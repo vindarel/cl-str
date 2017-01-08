@@ -17,6 +17,11 @@
   (is "rst" (s-trim "  rst  "))
   )
 
+(subtest "Concat"
+  (is "foo" (s-concat "f" "o" "o"))
+  (is "" (s-concat))
+  )
+
 (subtest "Replace"
   (is "foo" (s-replace "a" "o" "faa"))
   (is "foo" (s-replace "^a" "o" "fo^a"))

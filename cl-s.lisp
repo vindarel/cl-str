@@ -11,6 +11,7 @@
    #:s-join
    #:s-split
    #:s-replace
+   #:s-concat
    ))
 
 (in-package :cl-s)
@@ -30,14 +31,9 @@
   "Remove whitespaces at the beginning and end of s."
   (string-trim whitespaces s))
 
-
-(defun s-replace (old new s)
-  "Replace `old` by `new` in `s`. Arguments are not regexs."
-  (let* ((cl-ppcre:*allow-quoting* t)
-         (old (concatenate 'string  "\\Q" old))) ;; treat metacharacters as normal.
-    (cl-ppcre:regex-replace-all old s new)))
-
-;; To and from lists
+(defmacro s-concat (&rest strings)
+  "Join all the string arguments into one string."
+  `(concatenate 'string ,@strings))
 
 (defun s-join (separator strings)
   "Join all the strings in STRINGS with SEPARATOR in between."
@@ -48,3 +44,9 @@
 (defun s-split (separator s)
   "Split s into substring by separator (a regex)."
   (cl-ppcre:split separator s))
+
+(defun s-replace (old new s)
+  "Replace `old` by `new` in `s`. Arguments are not regexs."
+  (let* ((cl-ppcre:*allow-quoting* t)
+         (old (concatenate 'string  "\\Q" old))) ;; treat metacharacters as normal.
+    (cl-ppcre:regex-replace-all old s new)))
