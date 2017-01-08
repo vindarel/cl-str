@@ -17,6 +17,11 @@
   (is "rst" (s-trim "  rst  "))
   )
 
+(subtest "Replace"
+  (is "foo" (s-replace "a" "o" "faa"))
+  (is "foo" (s-replace "^a" "o" "fo^a"))
+  (is "foo" (s-replace "^aa+" "o" "fo^aa+"))
+  )
 
 (subtest "Join"
   (is "foo bar baz" (s-join " " '("foo" "bar" "baz")))

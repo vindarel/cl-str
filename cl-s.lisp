@@ -7,8 +7,10 @@
    #:s-trim-left
    #:s-trim-right
    #:s-trim
+   #:s-replace
    #:s-join
    #:s-split
+   #:s-replace
    ))
 
 (in-package :cl-s)
@@ -27,6 +29,14 @@
 (defun s-trim (s)
   "Remove whitespaces at the beginning and end of s."
   (string-trim whitespaces s))
+
+
+(defun s-replace (old new s)
+  "Replace `old` by `new` in `s`. Arguments are not regexs."
+  (let* ((cl-ppcre:*allow-quoting* t)
+         (old (concatenate 'string  "\\Q" old))) ;; treat metacharacters as normal.
+    (cl-ppcre:regex-replace-all old s new)))
+
 ;; To and from lists
 
 (defun s-join (separator strings)
