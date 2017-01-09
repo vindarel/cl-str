@@ -1,0 +1,17 @@
+@begin(section)
+@title(Overview)
+
+@b(cl-s, the long lost Common Lisp string manipulation library.)
+
+
+@cl:with-package[name="cl-s"](
+@cl:doc(function s-trim)
+@cl:doc(function s-trim-right)
+@cl:doc(function s-trim-left)
+@cl:doc(macro s-concat)
+@cl:doc(function s-join)
+@cl:doc(function s-split)
+@cl:doc(function s-replace)
+)
+
+@end(section)
