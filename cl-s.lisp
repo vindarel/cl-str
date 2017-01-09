@@ -16,23 +16,23 @@
 
 (in-package :cl-s)
 
-(defvar whitespaces '(#\Space #\Newline #\Backspace #\Tab
-                      #\Linefeed #\Page #\Return #\Rubout))
+(defvar *whitespaces* '(#\Space #\Newline #\Backspace #\Tab
+                        #\Linefeed #\Page #\Return #\Rubout))
 
 (defun s-trim-left (s)
   "Remove whitespaces at the beginning of s. "
-  (string-left-trim whitespaces s))
+  (string-left-trim *whitespaces* s))
 
 (defun s-trim-right (s)
   "Remove whitespaces at the end of s."
-  (string-right-trim whitespaces s))
+  (string-right-trim *whitespaces* s))
 
 (defun s-trim (s)
   "Remove whitespaces at the beginning and end of s.
 @begin[lang=lisp](code)
 (s-trim \"  foo \") ;; => \"foo\"
 @end(code)"
-  (string-trim whitespaces s))
+  (string-trim *whitespaces* s))
 
 (defun concat (&rest strings)
   "Join all the string arguments into one string."
