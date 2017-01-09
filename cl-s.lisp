@@ -20,7 +20,7 @@
                       #\Linefeed #\Page #\Return #\Rubout))
 
 (defun s-trim-left (s)
-  "Remove whitespaces at the beginning of s."
+  "Remove whitespaces at the beginning of s. "
   (string-left-trim whitespaces s))
 
 (defun s-trim-right (s)
@@ -28,15 +28,25 @@
   (string-right-trim whitespaces s))
 
 (defun s-trim (s)
-  "Remove whitespaces at the beginning and end of s."
+  "Remove whitespaces at the beginning and end of s.
+@begin[lang=lisp](code)
+(s-trim \"  foo \") ;; => \"foo\"
+@end(code)"
   (string-trim whitespaces s))
 
 (defmacro s-concat (&rest strings)
-  "Join all the string arguments into one string."
+  "Join all the string arguments into one string.
+@begin[lang=lisp](code)
+(s-concat \"f\" \"o\" \"o\") ;; => \"foo\"
+@end(code)"
   `(concatenate 'string ,@strings))
 
 (defun s-join (separator strings)
-  "Join all the strings in STRINGS with SEPARATOR in between."
+  "Join all the strings in @c(strings) with @c(separator) in between.
+@begin[lang=lisp](code)
+(s-join \" \" '(\"hello\" \"cl\")) ;; => \"hello cl\"
+@end(code)
+"
   (format nil
           (concatenate 'string "~{~a~^" separator "~}")
           strings))
@@ -46,7 +56,7 @@
   (cl-ppcre:split separator s))
 
 (defun s-replace (old new s)
-  "Replace `old` by `new` in `s`. Arguments are not regexs."
+  "Replace @c(old) by @c(new) in @c(s). Arguments are not regexs."
   (let* ((cl-ppcre:*allow-quoting* t)
          (old (concatenate 'string  "\\Q" old))) ;; treat metacharacters as normal.
     (cl-ppcre:regex-replace-all old s new)))
