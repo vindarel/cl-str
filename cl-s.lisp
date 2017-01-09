@@ -34,12 +34,9 @@
 @end(code)"
   (string-trim whitespaces s))
 
-(defmacro s-concat (&rest strings)
-  "Join all the string arguments into one string.
-@begin[lang=lisp](code)
-(s-concat \"f\" \"o\" \"o\") ;; => \"foo\"
-@end(code)"
-  `(concatenate 'string ,@strings))
+(defun concat (&rest strings)
+  "Join all the string arguments into one string."
+  (apply #'concatenate 'string strings))
 
 (defun s-join (separator strings)
   "Join all the strings in @c(strings) with @c(separator) in between.
