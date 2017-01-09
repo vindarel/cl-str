@@ -1,7 +1,7 @@
-;; (in-package :cl-user)
-;; (defpackage cl-s
-  ;; (:use :cl :asdf))
-;; (in-package :cl-s)
+(in-package :cl-user)
+(defpackage cl-s
+  (:use :cl :asdf))
+(in-package :cl-s)
 
 (defsystem cl-s
   :author "vindarel <ehvince@mailz.org>"
