@@ -1,4 +1,4 @@
-# The long lost Common Lisp string manipulation library
+# A modern and consistant Common Lisp string manipulation library
 
 straight from the famous Emacs Lisp's [s.el](https://github.com/magnars/s.el).
 
