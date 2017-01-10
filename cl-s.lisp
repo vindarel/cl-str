@@ -39,16 +39,13 @@
   (apply #'concatenate 'string strings))
 
 (defun s-join (separator strings)
-  "Join all the strings in @c(strings) with @c(separator) in between.
-@begin[lang=lisp](code)
-(s-join \" \" '(\"hello\" \"cl\")) ;; => \"hello cl\"
-@end(code)
-"
-  (format nil
-          (concatenate 'string "~{~a~^" separator "~}")
-          strings))
+  " "
+  (let ((separator (s-replace "~" "~~" separator)))
+    (format nil
+            (concatenate 'string "~{~a~^" separator "~}")
+            strings)))
 
-(defun s-split (separator s)
+(defun split (separator s)
   "Split s into substring by separator (a regex)."
   (cl-ppcre:split separator s))
 

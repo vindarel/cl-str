@@ -31,6 +31,8 @@
 (subtest "Join"
   (is "foo bar baz" (s-join " " '("foo" "bar" "baz")))
   (is "foo+++bar+++baz" (s-join "+++" '("foo" "bar" "baz")))
+  (is "foo~bar" (s-join "~" '("foo" "bar")))
+  (is "foo~~~bar" (s-join "~" '("foo~" "~bar")))
   )
 
 (subtest "Split"
