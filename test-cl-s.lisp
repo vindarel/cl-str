@@ -40,5 +40,15 @@
   (is '("foo" "bar") (split "\\+" "foo+bar"))
   )
 
+(subtest "Blank-p"
+  (ok (blank? nil))
+  (ok (blank? ""))
+  (is nil (blank? " "))
+  )
+
+(subtest "Blank string"
+  (ok (blank-str-p "  "))
+  )
+
 ;; prove end
 (finalize)

@@ -13,16 +13,18 @@ or `cl-s:concat strings` instead of an unusual `format` construct;
   easier to feed pipes and arrows.
 
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-generate-toc again -->
-
 **Table of Contents**
 
-- [The long lost Common Lisp string manipulation library](#the-long-lost-common-lisp-string-manipulation-library)
+- [A modern and consistant Common Lisp string manipulation library](#a-modern-and-consistant-common-lisp-string-manipulation-library)
     - [Functions and macros](#functions-and-macros)
         - [trim `(s)`](#trim-s)
         - [join `(separator list-of-strings)`](#join-separator-list-of-strings)
         - [concat `(&rest strings)`](#concat-rest-strings)
         - [split `(separator s)`](#split-separator-s)
         - [replace `(old new s)`](#replace-old-new-s)
+        - [blank-p `(s)`](#blank-p-s)
+        - [blank-str-p `(s)`](#blank-str-p-s)
+    - [Dev and test](#dev-and-test)
     - [Build the doc](#build-the-doc)
 
 <!-- markdown-toc end -->
@@ -79,6 +81,20 @@ Replace `old` by `new` (no regexs) in `s`.
 ```
 
 Uses `cl-ppcre:regex-replace-all` with quoting the user input to not treat it as a regex.
+
+### blank-p `(s)`
+
+True if `s` is nil or the empty string:
+
+```cl
+  (blank? nil) ;; => T
+  (blank? "")  ;; => T
+  (blank? " ") ;; => NIL
+```
+
+### blank-str-p `(s)`
+
+Also True if `s` only contains whitespaces.
 
 
 ## Dev and test

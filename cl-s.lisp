@@ -13,6 +13,10 @@
    :split
    :replace
    :concat
+   :blank?
+   :blank-p
+   :blank-str-p
+   :blank-str?
    ))
 
 (in-package :cl-s)
@@ -55,3 +59,17 @@
   (let* ((cl-ppcre:*allow-quoting* t)
          (old (concatenate 'string  "\\Q" old))) ;; treat metacharacters as normal.
     (cl-ppcre:regex-replace-all old s new)))
+
+(defun blank? (s)
+  "Is s nil or the empty string ?"
+  (or (null s) (string-equal "" s)))
+
+(defun blank-p (s)
+  (blank? s))
+
+(defun blank-str? (s)
+  "Is s nil or only contains whitespaces ?"
+  (or (null s) (string-equal "" (trim s))))
+
+(defun blank-str-p (s)
+  (blank-str? s))
