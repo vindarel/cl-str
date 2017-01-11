@@ -6,38 +6,38 @@
         :cl-s
         ))
 
-(in-package :test-cl-s)
+(in-package :cl-s)
 
 (setf prove:*enable-colors* t)
 (plan nil)
 
 (subtest "Trim"
-  (is "rst " (s-trim-left "   rst "))
-  (is " rst" (s-trim-right " rst   "))
-  (is "rst" (s-trim "  rst  "))
+  (is "rst " (trim-left "   rst "))
+  (is " rst" (trim-right " rst   "))
+  (is "rst" (trim "  rst  "))
   )
 
 (subtest "Concat"
-  (is "foo" (s-concat "f" "o" "o"))
-  (is "" (s-concat))
+  (is "foo" (concat "f" "o" "o"))
+  (is "" (concat))
   )
 
 (subtest "Replace"
-  (is "foo" (s-replace "a" "o" "faa"))
-  (is "foo" (s-replace "^a" "o" "fo^a"))
-  (is "foo" (s-replace "^aa+" "o" "fo^aa+"))
+  (is "foo" (replace "a" "o" "faa"))
+  (is "foo" (replace "^a" "o" "fo^a"))
+  (is "foo" (replace "^aa+" "o" "fo^aa+"))
   )
 
 (subtest "Join"
-  (is "foo bar baz" (s-join " " '("foo" "bar" "baz")))
-  (is "foo+++bar+++baz" (s-join "+++" '("foo" "bar" "baz")))
-  (is "foo~bar" (s-join "~" '("foo" "bar")))
-  (is "foo~~~bar" (s-join "~" '("foo~" "~bar")))
+  (is "foo bar baz" (join " " '("foo" "bar" "baz")))
+  (is "foo+++bar+++baz" (join "+++" '("foo" "bar" "baz")))
+  (is "foo~bar" (join "~" '("foo" "bar")))
+  (is "foo~~~bar" (join "~" '("foo~" "~bar")))
   )
 
 (subtest "Split"
-  (is '("foo" "bar") (s-split " " "foo bar"))
-  (is '("foo" "bar") (s-split "\\+" "foo+bar"))
+  (is '("foo" "bar") (split " " "foo bar"))
+  (is '("foo" "bar") (split "\\+" "foo+bar"))
   )
 
 ;; prove end
