@@ -11,7 +11,7 @@
   :homepage "https://github.com/vindarel/cl-str"
   :bug-tracker "https://github.com/vindarel/cl-str/issues"
   :source-control (:git "git@github.com:vindarel/cl-s.git")
-  :description "Modern, consistant and terse Common Lisp string manipulation library."
+  :description "Modern, consistent and terse Common Lisp string manipulation library."
   :depends-on (:prove)
   :components ((:file "cl-str"))
 

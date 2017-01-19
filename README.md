@@ -1,4 +1,4 @@
-# A modern and consistant Common Lisp string manipulation library
+# A modern and consistent Common Lisp string manipulation library
 
 straight from the famous Emacs Lisp's [s.el](https://github.com/magnars/s.el).
 
@@ -15,7 +15,7 @@ or `str:concat strings` instead of an unusual `format` construct;
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-generate-toc again -->
 **Table of Contents**
 
-- [A modern and consistant Common Lisp string manipulation library](#a-modern-and-consistant-common-lisp-string-manipulation-library)
+- [A modern and consistent Common Lisp string manipulation library](#a-modern-and-consistant-common-lisp-string-manipulation-library)
     - [Functions and macros](#functions-and-macros)
         - [trim `(s)`](#trim-s)
         - [join `(separator list-of-strings)`](#join-separator-list-of-strings)
