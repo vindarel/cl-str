@@ -58,16 +58,18 @@
          (old (concatenate 'string  "\\Q" old))) ;; treat metacharacters as normal.
     (cl-ppcre:regex-replace-all old s new)))
 
-(defun blank? (s)
+(defun empty? (s)
   "Is s nil or the empty string ?"
   (or (null s) (string-equal "" s)))
 
-(defun blank-p (s)
-  (blank? s))
+(defun empty-p (s)
+  "Is s nil or the empty string ?"
+  (empty? s))
 
-(defun blank-str? (s)
+(defun blank? (s)
   "Is s nil or only contains whitespaces ?"
   (or (null s) (string-equal "" (trim s))))
 
-(defun blank-str-p (s)
-  (blank-str? s))
+(defun blank-p (s)
+  "Is s nil or only contains whitespaces ?"
+  (blank? s))
