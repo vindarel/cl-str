@@ -1,12 +1,12 @@
 (in-package :cl-user)
-(defpackage test-cl-s
+(defpackage test-str
   (:use :cl
         :prove
         ;;
-        :cl-s
+        :str
         ))
 
-(in-package :cl-s)
+(in-package :str)
 
 (setf prove:*enable-colors* t)
 (plan nil)

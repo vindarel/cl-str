@@ -6,8 +6,8 @@ Why ?
 
 * modernity, simplicity and discoverability:
 
-`(cl-s:trim s)` instead of `  (string-trim '(#\Space #\Newline #\Backspace #\Tab #\Linefeed #\Page #\Return #\Rubout) s))`,
-or `cl-s:concat strings` instead of an unusual `format` construct;
+`(str:trim s)` instead of `  (string-trim '(#\Space #\Newline #\Backspace #\Tab #\Linefeed #\Page #\Return #\Rubout) s))`,
+or `str:concat strings` instead of an unusual `format` construct;
 
 * consistance and composability, where `s` is always the last argument, which makes it
   easier to feed pipes and arrows.
@@ -105,4 +105,4 @@ Test with [prove](https://github.com/fukamachi/prove).
 
 [https://commondoc.github.io/codex/docs/tutorial.html](https://commondoc.github.io/codex/docs/tutorial.html)
 
-    (codex:document :cl-s)
+    (codex:document :cl-str)

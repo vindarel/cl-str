@@ -1,5 +1,5 @@
 (in-package :cl-user)
-(defpackage cl-s
+(defpackage str
   (:use :cl
         :prove
         )
@@ -17,7 +17,7 @@
    :blank-str?
    ))
 
-(in-package :cl-s)
+(in-package :str)
 
 (defvar *whitespaces* '(#\Space #\Newline #\Backspace #\Tab
                         #\Linefeed #\Page #\Return #\Rubout))

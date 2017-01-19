@@ -1,9 +1,9 @@
 (in-package :cl-user)
-(defpackage cl-s
+(defpackage str
   (:use :cl :asdf))
-(in-package :cl-s)
+(in-package :str)
 
-(defsystem cl-s
+(defsystem str
   :author "vindarel <ehvince@mailz.org>"
   :maintainer "vindarel <ehvince@mailz.org>"
   :license "MIT"
@@ -11,9 +11,9 @@
   :homepage ""
   :bug-tracker ""
   :source-control (:git "")
-  :description "The long lost Common Lisp string manipulation library."
+  :description "Modern, consistant and terse Common Lisp string manipulation library."
   :depends-on (:prove)
-  :components ((:file "cl-s"))
+  :components ((:file "cl-str"))
 
   :long-description
   #.(uiop:read-file-string
