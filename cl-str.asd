@@ -8,7 +8,7 @@
   :maintainer "vindarel <ehvince@mailz.org>"
   :license "MIT"
   :version "0.1"
-  :homepage ""
+  :homepage "https://github.com/vindarel/cl-str"
   :bug-tracker ""
   :source-control (:git "git@github.com:vindarel/cl-s.git")
   :description "Modern, consistant and terse Common Lisp string manipulation library."
