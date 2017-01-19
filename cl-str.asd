@@ -10,7 +10,7 @@
   :version "0.1"
   :homepage ""
   :bug-tracker ""
-  :source-control (:git "")
+  :source-control (:git "git@github.com:vindarel/cl-s.git")
   :description "Modern, consistant and terse Common Lisp string manipulation library."
   :depends-on (:prove)
   :components ((:file "cl-str"))
