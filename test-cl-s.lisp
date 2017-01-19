@@ -23,9 +23,9 @@
   )
 
 (subtest "Replace"
-  (is "foo" (replace "a" "o" "faa"))
-  (is "foo" (replace "^a" "o" "fo^a"))
-  (is "foo" (replace "^aa+" "o" "fo^aa+"))
+  (is "foo" (replace-all "a" "o" "faa"))
+  (is "foo" (replace-all "^a" "o" "fo^a"))
+  (is "foo" (replace-all "^aa+" "o" "fo^aa+"))
   )
 
 (subtest "Join"

@@ -3,15 +3,13 @@
   (:use :cl
         :prove
         )
-  (:shadow :replace)
   (:export
    :trim-left
    :trim-right
    :trim
-   :replace
    :join
    :split
-   :replace
+   :replace-all
    :concat
    :blank?
    :blank-p
@@ -45,7 +43,7 @@
 
 (defun join (separator strings)
   " "
-  (let ((separator (replace "~" "~~" separator)))
+  (let ((separator (replace-all "~" "~~" separator)))
     (format nil
             (concatenate 'string "~{~a~^" separator "~}")
             strings)))
@@ -54,7 +52,7 @@
   "Split s into substring by separator (a regex)."
   (cl-ppcre:split separator s))
 
-(defun replace (old new s)
+(defun replace-all (old new s)
   "Replace @c(old) by @c(new) in @c(s). Arguments are not regexs."
   (let* ((cl-ppcre:*allow-quoting* t)
          (old (concatenate 'string  "\\Q" old))) ;; treat metacharacters as normal.
