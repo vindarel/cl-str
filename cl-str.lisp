@@ -62,7 +62,7 @@
   "Is s nil or the empty string ?"
   (or (null s) (string-equal "" s)))
 
-(defun empty-p (s)
+(defun emptyp (s)
   "Is s nil or the empty string ?"
   (empty? s))
 
@@ -70,6 +70,6 @@
   "Is s nil or only contains whitespaces ?"
   (or (null s) (string-equal "" (trim s))))
 
-(defun blank-p (s)
+(defun blankp (s)
   "Is s nil or only contains whitespaces ?"
   (blank? s))

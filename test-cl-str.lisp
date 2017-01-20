@@ -42,12 +42,12 @@
 
 (subtest "Empty-p"
   (ok (empty? nil))
-  (ok (empty-p ""))
+  (ok (emptyp ""))
   (is nil (empty? " "))
   )
 
 (subtest "Blank string"
-  (ok (blank-p "  "))
+  (ok (blankp "  "))
   (ok (blank? "  "))
   (is nil (blank? "   rst "))
   )
