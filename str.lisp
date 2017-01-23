@@ -15,6 +15,7 @@
    :blank-p
    :blank-str-p
    :blank-str?
+   :--map
    ))
 
 (in-package :str)
@@ -73,3 +74,6 @@
 (defun blankp (s)
   "Is s nil or only contains whitespaces ?"
   (blank? s))
+
+(defmacro --map (form list)
+  `(mapcar (lambda (it) ,form) ,list))
