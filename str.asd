@@ -13,9 +13,9 @@
   :source-control (:git "git@github.com:vindarel/cl-s.git")
   :description "Modern, consistent and terse Common Lisp string manipulation library."
   :depends-on (:prove)
-  :components ((:file "cl-str"))
+  :components ((:file "str"))
 
   :long-description
   #.(uiop:read-file-string
      (uiop:subpathname *load-pathname* "README.md"))
-  :in-order-to ((test-op (test-op cl-s-test))))
+  :in-order-to ((test-op (test-op test-str))))
