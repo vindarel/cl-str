@@ -1,9 +1,6 @@
-(in-package :cl-user)
-(defpackage str
-  (:use :cl :asdf))
-(in-package :str)
+(in-package #:asdf-user)
 
-(defsystem str
+(defsystem :str
   :author "vindarel <ehvince@mailz.org>"
   :maintainer "vindarel <ehvince@mailz.org>"
   :license "MIT"

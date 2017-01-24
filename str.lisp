@@ -1,8 +1,6 @@
 (in-package :cl-user)
 (defpackage str
-  (:use :cl
-        :prove
-        )
+  (:use :cl)
   (:export
    :trim-left
    :trim-right
