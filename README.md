@@ -12,6 +12,17 @@ or `str:concat strings` instead of an unusual `format` construct;
 * consistance and composability, where `s` is always the last argument, which makes it
   easier to feed pipes and arrows.
 
+## Install
+
+Install with [Quicklisp](https://www.quicklisp.org/beta/):
+
+    (ql:quickload :str)
+
+(don't have a full Common Lisp development environment yet ? Get
+[Portacle](https://shinmera.github.io/portacle/), a portable and
+multiplatform development environment shipping Emacs, Quicklisp, SBCL
+and Git).
+
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-generate-toc again -->
 **Table of Contents**
 
