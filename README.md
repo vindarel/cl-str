@@ -117,3 +117,11 @@ Test with [prove](https://github.com/fukamachi/prove).
 [https://commondoc.github.io/codex/docs/tutorial.html](https://commondoc.github.io/codex/docs/tutorial.html)
 
     (codex:document :cl-str)
+
+## See also
+
+* [cl-strings](https://github.com/diogoalexandrefranco/cl-strings), a
+  similar (discovered afterwards), maybe more complete library, that
+  does not use established libraries as dependencies as we do (with
+  *potential* implementation
+  [issues](https://github.com/diogoalexandrefranco/cl-strings/issues/2)).
