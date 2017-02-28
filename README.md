@@ -77,13 +77,24 @@ Simple macro around the built-in `concatenate`.
 
 ### split `(separator s)`
 
-Split into subtrings (with a regexp).
+Split into subtrings (unlike cl-ppcre, without a regexp).
 
 ```cl
-(split " " "foo bar") ;; => ("foo" "bar")
+(split "+" "foo+bar") ;; => ("foo" "bar")
 ```
 
-Simple wrapper around `cl-ppcre:split`.
+Wrapper around `cl-ppcre:split` but:
+
+- our separator is a simple string, where cl-ppcre takes a regexp,
+- we fix an inconsistency:
+
+```
+(cl-ppcre:split "," ",a,b,,c,") ;; => ("" "a" "b" "" "c")
+```
+
+and we return a trailing `""`:
+
+    (split "," ",a,b,,c,") ;; => ("" "a" "b" "" "c" "")
 
 ### replace `(old new s)`
 

@@ -50,8 +50,13 @@
             strings)))
 
 (defun split (separator s)
-  "Split s into substring by separator (a regex)."
-  (cl-ppcre:split separator s))
+  "Split s into substring by separator (cl-ppcre takes a regex, we do not)."
+  ;; cl-ppcre:split doesn't return a null string if the separator appears at the end of s.
+  (let ((val (concat s
+                     (string separator)
+                     ;; so we need an extra character, but not the user's.
+                     (if (eql separator #\x) "y" "x"))))
+    (butlast (cl-ppcre:split (cl-ppcre:quote-meta-chars (string separator)) val))))
 
 (defun replace-all (old new s)
   "Replace @c(old) by @c(new) in @c(s). Arguments are not regexs."

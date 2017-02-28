@@ -37,7 +37,12 @@
 
 (subtest "Split"
   (is '("foo" "bar") (split " " "foo bar"))
-  (is '("foo" "bar") (split "\\+" "foo+bar"))
+  (is '("foo" "bar") (split "+" "foo+bar") "separator is a regexp")
+  (is '("foo" "bar" "") (split "+" "foo+bar+") "a trailing separator returns a void string, unlike in cl-ppcre")
+  (is '("foo" "" "bar") (split "+" "foo++bar"))
+  (is '("foo" "bar") (split "+" "foo+bar"))
+  (is '("foo" "bar") (split "(*)" "foo(*)bar"))
+  (is '("foo" "bar" "") (split "NO" "fooNObarNO") "separator is a string")
   )
 
 (subtest "Empty-p"
