@@ -18,6 +18,8 @@ Install with [Quicklisp](https://www.quicklisp.org/beta/):
 
     (ql:quickload :str)
 
+but this is a young and unstable library.
+
 (don't have a full Common Lisp development environment yet ? Get
 [Portacle](https://shinmera.github.io/portacle/), a portable and
 multiplatform development environment shipping Emacs, Quicklisp, SBCL

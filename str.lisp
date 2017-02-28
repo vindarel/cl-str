@@ -9,8 +9,10 @@
    :split
    :replace-all
    :concat
+   :empty?
+   :emptyp
    :blank?
-   :blank-p
+   :blankp
    :blank-str-p
    :blank-str?
    :--map
