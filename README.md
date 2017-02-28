@@ -75,15 +75,17 @@ Join strings into one.
 
 Simple macro around the built-in `concatenate`.
 
-### split `(separator s)`
+### split `(separator s &key omit-nulls)`
 
-Split into subtrings (unlike cl-ppcre, without a regexp).
+Split into subtrings (unlike cl-ppcre, without a regexp). If
+`omit-nulls` is non-nil, zero-length substrings are omitted.
 
 ```cl
-(split "+" "foo+bar") ;; => ("foo" "bar")
+(split "+" "foo++bar") ;; => ("foo" "" "bar")
+(split "+" "foo++bar" :omit-nulls t) ;; => ("foo" "bar")
 ```
 
-Wrapper around `cl-ppcre:split` but:
+Wrapper around [cl-ppcre:split](http://weitz.de/cl-ppcre/#split) but:
 
 - our separator is a simple string, where cl-ppcre takes a regexp,
 - we fix an inconsistency:

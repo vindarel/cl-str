@@ -43,6 +43,8 @@
   (is '("foo" "bar") (split "+" "foo+bar"))
   (is '("foo" "bar") (split "(*)" "foo(*)bar"))
   (is '("foo" "bar" "") (split "NO" "fooNObarNO") "separator is a string")
+  (is '("foo" "bar") (split "+" "foo+++bar++++" :omit-nulls t) "omit-nulls argument")
+  (is '("foo" "   ") (split "+" "foo+++   ++++" :omit-nulls t) "omit-nulls and blanks")
   )
 
 (subtest "Empty-p"
