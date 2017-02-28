@@ -6,7 +6,7 @@
         :str
         ))
 
-(in-package :str)
+(in-package :test-str)
 
 (setf prove:*enable-colors* t)
 (plan nil)
