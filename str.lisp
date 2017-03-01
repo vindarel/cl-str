@@ -55,7 +55,7 @@
   (let* ((val (concat s
                       (string separator)
                       ;; so we need an extra character, but not the user's.
-                      (if (eql separator #\x) "y" "x")))
+                      (if (string-equal separator #\x) "y" "x")))
          (res (butlast (cl-ppcre:split (cl-ppcre:quote-meta-chars (string separator)) val))))
     (if omit-nulls
         (remove-if (lambda (it) (empty? it)) res)

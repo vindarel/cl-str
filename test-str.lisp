@@ -41,6 +41,8 @@
   (is '("foo" "bar" "") (split "+" "foo+bar+") "a trailing separator returns a void string, unlike in cl-ppcre")
   (is '("foo" "" "bar") (split "+" "foo++bar"))
   (is '("foo" "bar") (split "+" "foo+bar"))
+  (is '("foo" "bar") (split "x" "fooxbar") "split with string x")
+  (is '("foo" "bar") (split #\x "fooxbar") "split with character")
   (is '("foo" "bar") (split "(*)" "foo(*)bar"))
   (is '("foo" "bar" "") (split "NO" "fooNObarNO") "separator is a string")
   (is '("foo" "bar") (split "+" "foo+++bar++++" :omit-nulls t) "omit-nulls argument")
