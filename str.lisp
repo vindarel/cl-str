@@ -7,6 +7,7 @@
    :trim
    :join
    :split
+   :repeat
    :replace-all
    :concat
    :empty?
@@ -60,6 +61,13 @@
     (if omit-nulls
         (remove-if (lambda (it) (empty? it)) res)
         res)))
+
+(defun repeat (count s)
+  "Make a string of S repeated COUNT times."
+  (let ((result nil))
+    (dotimes (i count)
+      (setf result (cons s result)))
+    (apply #'concat result)))
 
 (defun replace-all (old new s)
   "Replace @c(old) by @c(new) in @c(s). Arguments are not regexs."

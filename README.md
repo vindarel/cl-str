@@ -23,6 +23,7 @@ or `str:concat strings` instead of an unusual `format` construct; one discoverab
         - [join `(separator list-of-strings)`](#join-separator-list-of-strings)
         - [concat `(&rest strings)`](#concat-rest-strings)
         - [split `(separator s &key omit-nulls)`](#split-separator-s-key-omit-nulls)
+        - [repeat `(count s)`](#repeat-count-s)
         - [replace `(old new s)`](#replace-old-new-s)
         - [emptyp `(s)`](#emptyp-s)
         - [blankp `(s)`](#blankp-s)
@@ -102,6 +103,14 @@ Wrapper around [cl-ppcre:split](http://weitz.de/cl-ppcre/#split) but:
 and we return a trailing `""`:
 
     (split "," ",a,b,,c,") ;; => ("" "a" "b" "" "c" "")
+
+### repeat `(count s)`
+
+Make a string of `s` repeated `count` times.
+
+```cl
+(repeat 3 "foo") ;; => "foofoofoo"
+```
 
 ### replace `(old new s)`
 

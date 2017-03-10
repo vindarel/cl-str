@@ -11,6 +11,7 @@
 @cl:doc(macro s-concat)
 @cl:doc(function s-join)
 @cl:doc(function s-split)
+@cl:doc(function s-repeat)
 @cl:doc(function s-replace)
 )
 

@@ -49,6 +49,10 @@
   (is '("foo" "   ") (split "+" "foo+++   ++++" :omit-nulls t) "omit-nulls and blanks")
   )
 
+(subtest "Repeat"
+  (is "" (repeat 10 ""))
+  (is "foofoofoo" (repeat 3 "foo")))
+
 (subtest "Empty-p"
   (ok (empty? nil))
   (ok (emptyp ""))
