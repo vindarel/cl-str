@@ -65,5 +65,48 @@
   (is nil (blank? "   rst "))
   )
 
+(subtest "Words"
+  (is nil (words nil))
+  (is nil (words ""))
+  (is '("foo") (words "foo"))
+  (is '("foo" "bar") (words "foo bar"))
+  (is '("foo" "bar") (words "  foo   bar   "))
+  (is '("foo" "bar  ") (words " foo bar  " :limit 2))
+  (is '("foo" "bar baz ") (words " foo bar baz " :limit 2))
+  (is '("foo" "bar" "baz" "?") (words "  foo bar  baz ?"))
+  )
+
+(subtest "Unwords"
+  (is "" (unwords nil))
+  (is "" (unwords '()))
+  (is "" (unwords '("")))
+  (is "foo" (unwords '("foo")))
+  (is "foo bar baz" (unwords '("foo bar baz"))))
+
+
+(subtest "Lines"
+  (is '("") (lines nil))
+  (is '("") (lines ""))
+  (is '("" "") (lines "
+"))
+  (is '("1" "2" " 3") (lines "1
+2
+ 3"))
+  (is '("1" "2" " 3" "") (lines "1
+2
+ 3
+")))
+
+(subtest "Unlines"
+  (is "" (unlines nil))
+  (is "" (unlines '("")))
+  (is "
+" (unlines '("" "")))
+  (is "1
+2
+" (unlines '("1" "2" ""))))
+
+
+
 ;; prove end
 (finalize)
