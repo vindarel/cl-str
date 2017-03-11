@@ -16,7 +16,10 @@
    :blankp
    :blank-str-p
    :blank-str?
-   :--map
+   :words
+   :unwords
+   :lines
+   :unlines
    ))
 
 (in-package :str)
@@ -91,5 +94,24 @@
   "Is s nil or only contains whitespaces ?"
   (blank? s))
 
-(defmacro --map (form list)
-  `(mapcar (lambda (it) ,form) ,list))
+
+(defun words (s &key (limit 0))
+  "Return list of words, which were delimited by white space"
+  (if (not s)
+      nil
+      (cl-ppcre:split "\\s+" (trim-left s) :limit limit)))
+
+(defun unwords (strings)
+  (join " " strings))
+
+
+(defun lines (s &key omit-nulls)
+  "Split string by newline character and return list of lines."
+  (split #\NewLine s :omit-nulls omit-nulls))
+
+(defun unlines (strings)
+  "Join strings with newline character."
+  (join (make-string 1 :initial-element #\Newline) strings))
+
+
+  
