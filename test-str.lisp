@@ -74,6 +74,8 @@
   (is '("foo" "bar  ") (words " foo bar  " :limit 2))
   (is '("foo" "bar baz ") (words " foo bar baz " :limit 2))
   (is '("foo" "bar" "baz" "?") (words "  foo bar  baz ?"))
+  (is '("foo" "bar" "baz" "?") (words "  foo
+ bar  baz ?"))
   )
 
 (subtest "Unwords"
@@ -105,7 +107,6 @@
   (is "1
 2
 " (unlines '("1" "2" ""))))
-
 
 
 ;; prove end

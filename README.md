@@ -13,7 +13,6 @@ or `str:concat strings` instead of an unusual `format` construct; one discoverab
   easier to feed pipes and arrows.
 
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-generate-toc again -->
-
 **Table of Contents**
 
 - [A modern and consistent Common Lisp string manipulation library](#a-modern-and-consistent-common-lisp-string-manipulation-library)
@@ -21,6 +20,10 @@ or `str:concat strings` instead of an unusual `format` construct; one discoverab
     - [Functions and macros](#functions-and-macros)
         - [trim `(s)`](#trim-s)
         - [join `(separator list-of-strings)`](#join-separator-list-of-strings)
+        - [words `(s)`](#words-s)
+        - [unwords `(strings)`](#unwords-strings)
+        - [lines `(s)`](#lines-s)
+        - [unlines `(strings)`](#unlines-strings)
         - [concat `(&rest strings)`](#concat-rest-strings)
         - [split `(separator s &key omit-nulls)`](#split-separator-s-key-omit-nulls)
         - [repeat `(count s)`](#repeat-count-s)
@@ -70,6 +73,22 @@ Join strings in list `list-of-strings` with `separator` in between.
 ```
 
 Uses a specific [format](http://jtra.cz/stuff/lisp/sclr/format.html) syntax.
+
+### words `(s)`
+
+Return list of words, which were delimited by whitespace.
+
+### unwords `(strings)`
+
+Join the list of strings with a whitespace.
+
+### lines `(s)`
+
+Split string by newline character and return list of lines.
+
+### unlines `(strings)`
+
+Join the list of strings with a newline character.
 
 ### concat `(&rest strings)`
 
@@ -145,6 +164,7 @@ True if `s` is empty or only contains whitespaces.
 ## Dev and test
 
 Test with [prove](https://github.com/fukamachi/prove).
+
 
 ## Build the doc
 

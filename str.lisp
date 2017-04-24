@@ -66,20 +66,21 @@
         res)))
 
 (defun words (s &key (limit 0))
-  "Return list of words, which were delimited by white space"
+  "Return list of words, which were delimited by white space. If the optional limit is 0 (the default), trailing empty strings are removed from the result list (see cl-ppcre)."
   (if (not s)
       nil
       (cl-ppcre:split "\\s+" (trim-left s) :limit limit)))
 
 (defun unwords (strings)
+  "Join the list of strings with a whitespace."
   (join " " strings))
 
 (defun lines (s &key omit-nulls)
-  "Split string by newline character and return list of lines."
+  "Split the string by newline characters and return a list of lines."
   (split #\NewLine s :omit-nulls omit-nulls))
 
 (defun unlines (strings)
-  "Join strings with newline character."
+  "Join the list of strings with a newline character."
   (join (make-string 1 :initial-element #\Newline) strings))
 
 (defun repeat (count s)
