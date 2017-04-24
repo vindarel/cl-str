@@ -65,6 +65,23 @@
         (remove-if (lambda (it) (empty? it)) res)
         res)))
 
+(defun words (s &key (limit 0))
+  "Return list of words, which were delimited by white space"
+  (if (not s)
+      nil
+      (cl-ppcre:split "\\s+" (trim-left s) :limit limit)))
+
+(defun unwords (strings)
+  (join " " strings))
+
+(defun lines (s &key omit-nulls)
+  "Split string by newline character and return list of lines."
+  (split #\NewLine s :omit-nulls omit-nulls))
+
+(defun unlines (strings)
+  "Join strings with newline character."
+  (join (make-string 1 :initial-element #\Newline) strings))
+
 (defun repeat (count s)
   "Make a string of S repeated COUNT times."
   (let ((result nil))
@@ -93,25 +110,3 @@
 (defun blankp (s)
   "Is s nil or only contains whitespaces ?"
   (blank? s))
-
-
-(defun words (s &key (limit 0))
-  "Return list of words, which were delimited by white space"
-  (if (not s)
-      nil
-      (cl-ppcre:split "\\s+" (trim-left s) :limit limit)))
-
-(defun unwords (strings)
-  (join " " strings))
-
-
-(defun lines (s &key omit-nulls)
-  "Split string by newline character and return list of lines."
-  (split #\NewLine s :omit-nulls omit-nulls))
-
-(defun unlines (strings)
-  "Join strings with newline character."
-  (join (make-string 1 :initial-element #\Newline) strings))
-
-
-  
