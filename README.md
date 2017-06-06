@@ -179,3 +179,5 @@ Test with [prove](https://github.com/fukamachi/prove).
   does not use established libraries as dependencies as we do (with
   *potential* implementation
   [issues](https://github.com/diogoalexandrefranco/cl-strings/issues/2)).
+* [cl-change-case](https://github.com/rudolfochrist/cl-change-case) to
+  convert strings between camelCase, param-case, snake_case and more.
