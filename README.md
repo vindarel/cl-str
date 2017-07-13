@@ -221,3 +221,4 @@ Test with [prove](https://github.com/fukamachi/prove).
   [issues](https://github.com/diogoalexandrefranco/cl-strings/issues/2)).
 * [cl-change-case](https://github.com/rudolfochrist/cl-change-case) to
   convert strings between camelCase, param-case, snake_case and more.
+* the [Common Lisp Cookbook](https://lispcookbook.github.io/cl-cookbook/strings.html), strings page.
