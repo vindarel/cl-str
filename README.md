@@ -13,23 +13,31 @@ or `str:concat strings` instead of an unusual `format` construct; one discoverab
   easier to feed pipes and arrows.
 
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-generate-toc again -->
+
 **Table of Contents**
 
 - [A modern and consistent Common Lisp string manipulation library](#a-modern-and-consistent-common-lisp-string-manipulation-library)
     - [Install](#install)
-    - [Functions and macros](#functions-and-macros)
-        - [trim `(s)`](#trim-s)
-        - [join `(separator list-of-strings)`](#join-separator-list-of-strings)
-        - [words `(s)`](#words-s)
-        - [unwords `(strings)`](#unwords-strings)
-        - [lines `(s)`](#lines-s)
-        - [unlines `(strings)`](#unlines-strings)
-        - [concat `(&rest strings)`](#concat-rest-strings)
-        - [split `(separator s &key omit-nulls)`](#split-separator-s-key-omit-nulls)
-        - [repeat `(count s)`](#repeat-count-s)
-        - [replace `(old new s)`](#replace-old-new-s)
-        - [emptyp `(s)`](#emptyp-s)
-        - [blankp `(s)`](#blankp-s)
+    - [Functions](#functions)
+        - [Tweak whitespace](#tweak-whitespace)
+            - [trim `(s)`](#trim-s)
+        - [To longer strings](#to-longer-strings)
+            - [join `(separator list-of-strings)`](#join-separator-list-of-strings)
+            - [concat `(&rest strings)`](#concat-rest-strings)
+            - [repeat `(count s)`](#repeat-count-s)
+        - [To and from lists](#to-and-from-lists)
+            - [words `(s)`](#words-s)
+            - [unwords `(strings)`](#unwords-strings)
+            - [lines `(s)`](#lines-s)
+            - [unlines `(strings)`](#unlines-strings)
+            - [split `(separator s &key omit-nulls)`](#split-separator-s-key-omit-nulls)
+        - [Predicates](#predicates)
+            - [empty?, emptyp `(s)`](#empty-emptyp-s)
+            - [blank?, blankp `(s)`](#blank-blankp-s)
+            - [starts-with? `(start s &key ignore-case)`](#starts-with-start-s-key-ignore-case)
+            - [ends-with? `(end s &key ignore-case)`](#ends-with-end-s-key-ignore-case)
+        - [Others](#others)
+            - [replace `(old new s)`](#replace-old-new-s)
     - [Dev and test](#dev-and-test)
     - [Build the doc](#build-the-doc)
     - [See also](#see-also)
@@ -49,9 +57,11 @@ beware, this is a young and unstable library.
 multiplatform development environment shipping Emacs, Quicklisp, SBCL
 and Git).
 
-## Functions and macros
+## Functions
 
-### trim `(s)`
+### Tweak whitespace
+
+#### trim `(s)`
 Remove whitespaces at the beginning and end of `s`.
 
 ```cl
@@ -64,7 +74,9 @@ Uses the built-in
 [string-trim](https://lispcookbook.github.io/cl-cookbook/strings.html#trimming-blanks-from-the-ends-of-a-string)
 where whitespaces are `'(#\Space #\Newline #\Backspace #\Tab #\Linefeed #\Page #\Return #\Rubout)`.
 
-### join `(separator list-of-strings)`
+### To longer strings
+
+#### join `(separator list-of-strings)`
 
 Join strings in list `list-of-strings` with `separator` in between.
 
@@ -74,23 +86,7 @@ Join strings in list `list-of-strings` with `separator` in between.
 
 Uses a specific [format](http://jtra.cz/stuff/lisp/sclr/format.html) syntax.
 
-### words `(s)`
-
-Return list of words, which were delimited by whitespace.
-
-### unwords `(strings)`
-
-Join the list of strings with a whitespace.
-
-### lines `(s)`
-
-Split string by newline character and return list of lines.
-
-### unlines `(strings)`
-
-Join the list of strings with a newline character.
-
-### concat `(&rest strings)`
+#### concat `(&rest strings)`
 
 Join strings into one.
 
@@ -100,7 +96,34 @@ Join strings into one.
 
 Simple call of the built-in [concatenate](https://lispcookbook.github.io/cl-cookbook/strings.html#concatenating-strings).
 
-### split `(separator s &key omit-nulls)`
+#### repeat `(count s)`
+
+Make a string of `s` repeated `count` times.
+
+```cl
+(repeat 3 "foo") ;; => "foofoofoo"
+```
+
+
+### To and from lists
+
+#### words `(s)`
+
+Return list of words, which were delimited by whitespace.
+
+#### unwords `(strings)`
+
+Join the list of strings with a whitespace.
+
+#### lines `(s)`
+
+Split string by newline character and return list of lines.
+
+#### unlines `(strings)`
+
+Join the list of strings with a newline character.
+
+#### split `(separator s &key omit-nulls)`
 
 Split into subtrings (unlike cl-ppcre, without a regexp). If
 `omit-nulls` is non-nil, zero-length substrings are omitted.
@@ -123,27 +146,10 @@ and we return a trailing `""`:
 
     (split "," ",a,b,,c,") ;; => ("" "a" "b" "" "c" "")
 
-### repeat `(count s)`
 
-Make a string of `s` repeated `count` times.
+### Predicates
 
-```cl
-(repeat 3 "foo") ;; => "foofoofoo"
-```
-
-### replace `(old new s)`
-
-Replace `old` by `new` (no regexs) in `s`.
-
-```cl
-(replace "a" "o" "faa") ;; => "foo"
-```
-
-Uses
-[cl-ppcre:regex-replace-all](http://weitz.de/cl-ppcre/#regex-replace-all)
-but quotes the user input to not treat it as a regex.
-
-### emptyp `(s)`
+#### empty?, emptyp `(s)`
 
 True if `s` is nil or the empty string:
 
@@ -153,7 +159,7 @@ True if `s` is nil or the empty string:
   (empty? " ") ;; => NIL
 ```
 
-### blankp `(s)`
+#### blank?, blankp `(s)`
 
 True if `s` is empty or only contains whitespaces.
 
@@ -178,6 +184,23 @@ Calls `string=` or `string-equal` depending on the case, with their
 True if `s` ends with the substring `end`. Ignore case by default.
 
     (ends-with? "bar" "foobar") ;; => T
+
+### Others
+
+#### replace `(old new s)`
+
+Replace `old` by `new` (no regexs) in `s`.
+
+```cl
+(replace "a" "o" "faa") ;; => "foo"
+```
+
+Uses
+[cl-ppcre:regex-replace-all](http://weitz.de/cl-ppcre/#regex-replace-all)
+but quotes the user input to not treat it as a regex.
+
+
+
 ## Dev and test
 
 Test with [prove](https://github.com/fukamachi/prove).
