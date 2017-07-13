@@ -19,6 +19,8 @@
    :words
    :unwords
    :lines
+   :starts-with?
+   :ends-with?
    :unlines
    ))
 
@@ -111,3 +113,15 @@
 (defun blankp (s)
   "Is s nil or only contains whitespaces ?"
   (blank? s))
+
+(defun starts-with? (start s &key (ignore-case nil))
+  "Return t if s starts with the substring 'start', nil otherwise."
+  (when (>= (length s) (length start))
+    (let ((fn (if ignore-case #'string-equal #'string=)))
+      (funcall fn s start :start1 0 :end1 (length start)))))
+
+(defun ends-with? (end s &key (ignore-case nil))
+  "Return t if s ends with the substring 'end', nil otherwise."
+  (when (>= (length s) (length end))
+    (let ((fn (if ignore-case #'string-equal #'string=)))
+      (funcall fn s end :start1 (- (length s) (length end))))))

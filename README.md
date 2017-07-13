@@ -161,6 +161,23 @@ True if `s` is empty or only contains whitespaces.
     (blankp " ") ;; => T
     (emptyp " ") ;; => NIL
 
+#### starts-with? `(start s &key ignore-case)`
+
+True if `s` starts with the substring `start`, nil otherwise. Ignore
+case by default.
+
+    (starts-with? "foo" "foobar") ;; => T
+    (starts-with? "FOO" "foobar") ;; => NIL
+    (starts-with? "FOO" "foobar" :ignore-case t) ;; => T
+
+Calls `string=` or `string-equal` depending on the case, with their
+`:start` and `:end` delimiters.
+
+#### ends-with? `(end s &key ignore-case)`
+
+True if `s` ends with the substring `end`. Ignore case by default.
+
+    (ends-with? "bar" "foobar") ;; => T
 ## Dev and test
 
 Test with [prove](https://github.com/fukamachi/prove).

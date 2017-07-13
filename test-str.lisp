@@ -108,6 +108,19 @@
 2
 " (unlines '("1" "2" ""))))
 
+(subtest "Starts-with"
+  (ok (starts-with? "foo" "foobar") "default case")
+  (ok (starts-with? "" "foo") "with blank start")
+  (ok (not (starts-with? "rs" "")) "with blank s")
+  (ok (not (starts-with? "foobar" "foo")) "with shorter s")
+  (ok (starts-with? "" "") "with everything blank")
+  (ok (not (starts-with? "FOO" "foobar")) "don't ignore case")
+  (ok (starts-with? "FOO" "foobar" :ignore-case t) "ignore case"))
+
+(subtest "ends-with"
+  (ok (ends-with? "bar" "foobar") "default case")
+  (ok (not (ends-with? "BAR" "foobar")) "don't ignore case")
+  (ok (ends-with? "BAR" "foobar" :ignore-case t) "ignore case"))
 
 ;; prove end
 (finalize)
