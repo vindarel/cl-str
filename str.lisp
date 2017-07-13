@@ -95,7 +95,7 @@
     (apply #'concat result)))
 
 (defun replace-all (old new s)
-  "Replace @c(old) by @c(new) in @c(s). Arguments are not regexs."
+  "Replace `old` by `new` in `s`. Arguments are not regexs."
   (let* ((cl-ppcre:*allow-quoting* t)
          (old (concatenate 'string  "\\Q" old))) ;; treat metacharacters as normal.
     (cl-ppcre:regex-replace-all old s new)))

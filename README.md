@@ -39,7 +39,6 @@ or `str:concat strings` instead of an unusual `format` construct; one discoverab
         - [Others](#others)
             - [replace `(old new s)`](#replace-old-new-s)
     - [Dev and test](#dev-and-test)
-    - [Build the doc](#build-the-doc)
     - [See also](#see-also)
 
 <!-- markdown-toc end -->
@@ -205,12 +204,6 @@ but quotes the user input to not treat it as a regex.
 
 Test with [prove](https://github.com/fukamachi/prove).
 
-
-## Build the doc
-
-[https://commondoc.github.io/codex/docs/tutorial.html](https://commondoc.github.io/codex/docs/tutorial.html)
-
-    (codex:document :cl-str)
 
 ## See also
 
