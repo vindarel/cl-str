@@ -115,10 +115,12 @@
   (ok (not (starts-with? "foobar" "foo")) "with shorter s")
   (ok (starts-with? "" "") "with everything blank")
   (ok (not (starts-with? "FOO" "foobar")) "don't ignore case")
+  (ok (starts-with-p "f" "foo") "starts-with-p alias")
   (ok (starts-with? "FOO" "foobar" :ignore-case t) "ignore case"))
 
 (subtest "ends-with"
   (ok (ends-with? "bar" "foobar") "default case")
+  (ok (ends-with-p "bar" "foobar") "ends-with-p alias")
   (ok (not (ends-with? "BAR" "foobar")) "don't ignore case")
   (ok (ends-with? "BAR" "foobar" :ignore-case t) "ignore case"))
 

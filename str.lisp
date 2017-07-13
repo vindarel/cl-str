@@ -20,7 +20,9 @@
    :unwords
    :lines
    :starts-with?
+   :starts-with-p
    :ends-with?
+   :ends-with-p
    :unlines
    ))
 
@@ -120,8 +122,13 @@
     (let ((fn (if ignore-case #'string-equal #'string=)))
       (funcall fn s start :start1 0 :end1 (length start)))))
 
+;; An alias:
+(setf (fdefinition 'starts-with-p) #'starts-with?)
+
 (defun ends-with? (end s &key (ignore-case nil))
   "Return t if s ends with the substring 'end', nil otherwise."
   (when (>= (length s) (length end))
     (let ((fn (if ignore-case #'string-equal #'string=)))
       (funcall fn s end :start1 (- (length s) (length end))))))
+
+(setf (fdefinition 'ends-with-p) #'ends-with?)

@@ -34,8 +34,8 @@ or `str:concat strings` instead of an unusual `format` construct; one discoverab
         - [Predicates](#predicates)
             - [empty?, emptyp `(s)`](#empty-emptyp-s)
             - [blank?, blankp `(s)`](#blank-blankp-s)
-            - [starts-with? `(start s &key ignore-case)`](#starts-with-start-s-key-ignore-case)
-            - [ends-with? `(end s &key ignore-case)`](#ends-with-end-s-key-ignore-case)
+            - [starts-with?, starts-with-p `(start s &key ignore-case)`](#starts-with-starts-with-p-start-s-key-ignore-case)
+            - [ends-with?, ends-with-p `(end s &key ignore-case)`](#ends-with-ends-with-p-end-s-key-ignore-case)
         - [Others](#others)
             - [replace `(old new s)`](#replace-old-new-s)
     - [Dev and test](#dev-and-test)
@@ -167,7 +167,7 @@ True if `s` is empty or only contains whitespaces.
     (blankp " ") ;; => T
     (emptyp " ") ;; => NIL
 
-#### starts-with? `(start s &key ignore-case)`
+#### starts-with?, starts-with-p `(start s &key ignore-case)`
 
 True if `s` starts with the substring `start`, nil otherwise. Ignore
 case by default.
@@ -179,7 +179,7 @@ case by default.
 Calls `string=` or `string-equal` depending on the case, with their
 `:start` and `:end` delimiters.
 
-#### ends-with? `(end s &key ignore-case)`
+#### ends-with?, ends-with-p `(end s &key ignore-case)`
 
 True if `s` ends with the substring `end`. Ignore case by default.
 
