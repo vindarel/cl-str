@@ -108,7 +108,7 @@
 2
 " (unlines '("1" "2" ""))))
 
-(subtest "Starts-with"
+(subtest "starts-with?"
   (ok (starts-with? "foo" "foobar") "default case")
   (ok (starts-with? "" "foo") "with blank start")
   (ok (not (starts-with? "rs" "")) "with blank s")
@@ -118,11 +118,21 @@
   (ok (starts-with-p "f" "foo") "starts-with-p alias")
   (ok (starts-with? "FOO" "foobar" :ignore-case t) "ignore case"))
 
-(subtest "ends-with"
+(subtest "ends-with?"
   (ok (ends-with? "bar" "foobar") "default case")
   (ok (ends-with-p "bar" "foobar") "ends-with-p alias")
   (ok (not (ends-with? "BAR" "foobar")) "don't ignore case")
   (ok (ends-with? "BAR" "foobar" :ignore-case t) "ignore case"))
+
+(subtest "contains?"
+  (ok (contains? "foo" "blafoobar") "default")
+  (ok (not (contains? "foo" "")) "with no string")
+  (ok (not (contains? "" nil)) "a blank substring in a nil str")
+  (ok (not (contains? "foo" nil)) "with string nil")
+  (ok (not (contains? "Foo" "blafoobar")) "with case")
+  (ok (contains? "Foo" "blafoobar" :ignore-case t) "ignore case")
+  (ok (containsp "Foo" "blafoobar" :ignore-case t) "containsp alias")
+  )
 
 ;; prove end
 (finalize)

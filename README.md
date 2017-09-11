@@ -13,7 +13,6 @@ or `str:concat strings` instead of an unusual `format` construct; one discoverab
   easier to feed pipes and arrows.
 
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-generate-toc again -->
-
 **Table of Contents**
 
 - [A modern and consistent Common Lisp string manipulation library](#a-modern-and-consistent-common-lisp-string-manipulation-library)
@@ -36,6 +35,7 @@ or `str:concat strings` instead of an unusual `format` construct; one discoverab
             - [blank?, blankp `(s)`](#blank-blankp-s)
             - [starts-with?, starts-with-p `(start s &key ignore-case)`](#starts-with-starts-with-p-start-s-key-ignore-case)
             - [ends-with?, ends-with-p `(end s &key ignore-case)`](#ends-with-ends-with-p-end-s-key-ignore-case)
+            - [contains?, containsp `(substring s &key (ignore-case nil))`](#contains-containsp-substring-s-key-ignore-case-nil)
         - [Others](#others)
             - [replace `(old new s)`](#replace-old-new-s)
     - [Dev and test](#dev-and-test)
@@ -183,6 +183,15 @@ Calls `string=` or `string-equal` depending on the case, with their
 True if `s` ends with the substring `end`. Ignore case by default.
 
     (ends-with? "bar" "foobar") ;; => T
+
+#### contains?, containsp `(substring s &key (ignore-case nil))`
+
+Return true if `s` contains `substring`, nil otherwise. Ignore the
+case with `:ignore-case t` (don't ignore by default).
+
+Based on a simple call to the built-in `search` (which returns the
+position of the substring).
+
 
 ### Others
 

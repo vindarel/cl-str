@@ -2,6 +2,8 @@
 (defpackage str
   (:use :cl)
   (:export
+   :contains?
+   :containsp
    :trim-left
    :trim-right
    :trim
@@ -132,3 +134,21 @@
       (funcall fn s end :start1 (- (length s) (length end))))))
 
 (setf (fdefinition 'ends-with-p) #'ends-with?)
+
+(defun contains? (substring s &key (ignore-case nil))
+  "Return `t` if `s` contains `substring`, nil otherwise. Ignore the case with `:ignore-case t`.
+A simple call to the built-in `search` (which returns the position of the substring)."
+  (let ((a (if ignore-case
+               (string-downcase substring)
+               substring))
+        (b (if ignore-case
+               (string-downcase s)
+               s)))
+    ;; weird case: (search "" nil) => 0
+    (if (and (blank? substring)
+             (null s))
+        nil
+        (if (search a b)
+            t))))
+
+(setf (fdefinition 'containsp) #'contains?)
