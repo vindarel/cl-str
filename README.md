@@ -1,6 +1,6 @@
 # A modern and consistent Common Lisp string manipulation library
 
-straight from the famous Emacs Lisp's [s.el](https://github.com/magnars/s.el).
+    (ql:quickload "str")
 
 Why ?
 
@@ -24,6 +24,8 @@ or `str:concat strings` instead of an unusual `format` construct; one discoverab
             - [join `(separator list-of-strings)`](#join-separator-list-of-strings)
             - [concat `(&rest strings)`](#concat-rest-strings)
             - [repeat `(count s)`](#repeat-count-s)
+        - [To shorter strings](#to-shorter-strings)
+            - [Substring `(start end s)` - new in 0.3](#substring-start-end-s---new-in-03)
         - [To and from lists](#to-and-from-lists)
             - [words `(s)`](#words-s)
             - [unwords `(strings)`](#unwords-strings)
@@ -103,6 +105,29 @@ Make a string of `s` repeated `count` times.
 (repeat 3 "foo") ;; => "foofoofoo"
 ```
 
+### To shorter strings
+
+#### Substring `(start end s)` - new in 0.3
+
+Return the substring of `s` from `start` to `end`.
+
+It uses `subseq` with differences:
+- argument order, s at the end
+- `start` and `end` can be lower than 0 or bigger than the length of s.
+- for convenience `end` can be nil or t to denote the end of the string.
+
+Examples:
+
+```lisp
+  (is "abcd" (substring 0 t "abcd") "t denotes the end of the string")
+  (is "abcd" (substring 0 nil "abcd") "nil too")
+  (is "abcd" (substring 0 100 "abcd") "end can be too large")
+  (is "abc" (substring 0 -1 "abcd") "end can be negative. Counts from the end.")
+  (is "" (substring 0 -100 "abcd") "end can be negative and too low")
+  (is "" (substring 100 1 "abcd") "start can be too big")
+  (is "abcd" (substring -100 4 "abcd") "start can also be too low")
+  (is "" (substring 2 1 "abcd") "start is bigger than end")
+```
 
 ### To and from lists
 
@@ -144,7 +169,6 @@ Wrapper around [cl-ppcre:split](http://weitz.de/cl-ppcre/#split) but:
 and we return a trailing `""`:
 
     (split "," ",a,b,,c,") ;; => ("" "a" "b" "" "c" "")
-
 
 ### Predicates
 
@@ -224,3 +248,5 @@ Test with [prove](https://github.com/fukamachi/prove).
 * [cl-change-case](https://github.com/rudolfochrist/cl-change-case) to
   convert strings between camelCase, param-case, snake_case and more.
 * the [Common Lisp Cookbook](https://lispcookbook.github.io/cl-cookbook/strings.html), strings page.
+
+Inspired by the famous Emacs Lisp's [s.el](https://github.com/magnars/s.el).

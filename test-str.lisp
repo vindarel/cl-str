@@ -49,6 +49,26 @@
   (is '("foo" "   ") (split "+" "foo+++   ++++" :omit-nulls t) "omit-nulls and blanks")
   )
 
+(subtest "substring"
+  (is "abcd" (substring 0 4 "abcd") "normal case")
+  (is "ab" (substring 0 2 "abcd") "normal case substing")
+  (is "bc" (substring 1 3 "abcd") "normal case substing middle")
+  (is "" (substring 4 4 "abcd") "normal case")
+  (is "" (substring 0 0 "abcd") "normal case")
+  (is "d" (substring 3 4 "abcd") "normal case")
+  (is "abcd" (substring 0 t "abcd") "end is t")
+  (is "abcd" (substring 0 nil "abcd") "end is nil")
+  (is "abcd" (substring 0 100 "abcd") "end is too large")
+  (is "abc" (substring 0 -1 "abcd") "end is negative")
+  (is "b" (substring 1 -2 "abcd") "end is negative")
+  (is "" (substring 2 1 "abcd") "start is bigger than end")
+  (is "" (substring 0 -100 "abcd") "end is too low")
+  (is "" (substring 100 1 "abcd") "start is too big")
+  (is "abcd" (substring -100 4 "abcd") "start is too low")
+  (is "abcd" (substring -100 100 "abcd") "start and end are too low and big")
+  (is "" (substring 100 -100 "abcd") "start and end are too big and low")
+  )
+
 (subtest "Repeat"
   (is "" (repeat 10 ""))
   (is "foofoofoo" (repeat 3 "foo")))
