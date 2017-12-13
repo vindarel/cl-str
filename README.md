@@ -39,7 +39,7 @@ or `str:concat strings` instead of an unusual `format` construct; one discoverab
             - [ends-with?, ends-with-p `(end s &key ignore-case)`](#ends-with-ends-with-p-end-s-key-ignore-case)
             - [contains?, containsp `(substring s &key (ignore-case nil))`](#contains-containsp-substring-s-key-ignore-case-nil)
         - [Others](#others)
-            - [replace `(old new s)`](#replace-old-new-s)
+            - [replace-all `(old new s)`](#replace-old-new-s)
     - [Dev and test](#dev-and-test)
     - [See also](#see-also)
 
@@ -219,12 +219,12 @@ position of the substring).
 
 ### Others
 
-#### replace `(old new s)`
+#### replace-all `(old new s)`
 
 Replace `old` by `new` (no regexs) in `s`.
 
 ```cl
-(replace "a" "o" "faa") ;; => "foo"
+(replace-all "a" "o" "faa") ;; => "foo"
 ```
 
 Uses
