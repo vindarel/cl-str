@@ -112,9 +112,10 @@ Make a string of `s` repeated `count` times.
 Return the substring of `s` from `start` to `end`.
 
 It uses `subseq` with differences:
-- argument order, s at the end
-- `start` and `end` can be lower than 0 or bigger than the length of s.
-- for convenience `end` can be nil or t to denote the end of the string.
+
+* argument order, s at the end
+* `start` and `end` can be lower than 0 or bigger than the length of s.
+* for convenience `end` can be nil or t to denote the end of the string.
 
 Examples:
 
@@ -170,6 +171,29 @@ and we return a trailing `""`:
 
     (split "," ",a,b,,c,") ;; => ("" "a" "b" "" "c" "")
 
+### To and from files (experimental in v0.4)
+
+#### from-file `(filename)`
+
+Read the file and return its content as a string.
+
+Example: `(str:from-file "path/to/file.txt")`.
+
+`:external-format`: if nil, the system default. Can be bound to `:utf-8`.
+
+#### to-file `(filename s)`
+
+Write the string `s` to the file `filename`. If the file does not
+exist, create it, if it already exists, replace it.
+
+Options:
+
+* `:if-does-not-exist`: `:create` (default), `:error`
+* `:if-exists`: `:supersede` (default), `:append`, `:overwrite`, `:rename`, `:error`,...
+
+Returns the string written to file.
+
+
 ### Predicates
 
 #### empty?, emptyp `(s)`
@@ -177,7 +201,7 @@ and we return a trailing `""`:
 True if `s` is nil or the empty string:
 
 ```cl
-  (empty? nil) ;; => T
+  (empty? nil) ;; => T
   (empty? "")  ;; => T
   (empty? " ") ;; => NIL
 ```
