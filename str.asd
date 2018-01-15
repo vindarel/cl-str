@@ -1,10 +1,10 @@
 (in-package #:asdf-user)
 
 (defsystem :str
-  :author "vindarel <ehvince@mailz.org>"
-  :maintainer "vindarel <ehvince@mailz.org>"
+  :author "vindarel <vindarel@mailz.org>"
+  :maintainer "vindarel <vindarel@mailz.org>"
   :license "MIT"
-  :version "0.4"
+  :version "0.5"
   :homepage "https://github.com/vindarel/cl-str"
   :bug-tracker "https://github.com/vindarel/cl-str/issues"
   :source-control (:git "git@github.com:vindarel/cl-s.git")

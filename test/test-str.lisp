@@ -2,7 +2,6 @@
 (defpackage test-str
   (:use :cl
         :prove
-        ;;
         :str
         ))
 
@@ -143,6 +142,13 @@
   (ok (ends-with-p "bar" "foobar") "ends-with-p alias")
   (ok (not (ends-with? "BAR" "foobar")) "don't ignore case")
   (ok (ends-with? "BAR" "foobar" :ignore-case t) "ignore case"))
+
+(subtest "common-prefix"
+  (is (common-prefix '("foobar" "footeam")) "foo" "default case")
+  (is (common-prefix '("foobar" "barfoo")) "" "no common prefix")
+  (is (common-prefix '("foobar" "")) "" "with empty string")
+  (is (common-prefix '("foobar" nil)) "" "with a nil")
+  (is (common-prefix '()) nil "with void list"))
 
 (subtest "contains?"
   (ok (contains? "foo" "blafoobar") "default")

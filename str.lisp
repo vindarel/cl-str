@@ -26,6 +26,7 @@
    :starts-with-p
    :ends-with?
    :ends-with-p
+   :common-prefix
    :unlines
    :from-file
    :to-file
@@ -182,6 +183,29 @@ A simple call to the built-in `search` (which returns the position of the substr
 
 (setf (fdefinition 'containsp) #'contains?)
 
+(defun common-prefix (items)
+  "Find the common prefix between strings.
+
+   Uses the built-in `mismatch', that returns the position at which
+   the strings fail to match.
+
+   Example: `(str:common-prefix '(\"foobar\" \"foozz\"))` => \"foo\"
+
+   - items: list of strings
+   - Return: a string.
+
+  "
+  ;; thanks koji-kojiro/cl-repl
+  (when items (subseq
+               (car items)
+               0
+               (apply
+                #'min
+                (mapcar
+                 #'(lambda (i) (or (mismatch (car items) i) (length i)))
+                 (cdr items))))))
+
+
 (defun from-file (pathname &key external-format)
   "Read the file and return its content as a string.
 
@@ -189,7 +213,7 @@ Example: (str:from-file \"path/to/file.txt\")
 
 - external-format: if nil, the system default. Can be bound to :utf-8.
 "
-;; Based on https://github.com/Wukix/wu-sugar/blob/master/wu-sugar.lisp string-to-file
+  ;; Based on https://github.com/Wukix/wu-sugar/blob/master/wu-sugar.lisp string-to-file
   (with-open-file (f pathname) :external-format external-format
     ;; external-format ?
     (let* ((str (make-array (file-length f) :element-type 'character :adjustable t))

@@ -12,6 +12,8 @@ or `str:concat strings` instead of an unusual `format` construct; one discoverab
 * consistance and composability, where `s` is always the last argument, which makes it
   easier to feed pipes and arrows.
 
+The only dependency is `cl-ppcre`.
+
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-generate-toc again -->
 **Table of Contents**
 
@@ -43,6 +45,7 @@ or `str:concat strings` instead of an unusual `format` construct; one discoverab
             - [contains?, containsp `(substring s &key (ignore-case nil))`](#contains-containsp-substring-s-key-ignore-case-nil)
         - [Others](#others)
             - [replace-all `(old new s)`](#replace-all-old-new-s)
+            - [common-prefix `(list-of-strings)` new in v0.5](#common-prefix-list-of-strings-new-in-v05)
     - [Changelog](#changelog)
     - [Dev and test](#dev-and-test)
     - [See also](#see-also)
@@ -258,6 +261,18 @@ Replace `old` by `new` (no regexs) in `s`.
 Uses
 [cl-ppcre:regex-replace-all](http://weitz.de/cl-ppcre/#regex-replace-all)
 but quotes the user input to not treat it as a regex.
+
+
+#### common-prefix `(list-of-strings)` new in v0.5
+
+Find the common prefix between strings.
+
+Example: `(str:common-prefix '(\"foobar\" \"foozz\"))` => \"foo\"
+
+Uses the built-in `mismatch`, that returns the position at which
+the strings fail to match.
+
+Return a string or nil when the input is the void list.
 
 
 ## Changelog
