@@ -188,6 +188,10 @@ Example: `(str:from-file "path/to/file.txt")`.
 
 `:external-format`: if nil, the system default. Can be bound to `:utf-8`.
 
+But you might just need
+[uiop's `uiop:read-file-string`](https://github.com/fare/asdf/blob/master/uiop/stream.lisp#L445)
+(included in ASDF) and `read-file-lines`.
+
 #### to-file `(filename s)`
 
 Write the string `s` to the file `filename`. If the file does not
