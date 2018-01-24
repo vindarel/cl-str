@@ -34,6 +34,7 @@ The only dependency is `cl-ppcre`.
             - [lines `(s)`](#lines-s)
             - [unlines `(strings)`](#unlines-strings)
             - [split `(separator s &key omit-nulls)`](#split-separator-s-key-omit-nulls)
+            - [split-omit-nulls  (in v0.6)](#split-omit-nulls--in-v06)
         - [To and from files (experimental in v0.4)](#to-and-from-files-experimental-in-v04)
             - [from-file `(filename)`](#from-file-filename)
             - [to-file `(filename s)`](#to-file-filename-s)
@@ -177,6 +178,12 @@ Wrapper around [cl-ppcre:split](http://weitz.de/cl-ppcre/#split) but:
 and we return a trailing `""`:
 
     (split "," ",a,b,,c,") ;; => ("" "a" "b" "" "c" "")
+
+#### split-omit-nulls  (in v0.6)
+
+Because it is a common pattern and it can be clearer than an option
+coming after many parenthesis.
+
 
 ### To and from files (experimental in v0.4)
 
