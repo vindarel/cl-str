@@ -9,6 +9,7 @@
    :trim
    :join
    :split
+   :split-omit-nulls
    :substring
    :repeat
    :replace-all
@@ -74,6 +75,13 @@
     (if omit-nulls
         (remove-if (lambda (it) (empty? it)) res)
         res)))
+
+(defun split-omit-nulls (separator s)
+  "Call split with :omit-nulls to t.
+
+   Can be clearer in certain situations.
+  "
+  (split separator s :omit-nulls t))
 
 (defun substring (start end s)
   "Return the substring of `s' from `start' to `end'.
