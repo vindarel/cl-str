@@ -59,7 +59,17 @@ Install with [Quicklisp](https://www.quicklisp.org/beta/):
 
     (ql:quickload :str)
 
-beware, this is a young and unstable library.
+Check its version:
+
+    (str:version)
+
+To get a newer version, you need to update the Quicklisp dist (think
+of QL as Debian's apt rather than pip/npm/etc):
+
+    (ql:update-dist "quicklisp")
+
+beware, this is a young and unstable library. (update v0.7) The
+functions implementation may change, but we shouldn't change the api.
 
 (don't have a full Common Lisp development environment yet ? Get
 [Portacle](https://shinmera.github.io/portacle/), a portable and
@@ -115,7 +125,7 @@ Make a string of `s` repeated `count` times.
 
 ### To shorter strings
 
-#### Substring `(start end s)` - new in 0.3
+#### Substring `(start end s)`
 
 Return the substring of `s` from `start` to `end`.
 
@@ -179,7 +189,7 @@ and we return a trailing `""`:
 
     (split "," ",a,b,,c,") ;; => ("" "a" "b" "" "c" "")
 
-#### split-omit-nulls  (in v0.6)
+#### split-omit-nulls  (in v0.6, QL january 2018)
 
 Because it is a common pattern and it can be clearer than an option
 coming after many parenthesis.
@@ -195,9 +205,11 @@ Example: `(str:from-file "path/to/file.txt")`.
 
 `:external-format`: if nil, the system default. Can be bound to `:utf-8`.
 
-But you might just need
+But you might just call
 [uiop's `uiop:read-file-string`](https://github.com/fare/asdf/blob/master/uiop/stream.lisp#L445)
-(included in ASDF) and `read-file-lines`.
+directly.
+
+There is also `uiop:read-file-lines`.
 
 #### to-file `(filename s)`
 
@@ -288,8 +300,9 @@ Return a string or nil when the input is the void list.
 
 ## Changelog
 
-* 0.6 added `split-omit-nulls`
-* 0.5 added `common-prefix` (**upcoming in Quicklisp, february 2018**)
+* 0.7 added `version`
+* 0.6 added `split-omit-nulls` (QL, january 2018)
+* 0.5 added `common-prefix`
 * 0.4 added `from-file` and `to-file`.
 * 0.3 added `substring`.
 

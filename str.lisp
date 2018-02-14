@@ -31,12 +31,19 @@
    :unlines
    :from-file
    :to-file
+   :version
+   :+version+
    ))
 
 (in-package :str)
 
 (defvar *whitespaces* '(#\Space #\Newline #\Backspace #\Tab
                         #\Linefeed #\Page #\Return #\Rubout))
+
+(defvar +version+ "0.7")
+
+(defun version ()
+  (print +version+))
 
 (defun trim-left (s)
   "Remove whitespaces at the beginning of s. "
