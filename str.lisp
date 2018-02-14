@@ -221,20 +221,16 @@ A simple call to the built-in `search` (which returns the position of the substr
                  (cdr items))))))
 
 
-(defun from-file (pathname &key external-format)
+(defun from-file (pathname &rest keys)
   "Read the file and return its content as a string.
 
-Example: (str:from-file \"path/to/file.txt\")
+   From v0.7 simply uses uiop:read-file-string. There is also read-file-lines.
+
+Example: (str:from-file \"path/to/file.txt\" :external-format :utf-8)
 
 - external-format: if nil, the system default. Can be bound to :utf-8.
 "
-  ;; Based on https://github.com/Wukix/wu-sugar/blob/master/wu-sugar.lisp string-to-file
-  (with-open-file (f pathname) :external-format external-format
-    ;; external-format ?
-    (let* ((str (make-array (file-length f) :element-type 'character :adjustable t))
-           (character-length (read-sequence str f)))
-      (adjust-array str character-length)
-      str)))
+  (uiop:read-file-string pathname keys))
 
 (defun to-file (pathname s &key (if-exists :supersede) (if-does-not-exist :create))
   "Write string `s' to file `pathname'. If the file does not exist, create it (use `:if-does-not-exist'), if it already exists, replace its content (`:if-exists').
