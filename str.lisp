@@ -31,6 +31,7 @@
    :unlines
    :from-file
    :to-file
+   :string-case
    :version
    :+version+
    ))
@@ -40,7 +41,7 @@
 (defvar *whitespaces* '(#\Space #\Newline #\Backspace #\Tab
                         #\Linefeed #\Page #\Return #\Rubout))
 
-(defvar +version+ "0.7")
+(defvar +version+ "0.8")
 
 (defun version ()
   (print +version+))
@@ -238,3 +239,30 @@ Example: (str:from-file \"path/to/file.txt\" :external-format :utf-8)
 Returns the string written to file."
   (with-open-file (f pathname :direction :output :if-exists if-exists :if-does-not-exist if-does-not-exist)
     (write-sequence s f)))
+
+(defmacro string-case (str &rest forms)
+  "A case-like macro that works with strings (case works only with symbols).
+
+  Example:
+
+  (str:string-case input
+    (\"foo\" (do something))
+    (nil (print \"input is nil\")
+    (otherwise (print \"none of the previous forms was caught\")))
+
+  You might also like pattern matching. The example below with optima is very similar:
+
+  (optima:match \"hey\"
+    (\"hey\" (print \"it matched\"))
+    (otherwise :nothing))
+
+  Note that there is also http://quickdocs.org/string-case/.
+  "
+  ;; thanks koji-kojiro/cl-repl
+  (let ((test (gensym)))
+    `(let ((,test ,str))
+       (cond
+         ,@(loop :for (s  f) :in forms
+              :if (stringp s) :collect `((string= ,test ,s) ,f)
+              :else :if (string= s 'otherwise) :collect `(t ,f)
+              :else :collect `((eql ,test ,s) ,f))))))
