@@ -160,5 +160,19 @@
   (ok (containsp "Foo" "blafoobar" :ignore-case t) "containsp alias")
   )
 
+(subtest "string-case"
+  (ok (string-case "hello"
+        ("hello" (format nil "yes"))
+        (otherwise nil))
+      "string-case base case")
+  (ok (not (string-case "no"
+             ("hello" t)
+             (otherwise nil)))
+      "otherwise form")
+  (is :otherwise (string-case :no-str
+                   ("hello" t)
+                   (otherwise :otherwise))
+      "matching with a symbol: otherwise"))
+
 ;; prove end
 (finalize)

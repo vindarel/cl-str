@@ -27,14 +27,14 @@ The only dependency is `cl-ppcre`.
             - [concat `(&rest strings)`](#concat-rest-strings)
             - [repeat `(count s)`](#repeat-count-s)
         - [To shorter strings](#to-shorter-strings)
-            - [Substring `(start end s)` - new in 0.3](#substring-start-end-s---new-in-03)
+            - [Substring `(start end s)`](#substring-start-end-s)
         - [To and from lists](#to-and-from-lists)
             - [words `(s)`](#words-s)
             - [unwords `(strings)`](#unwords-strings)
             - [lines `(s)`](#lines-s)
             - [unlines `(strings)`](#unlines-strings)
             - [split `(separator s &key omit-nulls)`](#split-separator-s-key-omit-nulls)
-            - [split-omit-nulls  (in v0.6)](#split-omit-nulls--in-v06)
+            - [split-omit-nulls  (in v0.6, QL january 2018)](#split-omit-nulls--in-v06-ql-january-2018)
         - [To and from files (experimental in v0.4)](#to-and-from-files-experimental-in-v04)
             - [from-file `(filename)`](#from-file-filename)
             - [to-file `(filename s)`](#to-file-filename-s)
@@ -47,6 +47,8 @@ The only dependency is `cl-ppcre`.
         - [Others](#others)
             - [replace-all `(old new s)`](#replace-all-old-new-s)
             - [common-prefix `(list-of-strings)` new in v0.5](#common-prefix-list-of-strings-new-in-v05)
+    - [Macros](#macros)
+        - [string-case](#string-case)
     - [Changelog](#changelog)
     - [Dev and test](#dev-and-test)
     - [See also](#see-also)
@@ -296,6 +298,33 @@ Uses the built-in `mismatch`, that returns the position at which
 the strings fail to match.
 
 Return a string or nil when the input is the void list.
+
+## Macros
+
+### string-case (new in v0.8, Quicklisp end of february 2018)
+
+A case-like macro that works with strings (CL's case only works with symbols).
+
+Example:
+
+
+~~~lisp
+(str:string-case input
+  ("foo" (do something))
+  (nil (print "input is nil")
+  (otherwise (print "any of previous forms was caught.")))
+~~~
+
+You might also like pattern matching. The example below with
+[optima](https://github.com/m2ym/optima) is very similar:
+
+~~~lisp
+(optima:match "hey"
+  ("hey" (print "it matched"))
+  (otherwise :nothing))
+~~~
+
+Note that there is also http://quickdocs.org/string-case/.
 
 
 ## Changelog
