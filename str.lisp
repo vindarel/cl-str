@@ -199,6 +199,9 @@ A simple call to the built-in `search` (which returns the position of the substr
 
 (setf (fdefinition 'containsp) #'contains?)
 
+(defun common-prefix-1 (item1 item2)
+  (subseq item1 0 (or (mismatch item1 item2) (length item1))))
+
 (defun common-prefix (items)
   "Find the common prefix between strings.
 
@@ -211,16 +214,8 @@ A simple call to the built-in `search` (which returns the position of the substr
    - Return: a string.
 
   "
-  ;; thanks koji-kojiro/cl-repl
-  (when items (subseq
-               (car items)
-               0
-               (apply
-                #'min
-                (mapcar
-                 #'(lambda (i) (or (mismatch (car items) i) (length i)))
-                 (cdr items))))))
-
+  (when items
+    (reduce #'common-prefix-1 items)))
 
 (defun from-file (pathname &rest keys)
   "Read the file and return its content as a string.
