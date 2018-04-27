@@ -32,6 +32,9 @@
    :from-file
    :to-file
    :string-case
+   :s-first
+   :s-rest
+   :s-nth
    :version
    :+version+
    ))
@@ -261,3 +264,21 @@ Returns the string written to file."
               :if (stringp s) :collect `((string= ,test ,s) ,f)
               :else :if (string= s 'otherwise) :collect `(t ,f)
               :else :collect `((eql ,test ,s) ,f))))))
+
+(defun s-first (s)
+  "Return the first substring of `s'."
+  (if (empty? s)
+      ""
+      (subseq s 0 1)))
+
+(defun s-rest (s)
+  "Return the rest substring of `s'."
+  (if (empty? s)
+      ""
+      (subseq s 1)))
+
+(defun s-nth (n s)
+  "Return the nth substring of `s'."
+  (cond ((or (empty? s) (minusp n)) "")
+	((= n 0) (s-first s))
+	(t (s-nth (1- n) (s-rest s)))))
