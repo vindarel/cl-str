@@ -174,5 +174,19 @@
                    (otherwise :otherwise))
       "matching with a symbol: otherwise"))
 
+(subtest "string-car"
+  (is (string-car "foobar") "f")
+  (is (string-car "") ""))
+
+(subtest "string-cdr"
+  (is (string-cdr "foobar") "oobar")
+  (is (string-cdr "") ""))
+
+(subtest "string-nth"
+  (is (string-nth 3 "foobar") "b")
+  (is (string-nth -1 "foobar") "")
+  (is (string-nth 6 "foobar") "")
+  (is (string-nth 3 "") ""))
+
 ;; prove end
 (finalize)

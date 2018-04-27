@@ -32,6 +32,9 @@
    :from-file
    :to-file
    :string-case
+   :string-car
+   :string-cdr
+   :string-nth
    :version
    :+version+
    ))
@@ -97,7 +100,7 @@
 It uses `subseq' with differences:
 - argument order, s at the end
 - `start' and `end' can be lower than 0 or bigger than the length of s.
-- for convenience `end' can be nil or t to denote the end of the string.
+- for convenience `end' can be nil or t to denote the end of the string.o
 "
   (let* ((s-length (length s))
          (end (cond
@@ -261,3 +264,21 @@ Returns the string written to file."
               :if (stringp s) :collect `((string= ,test ,s) ,f)
               :else :if (string= s 'otherwise) :collect `(t ,f)
               :else :collect `((eql ,test ,s) ,f))))))
+
+(defun string-car (s)
+  "Return the car substring of `s'."
+  (if (empty? s)
+      ""
+      (subseq s 0 1)))
+
+(defun string-cdr (s)
+  "Return the cdr substring of `s'."
+  (if (empty? s)
+      ""
+      (subseq s 1 (length s))))
+
+(defun string-nth (n s)
+  "Return the nth substring of `s'."
+  (cond ((or (empty? s) (minusp n)) "")
+	((= n 0) (string-car s))
+	(t (string-nth (1- n) (string-cdr s)))))
