@@ -275,7 +275,7 @@ Returns the string written to file."
   "Return the cdr substring of `s'."
   (if (empty? s)
       ""
-      (subseq s 1 (length s))))
+      (subseq s 1)))
 
 (defun string-nth (n s)
   "Return the nth substring of `s'."
