@@ -204,6 +204,7 @@ Split string by newline character and return list of lines.
 #### unlines `(strings)`
 
 Join the list of strings with a newline character.
+
 #### split `(separator s &key omit-nulls)`
 
 Split into subtrings (unlike cl-ppcre, without a regexp). If
