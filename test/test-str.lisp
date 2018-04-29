@@ -174,15 +174,15 @@
                    (otherwise :otherwise))
       "matching with a symbol: otherwise"))
 
-(subtest "string-car"
+(subtest "s-first"
   (is (string-car "foobar") "f")
   (is (string-car "") ""))
 
-(subtest "string-cdr"
+(subtest "s-rest"
   (is (string-cdr "foobar") "oobar")
   (is (string-cdr "") ""))
 
-(subtest "string-nth"
+(subtest "s-nth"
   (is (string-nth 3 "foobar") "b")
   (is (string-nth -1 "foobar") "")
   (is (string-nth 6 "foobar") "")

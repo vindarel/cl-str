@@ -27,7 +27,10 @@ The only dependency is `cl-ppcre`.
             - [concat `(&rest strings)`](#concat-rest-strings)
             - [repeat `(count s)`](#repeat-count-s)
         - [To shorter strings](#to-shorter-strings)
-            - [Substring `(start end s)`](#substring-start-end-s)
+            - [substring `(start end s)`](#substring-start-end-s)
+	    - [s-first`(s)`](#s-first-s)
+	    - [s-rest`(s)`](#s-rest-s)
+	    - [s-nth`(n s)`](#s-nth-n-s)
         - [To and from lists](#to-and-from-lists)
             - [words `(s)`](#words-s)
             - [unwords `(strings)`](#unwords-strings)
@@ -127,7 +130,7 @@ Make a string of `s` repeated `count` times.
 
 ### To shorter strings
 
-#### Substring `(start end s)`
+#### substring `(start end s)`
 
 Return the substring of `s` from `start` to `end`.
 
@@ -150,6 +153,40 @@ Examples:
   (is "" (substring 2 1 "abcd") "start is bigger than end")
 ```
 
+#### s-first `(s)`
+
+Retrun the first substring of `s`.
+
+
+Examples:
+
+```lisp
+  (s-first "foobar") ;; => "f"
+  (s-first "") ;; => ""
+```
+
+#### s-rest `(s)`
+
+Retrun the rest substring of `s`.
+
+Examples:
+
+```lisp
+  (s-rest "foobar") ;; => "oobar"
+  (s-rest "") ;; => ""
+```
+
+#### s-nth `(n s)`
+
+Retrun the nth substring of `s`.
+
+Examples:
+
+```lisp
+  (s-nth 3 "foobar") ;; => "b"
+  (s-nth 3 "") ;; => ""
+```
+
 ### To and from lists
 
 #### words `(s)`
@@ -167,7 +204,6 @@ Split string by newline character and return list of lines.
 #### unlines `(strings)`
 
 Join the list of strings with a newline character.
-
 #### split `(separator s &key omit-nulls)`
 
 Split into subtrings (unlike cl-ppcre, without a regexp). If
@@ -329,6 +365,7 @@ Note that there is also http://quickdocs.org/string-case/.
 
 ## Changelog
 
+* 0.9 added `s-first` , `s-rest` and `s-nth`
 * 0.8 added `string-case`
 * 0.7 added `version`
 * 0.6 added `split-omit-nulls` (QL, january 2018)
