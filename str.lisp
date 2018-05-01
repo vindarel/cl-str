@@ -27,6 +27,7 @@
    :starts-with-p
    :ends-with?
    :ends-with-p
+   :common-prefix
    :prefix
    :suffix
    :prefix?
@@ -226,6 +227,10 @@ A simple call to the built-in `search` (which returns the position of the substr
   "
   (when items
     (reduce #'prefix-1 items)))
+
+(defun common-prefix (items)
+  (warn "common-prefix is deprecated, use prefix instead.")
+  (prefix items))
 
 (defun suffix-1 (item1 item2)
   (subseq item1 (or (mismatch item1 item2 :from-end t) 0)))
