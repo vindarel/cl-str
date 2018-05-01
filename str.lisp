@@ -33,6 +33,8 @@
    :prefixp
    :suffix?
    :suffixp
+   :add-prefix
+   :add-suffix
    :unlines
    :from-file
    :to-file
@@ -251,6 +253,14 @@ A simple call to the built-in `search` (which returns the position of the substr
   (when (string= s (suffix items)) s))
 
 (setf (fdefinition 'suffixp) #'suffix?)
+
+(defun add-prefix (items s)
+  "Prepend s to the front of each items."
+  (mapcar #'(lambda (item) (concat s item)) items))
+
+(defun add-suffix (items s)
+  "Append s to the end of eahc items."
+  (mapcar #'(lambda (item) (concat item s)) items))
 
 (defun from-file (pathname &rest keys)
   "Read the file and return its content as a string.

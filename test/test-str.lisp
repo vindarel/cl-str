@@ -171,6 +171,16 @@
   (is (suffix? '("foobar" nil) "") "" "with a nil")
   (is (suffix? '() nil) nil "with void list"))
 
+(subtest "add-prefix"
+  (is (add-prefix '("bar" "team") "foo") '("foobar" "footeam") "default case")
+  (is (add-prefix '("bar" nil) "foo") '("foobar" "foo") "with a nil")
+  (is (add-prefix '() "foo") '() "with void list"))
+
+(subtest "add-suffix"
+  (is (add-suffix '("foo" "team") "bar") '("foobar" "teambar") "default case")
+  (is (add-suffix '("foo" nil) "bar") '("foobar" "bar") "with a nil")
+  (is (add-suffix '() "foo") '() "with void list"))
+
 (subtest "contains?"
   (ok (contains? "foo" "blafoobar") "default")
   (ok (not (contains? "foo" "")) "with no string")
