@@ -29,6 +29,10 @@
    :ends-with-p
    :prefix
    :suffix
+   :prefix?
+   :prefixp
+   :suffix?
+   :suffixp
    :unlines
    :from-file
    :to-file
@@ -238,6 +242,18 @@ A simple call to the built-in `search` (which returns the position of the substr
   "
   (when items
     (reduce #'suffix-1 items)))
+
+(defun prefix? (items s)
+  "Return s if s is common prefix between items."
+  (when (string= s (prefix items)) s))
+
+(setf (fdefinition 'prefixp) #'prefix?)
+
+(defun suffix? (items s)
+  "Return s if s is common suffix between items."
+  (when (string= s (suffix items)) s))
+
+(setf (fdefinition 'suffixp) #'suffix?)
 
 (defun from-file (pathname &rest keys)
   "Read the file and return its content as a string.
