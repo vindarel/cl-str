@@ -27,7 +27,8 @@
    :starts-with-p
    :ends-with?
    :ends-with-p
-   :common-prefix
+   :prefix
+   :suffix
    :unlines
    :from-file
    :to-file
@@ -202,23 +203,41 @@ A simple call to the built-in `search` (which returns the position of the substr
 
 (setf (fdefinition 'containsp) #'contains?)
 
-(defun common-prefix-1 (item1 item2)
+(defun prefix-1 (item1 item2)
   (subseq item1 0 (or (mismatch item1 item2) (length item1))))
 
-(defun common-prefix (items)
+(defun prefix (items)
   "Find the common prefix between strings.
 
    Uses the built-in `mismatch', that returns the position at which
    the strings fail to match.
 
-   Example: `(str:common-prefix '(\"foobar\" \"foozz\"))` => \"foo\"
+   Example: `(str:prefix '(\"foobar\" \"foozz\"))` => \"foo\"
 
    - items: list of strings
    - Return: a string.
 
   "
   (when items
-    (reduce #'common-prefix-1 items)))
+    (reduce #'prefix-1 items)))
+
+(defun suffix-1 (item1 item2)
+  (subseq item1 (or (mismatch item1 item2 :from-end t) 0)))
+
+(defun suffix (items)
+  "Find the common suffix between strings.
+
+   Uses the built-in `mismatch', that returns the position at which
+   the strings fail to match.
+
+   Example: `(str:suffix '(\"foobar\" \"zzbar\"))` => \"bar\"
+
+   - items: list of strings
+   - Return: a string.
+
+  "
+  (when items
+    (reduce #'suffix-1 items)))
 
 (defun from-file (pathname &rest keys)
   "Read the file and return its content as a string.

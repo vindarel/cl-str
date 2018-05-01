@@ -143,12 +143,19 @@
   (ok (not (ends-with? "BAR" "foobar")) "don't ignore case")
   (ok (ends-with? "BAR" "foobar" :ignore-case t) "ignore case"))
 
-(subtest "common-prefix"
-  (is (common-prefix '("foobar" "footeam")) "foo" "default case")
-  (is (common-prefix '("foobar" "barfoo")) "" "no common prefix")
-  (is (common-prefix '("foobar" "")) "" "with empty string")
-  (is (common-prefix '("foobar" nil)) "" "with a nil")
-  (is (common-prefix '()) nil "with void list"))
+(subtest "prefix"
+  (is (prefix '("foobar" "footeam")) "foo" "default case")
+  (is (prefix '("foobar" "barfoo")) "" "no common prefix")
+  (is (prefix '("foobar" "")) "" "with empty string")
+  (is (prefix '("foobar" nil)) "" "with a nil")
+  (is (prefix '()) nil "with void list"))
+
+(subtest "suffix"
+  (is (suffix '("foobar" "teambar")) "bar" "default case")
+  (is (suffix '("foobar" "barfoo")) "" "no common suffix")
+  (is (suffix '("foobar" "")) "" "with empty string")
+  (is (suffix '("foobar" nil)) "" "with a nil")
+  (is (suffix '()) nil "with void list"))
 
 (subtest "contains?"
   (ok (contains? "foo" "blafoobar") "default")
