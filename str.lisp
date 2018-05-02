@@ -43,11 +43,16 @@
    :s-first
    :s-rest
    :s-nth
+   :*ignore-case*
+   :*omit-nulls*
    :version
    :+version+
    ))
 
 (in-package :str)
+
+(defparameter *ignore-case* nil)
+(defparameter *omit-nulls* nil)
 
 (defvar *whitespaces* '(#\Space #\Newline #\Backspace #\Tab
                         #\Linefeed #\Page #\Return #\Rubout))
@@ -83,7 +88,7 @@
             (concatenate 'string "~{~a~^" separator "~}")
             strings)))
 
-(defun split (separator s &key omit-nulls)
+(defun split (separator s &key (omit-nulls *omit-nulls*))
   "Split s into substring by separator (cl-ppcre takes a regex, we do not)."
   ;; cl-ppcre:split doesn't return a null string if the separator appears at the end of s.
   (let* ((val (concat s
@@ -138,7 +143,7 @@ It uses `subseq' with differences:
   "Join the list of strings with a whitespace."
   (join " " strings))
 
-(defun lines (s &key omit-nulls)
+(defun lines (s &key (omit-nulls *omit-nulls*))
   "Split the string by newline characters and return a list of lines."
   (split #\NewLine s :omit-nulls omit-nulls))
 
@@ -175,7 +180,7 @@ It uses `subseq' with differences:
   "Is s nil or only contains whitespaces ?"
   (blank? s))
 
-(defun starts-with? (start s &key (ignore-case nil))
+(defun starts-with? (start s &key (ignore-case *ignore-case*))
   "Return t if s starts with the substring 'start', nil otherwise."
   (when (>= (length s) (length start))
     (let ((fn (if ignore-case #'string-equal #'string=)))
@@ -184,7 +189,7 @@ It uses `subseq' with differences:
 ;; An alias:
 (setf (fdefinition 'starts-with-p) #'starts-with?)
 
-(defun ends-with? (end s &key (ignore-case nil))
+(defun ends-with? (end s &key (ignore-case *ignore-case*))
   "Return t if s ends with the substring 'end', nil otherwise."
   (when (>= (length s) (length end))
     (let ((fn (if ignore-case #'string-equal #'string=)))
@@ -192,7 +197,7 @@ It uses `subseq' with differences:
 
 (setf (fdefinition 'ends-with-p) #'ends-with?)
 
-(defun contains? (substring s &key (ignore-case nil))
+(defun contains? (substring s &key (ignore-case *ignore-case*))
   "Return `t` if `s` contains `substring`, nil otherwise. Ignore the case with `:ignore-case t`.
 A simple call to the built-in `search` (which returns the position of the substring)."
   (let ((a (if ignore-case
@@ -220,6 +225,8 @@ A simple call to the built-in `search` (which returns the position of the substr
    the strings fail to match.
 
    Example: `(str:prefix '(\"foobar\" \"foozz\"))` => \"foo\"
+<<<<<<< HEAD
+=======
 
    - items: list of strings
    - Return: a string.
@@ -242,12 +249,34 @@ A simple call to the built-in `search` (which returns the position of the substr
    the strings fail to match.
 
    Example: `(str:suffix '(\"foobar\" \"zzbar\"))` => \"bar\"
+>>>>>>> 601da75df4e18205a54f321a1313a33e88da22e7
 
    - items: list of strings
    - Return: a string.
 
   "
   (when items
+<<<<<<< HEAD
+    (reduce #'prefix-1 items)))
+
+(defun suffix-1 (item1 item2)
+  (subseq item1 (or (mismatch item1 item2 :from-end t) 0)))
+
+(defun suffix (items)
+  "Find the common suffix between strings.
+
+   Uses the built-in `mismatch', that returns the position at which
+   the strings fail to match.
+
+   Example: `(str:suffix '(\"foobar\" \"zzbar\"))` => \"bar\"
+
+   - items: list of strings
+   - Return: a string.
+
+  "
+  (when items
+=======
+>>>>>>> 601da75df4e18205a54f321a1313a33e88da22e7
     (reduce #'suffix-1 items)))
 
 (defun prefix? (items s)
