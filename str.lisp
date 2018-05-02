@@ -27,6 +27,7 @@
    :starts-with-p
    :ends-with?
    :ends-with-p
+   :common-prefix
    :prefix
    :suffix
    :prefix?
@@ -39,6 +40,9 @@
    :from-file
    :to-file
    :string-case
+   :s-first
+   :s-rest
+   :s-nth
    :version
    :+version+
    ))
@@ -216,12 +220,38 @@ A simple call to the built-in `search` (which returns the position of the substr
    the strings fail to match.
 
    Example: `(str:prefix '(\"foobar\" \"foozz\"))` => \"foo\"
+<<<<<<< HEAD
+=======
 
    - items: list of strings
    - Return: a string.
 
   "
   (when items
+    (reduce #'prefix-1 items)))
+
+(defun common-prefix (items)
+  (warn "common-prefix is deprecated, use prefix instead.")
+  (prefix items))
+
+(defun suffix-1 (item1 item2)
+  (subseq item1 (or (mismatch item1 item2 :from-end t) 0)))
+
+(defun suffix (items)
+  "Find the common suffix between strings.
+
+   Uses the built-in `mismatch', that returns the position at which
+   the strings fail to match.
+
+   Example: `(str:suffix '(\"foobar\" \"zzbar\"))` => \"bar\"
+>>>>>>> 601da75df4e18205a54f321a1313a33e88da22e7
+
+   - items: list of strings
+   - Return: a string.
+
+  "
+  (when items
+<<<<<<< HEAD
     (reduce #'prefix-1 items)))
 
 (defun suffix-1 (item1 item2)
@@ -240,6 +270,8 @@ A simple call to the built-in `search` (which returns the position of the substr
 
   "
   (when items
+=======
+>>>>>>> 601da75df4e18205a54f321a1313a33e88da22e7
     (reduce #'suffix-1 items)))
 
 (defun prefix? (items s)
@@ -306,3 +338,21 @@ Returns the string written to file."
               :if (stringp s) :collect `((string= ,test ,s) ,f)
               :else :if (string= s 'otherwise) :collect `(t ,f)
               :else :collect `((eql ,test ,s) ,f))))))
+
+(defun s-first (s)
+  "Return the first substring of `s'."
+  (if (empty? s)
+      ""
+      (subseq s 0 1)))
+
+(defun s-rest (s)
+  "Return the rest substring of `s'."
+  (if (empty? s)
+      ""
+      (subseq s 1)))
+
+(defun s-nth (n s)
+  "Return the nth substring of `s'."
+  (cond ((or (empty? s) (minusp n)) "")
+	((= n 0) (s-first s))
+	(t (s-nth (1- n) (s-rest s)))))

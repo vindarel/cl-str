@@ -15,6 +15,7 @@ or `str:concat strings` instead of an unusual `format` construct; one discoverab
 The only dependency is `cl-ppcre`.
 
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-generate-toc again -->
+
 **Table of Contents**
 
 - [A modern and consistent Common Lisp string manipulation library](#a-modern-and-consistent-common-lisp-string-manipulation-library)
@@ -26,8 +27,12 @@ The only dependency is `cl-ppcre`.
             - [join `(separator list-of-strings)`](#join-separator-list-of-strings)
             - [concat `(&rest strings)`](#concat-rest-strings)
             - [repeat `(count s)`](#repeat-count-s)
+            - [add-prefix, add-suffix `(items s)` (new in 0.9)](#add-prefix-add-suffix-items-s-new-in-09)
         - [To shorter strings](#to-shorter-strings)
-            - [Substring `(start end s)`](#substring-start-end-s)
+            - [substring `(start end s)`](#substring-start-end-s)
+            - [s-first `(s)`](#s-first-s)
+            - [s-rest `(s)`](#s-rest-s)
+            - [s-nth `(n s)`](#s-nth-n-s)
         - [To and from lists](#to-and-from-lists)
             - [words `(s)`](#words-s)
             - [unwords `(strings)`](#unwords-strings)
@@ -44,11 +49,13 @@ The only dependency is `cl-ppcre`.
             - [starts-with?, starts-with-p `(start s &key ignore-case)`](#starts-with-starts-with-p-start-s-key-ignore-case)
             - [ends-with?, ends-with-p `(end s &key ignore-case)`](#ends-with-ends-with-p-end-s-key-ignore-case)
             - [contains?, containsp `(substring s &key (ignore-case nil))`](#contains-containsp-substring-s-key-ignore-case-nil)
+            - [prefix?, prefixp and suffix?, suffixp `(items s)` (new in 0.9)](#prefix-prefixp-and-suffix-suffixp-items-s-new-in-09)
         - [Others](#others)
             - [replace-all `(old new s)`](#replace-all-old-new-s)
-            - [common-prefix `(list-of-strings)` new in v0.5](#common-prefix-list-of-strings-new-in-v05)
+            - [prefix `(list-of-strings)` (renamed in 0.9)](#prefix-list-of-strings-renamed-in-09)
+            - [suffix `(list-of-strings)` (new in 0.9)](#suffix-list-of-strings-new-in-09)
     - [Macros](#macros)
-        - [string-case](#string-case)
+        - [string-case (new in v0.8, Quicklisp end of february 2018)](#string-case-new-in-v08-quicklisp-end-of-february-2018)
     - [Changelog](#changelog)
     - [Dev and test](#dev-and-test)
     - [See also](#see-also)
@@ -125,9 +132,14 @@ Make a string of `s` repeated `count` times.
 (repeat 3 "foo") ;; => "foofoofoo"
 ```
 
+#### add-prefix, add-suffix `(items s)` (new in 0.9)
+
+Respectively prepend or append `s` to the front of each item.
+
+
 ### To shorter strings
 
-#### Substring `(start end s)`
+#### substring `(start end s)`
 
 Return the substring of `s` from `start` to `end`.
 
@@ -148,6 +160,40 @@ Examples:
   (is "" (substring 100 1 "abcd") "start can be too big")
   (is "abcd" (substring -100 4 "abcd") "start can also be too low")
   (is "" (substring 2 1 "abcd") "start is bigger than end")
+```
+
+#### s-first `(s)`
+
+Return the first letter of `s`.
+
+
+Examples:
+
+```lisp
+  (s-first "foobar") ;; => "f"
+  (s-first "") ;; => ""
+```
+
+#### s-rest `(s)`
+
+Return the rest substring of `s`.
+
+Examples:
+
+```lisp
+  (s-rest "foobar") ;; => "oobar"
+  (s-rest "") ;; => ""
+```
+
+#### s-nth `(n s)`
+
+Return the nth letter of `s`.
+
+Examples:
+
+```lisp
+  (s-nth 3 "foobar") ;; => "b"
+  (s-nth 3 "") ;; => ""
 ```
 
 ### To and from lists
@@ -272,6 +318,9 @@ case with `:ignore-case t` (don't ignore by default).
 Based on a simple call to the built-in `search` (which returns the
 position of the substring).
 
+#### prefix?, prefixp and suffix?, suffixp `(items s)` (new in 0.9)
+
+Return `s` if it is a common prefix (or suffix) between items.
 
 ### Others
 
@@ -288,16 +337,25 @@ Uses
 but quotes the user input to not treat it as a regex.
 
 
-#### common-prefix `(list-of-strings)` new in v0.5
+#### prefix `(list-of-strings)` (renamed in 0.9)
+
+(renamed from `common-prefix` in v0.9)
 
 Find the common prefix between strings.
 
-Example: `(str:common-prefix '(\"foobar\" \"foozz\"))` => \"foo\"
+Example: `(str:prefix '(\"foobar\" \"foozz\"))` => \"foo\"
 
 Uses the built-in `mismatch`, that returns the position at which
 the strings fail to match.
 
 Return a string or nil when the input is the void list.
+
+
+#### suffix `(list-of-strings)` (new in 0.9)
+
+Find the common suffix between strings.
+
+
 
 ## Macros
 
@@ -329,6 +387,9 @@ Note that there is also http://quickdocs.org/string-case/.
 
 ## Changelog
 
+* 0.9 (Quicklisp end of may, 2018)
+  - added `s-first` , `s-rest` and `s-nth`
+  - added `prefix` and `suffix` functions and predicates.
 * 0.8 added `string-case`
 * 0.7 added `version`
 * 0.6 added `split-omit-nulls` (QL, january 2018)
