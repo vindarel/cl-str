@@ -196,6 +196,16 @@ Examples:
   (s-nth 3 "") ;; => ""
 ```
 
+You could also use
+
+~~~lisp
+(elt "test" 1)
+;; => #\e
+(string (elt "test" 1))
+;; => "e"
+~~~
+
+
 ### To and from lists
 
 #### words `(s)`

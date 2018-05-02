@@ -333,7 +333,11 @@ Returns the string written to file."
       (subseq s 1)))
 
 (defun s-nth (n s)
-  "Return the nth substring of `s'."
+  "Return the nth substring of `s'.
+
+   You could also use
+   (string (elt \"test\" 1))
+   ;; => \"e\""
   (cond ((or (empty? s) (minusp n)) "")
 	((= n 0) (s-first s))
 	(t (s-nth (1- n) (s-rest s)))))
