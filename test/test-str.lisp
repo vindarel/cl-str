@@ -46,6 +46,8 @@
   (is '("foo" "bar" "") (split "NO" "fooNObarNO") "separator is a string")
   (is '("foo" "bar") (split "+" "foo+++bar++++" :omit-nulls t) "omit-nulls argument")
   (is '("foo" "   ") (split "+" "foo+++   ++++" :omit-nulls t) "omit-nulls and blanks")
+  (is '("foo" "bar") (let ((*omit-nulls* t)) (split "+" "foo+++bar++++")) "omit-nulls argument")
+  (is '("foo" "   ") (let ((*omit-nulls* t)) (split "+" "foo+++   ++++")) "omit-nulls and blanks")
   )
 
 (subtest "substring"
@@ -135,13 +137,17 @@
   (ok (starts-with? "" "") "with everything blank")
   (ok (not (starts-with? "FOO" "foobar")) "don't ignore case")
   (ok (starts-with-p "f" "foo") "starts-with-p alias")
-  (ok (starts-with? "FOO" "foobar" :ignore-case t) "ignore case"))
+  (ok (starts-with? "FOO" "foobar" :ignore-case t) "ignore case")
+  (ok (let ((*ignore-case* t)) (starts-with? "FOO" "foobar")) "ignore case")
+  )
 
 (subtest "ends-with?"
   (ok (ends-with? "bar" "foobar") "default case")
   (ok (ends-with-p "bar" "foobar") "ends-with-p alias")
   (ok (not (ends-with? "BAR" "foobar")) "don't ignore case")
-  (ok (ends-with? "BAR" "foobar" :ignore-case t) "ignore case"))
+  (ok (ends-with? "BAR" "foobar" :ignore-case t) "ignore case")
+  (ok (let ((*ignore-case* t)) (ends-with? "BAR" "foobar")) "ignore case")
+  )
 
 (subtest "prefix"
   (is (prefix '("foobar" "footeam")) "foo" "default case")
@@ -189,6 +195,7 @@
   (ok (not (contains? "Foo" "blafoobar")) "with case")
   (ok (contains? "Foo" "blafoobar" :ignore-case t) "ignore case")
   (ok (containsp "Foo" "blafoobar" :ignore-case t) "containsp alias")
+  (ok (let ((*ignore-case* t)) (contains? "Foo" "blafoobar")) "ignore case")
   )
 
 (subtest "string-case"
