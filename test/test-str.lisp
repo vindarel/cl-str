@@ -206,18 +206,18 @@
       "matching with a symbol: otherwise"))
 
 (subtest "s-first"
-  (is (string-car "foobar") "f")
-  (is (string-car "") ""))
+  (is (s-first "foobar") "f")
+  (is (s-first "") ""))
 
 (subtest "s-rest"
-  (is (string-cdr "foobar") "oobar")
-  (is (string-cdr "") ""))
+  (is (s-rest "foobar") "oobar")
+  (is (s-rest "") ""))
 
 (subtest "s-nth"
-  (is (string-nth 3 "foobar") "b")
-  (is (string-nth -1 "foobar") "")
-  (is (string-nth 6 "foobar") "")
-  (is (string-nth 3 "") ""))
+  (is (s-nth 3 "foobar") "b")
+  (is (s-nth -1 "foobar") "")
+  (is (s-nth 6 "foobar") "")
+  (is (s-nth 3 "") ""))
 
 ;; prove end
 (finalize)
