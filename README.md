@@ -20,6 +20,7 @@ The only dependency is `cl-ppcre`.
 
 - [A modern and consistent Common Lisp string manipulation library](#a-modern-and-consistent-common-lisp-string-manipulation-library)
     - [Install](#install)
+    - [Global parameters](#global-parameters)
     - [Functions](#functions)
         - [Tweak whitespace](#tweak-whitespace)
             - [trim `(s)`](#trim-s)
@@ -84,6 +85,24 @@ functions implementation may change, but we shouldn't change the api.
 [Portacle](https://shinmera.github.io/portacle/), a portable and
 multiplatform development environment shipping Emacs, Quicklisp, SBCL
 and Git).
+
+## Global parameters
+
+Some parameters are common to various functions and often used:
+`:ignore-case` and `:omit-nulls`.
+
+Consequently we can also manage them with global parameters:
+
+~~~lisp
+(let ((*ignore-case* t))
+  (ends-with? "BAR" "foobar"))
+~~~
+
+is equivalent to
+
+~~~lisp
+(ends-with? "BAR" "foobar" :ignore-case t)
+~~~
 
 ## Functions
 
