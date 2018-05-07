@@ -224,6 +224,27 @@ You could also use
 ;; => "e"
 ~~~
 
+#### Prune `(len s &key ellipsis)`
+
+If `s` is longer than `len`, truncate it and add an ellipsis at the
+end (`...` by default). `s` is cut down to `len` minus the length of
+the ellipsis (3 by default).
+
+Optionally, give an `:ellipsis` keyword argument. Also set it globally
+with `*ellipsis*`.
+
+~~~lisp
+(prune 8 "hello world")
+;; => "hello..."
+(prune 3 "hello world")
+;; => "..."
+(prune 8 "hello world" :ellipsis "-")
+;; => "hello w-"
+(let ((*ellipsis* "-"))
+  (prune 8 "hello world"))
+;; => "hello w-"
+~~~
+
 
 ### To and from lists
 
@@ -419,6 +440,7 @@ Note that there is also http://quickdocs.org/string-case/.
 * 0.9 (Quicklisp end of may, 2018)
   - added `s-first` , `s-rest` and `s-nth`
   - added `prefix` and `suffix` functions and predicates.
+  - added `prune`.
 * 0.8 added `string-case`
 * 0.7 added `version`
 * 0.6 added `split-omit-nulls` (QL, january 2018)

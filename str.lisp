@@ -11,6 +11,7 @@
    :split
    :split-omit-nulls
    :substring
+   :prune
    :repeat
    :replace-all
    :concat
@@ -45,6 +46,7 @@
    :s-nth
    :*ignore-case*
    :*omit-nulls*
+   :*ellipsis*
    :version
    :+version+
    ))
@@ -132,6 +134,21 @@ It uses `subseq' with differences:
           (if (< end start)
               ""
               (subseq s start end))))))
+
+(defparameter *ellipsis* "..."
+  "Ellipsis to add to the end of a pruned (truncated) string.")
+
+(defun prune (len s &key (ellipsis *ellipsis*))
+  "If s is longer than `len', truncate it to this length and add an ellipsis at the end (\"...\" by default). Cut it down to `len' minus the length of the ellipsis."
+  (when (and len
+             (< len
+                (length s)))
+    (let ((end (max (- len (length ellipsis))
+                    0)))
+      (setf s (concat
+               (subseq s 0 end)
+               ellipsis))))
+  s)
 
 (defun words (s &key (limit 0))
   "Return list of words, which were delimited by white space. If the optional limit is 0 (the default), trailing empty strings are removed from the result list (see cl-ppcre)."
