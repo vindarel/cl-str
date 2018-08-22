@@ -239,6 +239,12 @@
   (is (s-first "foobar") "f")
   (is (s-first "") ""))
 
+(subtest "s-last"
+  (is (s-last nil) nil)
+  (is (s-last "b") "b")
+  (is (s-last "bar") "r")
+  (is (s-last "") ""))
+
 (subtest "s-rest"
   (is (s-rest nil) nil)
   (is (s-rest "foobar") "oobar")

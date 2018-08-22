@@ -42,6 +42,7 @@
    :to-file
    :string-case
    :s-first
+   :s-last
    :s-rest
    :s-nth
    :*ignore-case*
@@ -344,6 +345,14 @@ Returns the string written to file."
       (if (empty? s)
           ""
           (subseq s 0 1))))
+
+(defun s-last (s)
+  "Return the last substring of `s'."
+  (if (null s)
+      nil
+      (if (empty? s)
+          ""
+          (substring (1- (length s)) t s))))
 
 (defun s-rest (s)
   "Return the rest substring of `s'."
