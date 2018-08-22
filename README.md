@@ -280,18 +280,16 @@ Split into subtrings (unlike cl-ppcre, without a regexp). If
 (split "+" "foo++bar" :omit-nulls t) ;; => ("foo" "bar")
 ```
 
-Wrapper around [cl-ppcre:split](http://weitz.de/cl-ppcre/#split) but:
-
-- our separator is a simple string, where cl-ppcre takes a regexp,
-- we fix an inconsistency:
+It is a wrapper around
+[cl-ppcre:split](https://edicl.github.io/cl-ppcre/#split), so it comes
+with its inconsistency when the separator appears at the end of `s`:
 
 ```
 (cl-ppcre:split "," ",a,b,,c,") ;; => ("" "a" "b" "" "c")
 ```
 
-and we return a trailing `""`:
+it doesn't return a trailing `""`.
 
-    (split "," ",a,b,,c,") ;; => ("" "a" "b" "" "c" "")
 
 #### split-omit-nulls  (in v0.6, QL january 2018)
 
@@ -443,6 +441,10 @@ Note that there is also http://quickdocs.org/string-case/.
 
 ## Changelog
 
+* 0.10 (Quicklisp end of august, 2018)
+  - `split` doesn't fix cl-ppcre's inconsistency anymore (when the separator appears at the end). See issue #18. So `(str:split "xx" "fooxxbarxx")` doesn't return a trailing `""`.
+  - added `s-last`
+  - `s-first` and friends return `nil` when appropriate, not `""`.
 * 0.9 (Quicklisp end of may, 2018)
   - added `s-first` , `s-rest` and `s-nth`
   - added `prefix` and `suffix` functions and predicates.
