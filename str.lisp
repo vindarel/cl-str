@@ -60,7 +60,7 @@
 (defvar *whitespaces* '(#\Space #\Newline #\Backspace #\Tab
                         #\Linefeed #\Page #\Return #\Rubout))
 
-(defvar +version+ "0.8")
+(defvar +version+ "0.10")
 
 (defun version ()
   (print +version+))
@@ -94,11 +94,7 @@
 (defun split (separator s &key (omit-nulls *omit-nulls*))
   "Split s into substring by separator (cl-ppcre takes a regex, we do not)."
   ;; cl-ppcre:split doesn't return a null string if the separator appears at the end of s.
-  (let* ((val (concat s
-                      (string separator)
-                      ;; so we need an extra character, but not the user's.
-                      (if (string-equal separator #\x) "y" "x")))
-         (res (butlast (cl-ppcre:split (cl-ppcre:quote-meta-chars (string separator)) val))))
+  (let* ((res (cl-ppcre:split (cl-ppcre:quote-meta-chars (string separator)) s)))
     (if omit-nulls
         (remove-if (lambda (it) (empty? it)) res)
         res)))
