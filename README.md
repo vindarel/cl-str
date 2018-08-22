@@ -15,7 +15,6 @@ or `str:concat strings` instead of an unusual `format` construct; one discoverab
 The only dependency is `cl-ppcre`.
 
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-generate-toc again -->
-
 **Table of Contents**
 
 - [A modern and consistent Common Lisp string manipulation library](#a-modern-and-consistent-common-lisp-string-manipulation-library)
@@ -32,8 +31,10 @@ The only dependency is `cl-ppcre`.
         - [To shorter strings](#to-shorter-strings)
             - [substring `(start end s)`](#substring-start-end-s)
             - [s-first `(s)`](#s-first-s)
+            - [s-last `(s)`](#s-last-s)
             - [s-rest `(s)`](#s-rest-s)
             - [s-nth `(n s)`](#s-nth-n-s)
+            - [Prune `(len s &key ellipsis)`](#prune-len-s-key-ellipsis)
         - [To and from lists](#to-and-from-lists)
             - [words `(s)`](#words-s)
             - [unwords `(strings)`](#unwords-strings)
@@ -192,6 +193,11 @@ Examples:
   (s-first "foobar") ;; => "f"
   (s-first "") ;; => ""
 ```
+
+#### s-last `(s)`
+
+Return the last letter of `s`.
+
 
 #### s-rest `(s)`
 
