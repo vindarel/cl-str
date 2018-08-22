@@ -235,14 +235,17 @@
       "matching with a symbol: otherwise"))
 
 (subtest "s-first"
+  (is (s-first nil) nil)
   (is (s-first "foobar") "f")
   (is (s-first "") ""))
 
 (subtest "s-rest"
+  (is (s-rest nil) nil)
   (is (s-rest "foobar") "oobar")
   (is (s-rest "") ""))
 
 (subtest "s-nth"
+  (is (s-nth 1 nil) nil)
   (is (s-nth 3 "foobar") "b")
   (is (s-nth -1 "foobar") "")
   (is (s-nth 6 "foobar") "")

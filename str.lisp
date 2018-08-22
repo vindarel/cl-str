@@ -339,15 +339,19 @@ Returns the string written to file."
 
 (defun s-first (s)
   "Return the first substring of `s'."
-  (if (empty? s)
-      ""
-      (subseq s 0 1)))
+  (if (null s)
+      nil
+      (if (empty? s)
+          ""
+          (subseq s 0 1))))
 
 (defun s-rest (s)
   "Return the rest substring of `s'."
-  (if (empty? s)
-      ""
-      (subseq s 1)))
+  (if (null s)
+      nil
+      (if (empty? s)
+          ""
+          (subseq s 1))))
 
 (defun s-nth (n s)
   "Return the nth substring of `s'.
@@ -355,6 +359,7 @@ Returns the string written to file."
    You could also use
    (string (elt \"test\" 1))
    ;; => \"e\""
-  (cond ((or (empty? s) (minusp n)) "")
+  (cond ((null s) nil)
+        ((or (empty? s) (minusp n)) "")
 	((= n 0) (s-first s))
 	(t (s-nth (1- n) (s-rest s)))))
