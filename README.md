@@ -144,6 +144,8 @@ Join strings into one.
 
 Simple call of the built-in [concatenate](https://lispcookbook.github.io/cl-cookbook/strings.html#concatenating-strings).
 
+We actually also have `uiop:strcat`.
+
 #### repeat `(count s)`
 
 Make a string of `s` repeated `count` times.
@@ -376,6 +378,12 @@ position of the substring).
 
 Return `s` if it is a common prefix (or suffix) between items.
 
+See also `uiop:string-prefix-p prefix s`, which returns `t` if
+`prefix` is a prefix of `s`,
+
+and `uiop:string-enclosed-p prefix s suffix`, which returns `t` if `s`
+begins with `prefix` and ends with `suffix`.
+
 ### Others
 
 #### replace-all `(old new s)`
@@ -408,7 +416,6 @@ Return a string or nil when the input is the void list.
 #### suffix `(list-of-strings)` (new in 0.9)
 
 Find the common suffix between strings.
-
 
 
 ## Macros
