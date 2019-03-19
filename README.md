@@ -1,6 +1,10 @@
+[![Quicklisp](http://quickdocs.org/badge/cl-str.svg)](http://quickdocs.org/cl-str)
+
 # A modern and consistent Common Lisp string manipulation library
 
     (ql:quickload "str")
+
+also on [Ultralisp](http://ultralisp.org/).
 
 Why ?
 
