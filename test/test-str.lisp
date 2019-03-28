@@ -259,5 +259,18 @@
   (is (s-nth 6 "foobar") "")
   (is (s-nth 3 "") ""))
 
+(subtest "case"
+  (is (downcase nil) nil
+      "downcase nil returns nil, not a string.")
+  (is (downcase "Foo") "foo")
+  (is (downcase :foo) "foo"
+      "Built-in functions also work on symbols.")
+  (is (upcase nil) nil
+      "upcase nil returns nil, not a string.")
+  (is (upcase "foo") "FOO")
+  (is (capitalize nil) nil
+      "capitalize nil returns nil, not a string.")
+  (is (capitalize "foo") "Foo"))
+
 ;; prove end
 (finalize)

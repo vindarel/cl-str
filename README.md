@@ -1,5 +1,4 @@
 [![Quicklisp](http://quickdocs.org/badge/cl-str.svg)](http://quickdocs.org/cl-str)
-
 # A modern and consistent Common Lisp string manipulation library
 
     (ql:quickload "str")
@@ -18,7 +17,7 @@ or `str:concat strings` instead of an unusual `format` construct; one discoverab
 
 The only dependency is `cl-ppcre`.
 
-<!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-generate-toc again -->
+<!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
 **Table of Contents**
 
 - [A modern and consistent Common Lisp string manipulation library](#a-modern-and-consistent-common-lisp-string-manipulation-library)
@@ -31,7 +30,7 @@ The only dependency is `cl-ppcre`.
             - [join `(separator list-of-strings)`](#join-separator-list-of-strings)
             - [concat `(&rest strings)`](#concat-rest-strings)
             - [repeat `(count s)`](#repeat-count-s)
-            - [add-prefix, add-suffix `(items s)` (new in 0.9)](#add-prefix-add-suffix-items-s-new-in-09)
+            - [add-prefix, add-suffix `(items s)`](#add-prefix-add-suffix-items-s)
         - [To shorter strings](#to-shorter-strings)
             - [substring `(start end s)`](#substring-start-end-s)
             - [s-first `(s)`](#s-first-s)
@@ -55,13 +54,15 @@ The only dependency is `cl-ppcre`.
             - [starts-with?, starts-with-p `(start s &key ignore-case)`](#starts-with-starts-with-p-start-s-key-ignore-case)
             - [ends-with?, ends-with-p `(end s &key ignore-case)`](#ends-with-ends-with-p-end-s-key-ignore-case)
             - [contains?, containsp `(substring s &key (ignore-case nil))`](#contains-containsp-substring-s-key-ignore-case-nil)
-            - [prefix?, prefixp and suffix?, suffixp `(items s)` (new in 0.9)](#prefix-prefixp-and-suffix-suffixp-items-s-new-in-09)
+            - [prefix?, prefixp and suffix?, suffixp `(items s)`](#prefix-prefixp-and-suffix-suffixp-items-s)
+        - [Case](#case)
+            - [`(downcase, upcase, capitalize s)` fixing a built-in suprise. (new in 0.11)](#downcase-upcase-capitalize-s-fixing-a-built-in-suprise-new-in-011)
         - [Others](#others)
             - [replace-all `(old new s)`](#replace-all-old-new-s)
             - [prefix `(list-of-strings)` (renamed in 0.9)](#prefix-list-of-strings-renamed-in-09)
-            - [suffix `(list-of-strings)` (new in 0.9)](#suffix-list-of-strings-new-in-09)
+            - [suffix `(list-of-strings)`](#suffix-list-of-strings)
     - [Macros](#macros)
-        - [string-case (new in v0.8, Quicklisp end of february 2018)](#string-case-new-in-v08-quicklisp-end-of-february-2018)
+        - [string-case](#string-case)
     - [Changelog](#changelog)
     - [Dev and test](#dev-and-test)
     - [See also](#see-also)
@@ -158,7 +159,7 @@ Make a string of `s` repeated `count` times.
 (repeat 3 "foo") ;; => "foofoofoo"
 ```
 
-#### add-prefix, add-suffix `(items s)` (new in 0.9)
+#### add-prefix, add-suffix `(items s)`
 
 Respectively prepend or append `s` to the front of each item.
 
@@ -378,7 +379,7 @@ case with `:ignore-case t` (don't ignore by default).
 Based on a simple call to the built-in `search` (which returns the
 position of the substring).
 
-#### prefix?, prefixp and suffix?, suffixp `(items s)` (new in 0.9)
+#### prefix?, prefixp and suffix?, suffixp `(items s)`
 
 Return `s` if it is a common prefix (or suffix) between items.
 
@@ -387,6 +388,21 @@ See also `uiop:string-prefix-p prefix s`, which returns `t` if
 
 and `uiop:string-enclosed-p prefix s suffix`, which returns `t` if `s`
 begins with `prefix` and ends with `suffix`.
+
+### Case
+
+#### `(downcase, upcase, capitalize s)` fixing a built-in suprise. (new in 0.11)
+
+The functions `str:downcase`, `str:upcase` and `str:capitalize` return
+a new string. They call the built-in `string-downcase`,
+`string-upcase` and `string-capitalize` respectively, but they fix
+something surprising. When the argument is `nil`, the built-ins return
+"nil" or "NIL" or "Nil", a *string*. Indeed, they work on anything:
+
+    (string-downcase nil) ;; => "nil" the string !
+    (str:downcase nil) ;; nil
+
+    (string-downcase :FOO) ;; => "foo"
 
 ### Others
 
@@ -417,14 +433,14 @@ the strings fail to match.
 Return a string or nil when the input is the void list.
 
 
-#### suffix `(list-of-strings)` (new in 0.9)
+#### suffix `(list-of-strings)`
 
 Find the common suffix between strings.
 
 
 ## Macros
 
-### string-case (new in v0.8, Quicklisp end of february 2018)
+### string-case
 
 A case-like macro that works with strings (CL's case only works with symbols).
 
@@ -452,11 +468,13 @@ Note that there is also http://quickdocs.org/string-case/.
 
 ## Changelog
 
-* 0.10 (Quicklisp end of august, 2018)
+* 0.11 (Quicklisp end of march, 2019, also in Ultralisp)
+  - added `str:downcase`, `str:upcase` and `str:capitalize`, that fix the `nil` argument surprise.
+* 0.10
   - `split` doesn't fix cl-ppcre's inconsistency anymore (when the separator appears at the end). See issue #18. So `(str:split "xx" "fooxxbarxx")` doesn't return a trailing `""`.
   - added `s-last`
   - `s-first` and friends return `nil` when appropriate, not `""`.
-* 0.9 (Quicklisp end of may, 2018)
+* 0.9
   - added `s-first` , `s-rest` and `s-nth`
   - added `prefix` and `suffix` functions and predicates.
   - added `prune`.
