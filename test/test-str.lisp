@@ -82,6 +82,25 @@
   (is nil (empty? " "))
   )
 
+(subtest "non-empty string"
+  (is nil (non-empty-string-p 8))
+  (is nil (non-empty-string-p nil))
+  (is nil (non-empty-string-p #\x))
+  (is nil (non-empty-string-p ""))
+  (ok (non-empty-string-p "  "))
+  (ok (non-empty-string-p "foo"))
+  (ok (non-empty-string-p "8")))
+
+(subtest "non-blank string"
+  (is nil (non-blank-string-p 8))
+  (is nil (non-blank-string-p ""))
+  (is nil (non-blank-string-p "  "))
+  (is nil (non-blank-string-p "
+
+  "))
+  (ok (non-blank-string-p "foo"))
+  (ok (non-blank-string-p "8")))
+
 (subtest "Blank string"
   (ok (blankp "  "))
   (ok (blank? "  "))

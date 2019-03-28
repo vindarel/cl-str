@@ -344,6 +344,8 @@ True if `s` is nil or the empty string:
   (empty? " ") ;; => NIL
 ```
 
+See also `str:non-empty-string-p`, which adds a `stringp` check.
+
 #### blank?, blankp `(s)`
 
 True if `s` is empty or only contains whitespaces.
@@ -351,6 +353,8 @@ True if `s` is empty or only contains whitespaces.
     (blankp "") ;; => T
     (blankp " ") ;; => T
     (emptyp " ") ;; => NIL
+
+See also `str:non-blank-string-p`.
 
 #### starts-with?, starts-with-p `(start s &key ignore-case)`
 

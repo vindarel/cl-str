@@ -17,6 +17,8 @@
    :concat
    :empty?
    :emptyp
+   :non-empty-string-p
+   :non-blank-string-p
    :blank?
    :blankp
    :blank-str-p
@@ -192,6 +194,13 @@ It uses `subseq' with differences:
   "Is s nil or the empty string ?"
   (empty? s))
 
+(defun non-empty-string-p (s)
+  "Return t if `s' is a string and is non-empty.
+
+  Like `(not (empty? s))', with a `stringp' check. Useful in context."
+  (and (stringp s)
+       (not (emptyp s))))
+
 (defun blank? (s)
   "Is s nil or only contains whitespaces ?"
   (or (null s) (string-equal "" (trim s))))
@@ -199,6 +208,13 @@ It uses `subseq' with differences:
 (defun blankp (s)
   "Is s nil or only contains whitespaces ?"
   (blank? s))
+
+(defun non-blank-string-p (s)
+  "Return t if `s' is a string and is non blank (it doesn't exclusively contain whitespace characters).
+
+  Like `(not (blank? s))', with a `stringp' check. Useful in context."
+  (and (stringp s)
+       (not (blankp s))))
 
 (defun starts-with? (start s &key (ignore-case *ignore-case*))
   "Return t if s starts with the substring 'start', nil otherwise."
