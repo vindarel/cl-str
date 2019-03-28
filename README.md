@@ -84,13 +84,12 @@ of QL as Debian's apt rather than pip/npm/etc):
 
     (ql:update-dist "quicklisp")
 
-beware, this is a young and unstable library. (update v0.7) The
-functions implementation may change, but we shouldn't change the api.
-
-(don't have a full Common Lisp development environment yet ? Get
+Don't have a full Common Lisp development environment yet ? Get
 [Portacle](https://shinmera.github.io/portacle/), a portable and
 multiplatform development environment shipping Emacs, Quicklisp, SBCL
-and Git).
+and Git. See also [editor
+support](https://lispcookbook.github.io/cl-cookbook/editor-support.html)
+(Vim, Lem, Atom, Eclipse,…).
 
 ## Global parameters
 
@@ -100,14 +99,14 @@ Some parameters are common to various functions and often used:
 Consequently we can also manage them with global parameters:
 
 ~~~lisp
-(let ((*ignore-case* t))
-  (ends-with? "BAR" "foobar"))
+(let ((str:*ignore-case* t))
+  (str:ends-with? "BAR" "foobar"))
 ~~~
 
 is equivalent to
 
 ~~~lisp
-(ends-with? "BAR" "foobar" :ignore-case t)
+(str:ends-with? "BAR" "foobar" :ignore-case t)
 ~~~
 
 ## Functions
