@@ -45,11 +45,17 @@
    :s-last
    :s-rest
    :s-nth
+
+   :downcase
+   :upcase
+   :capitalize
+
    :*ignore-case*
    :*omit-nulls*
    :*ellipsis*
    :version
    :+version+
+   :?
    ))
 
 (in-package :str)
@@ -368,3 +374,28 @@ Returns the string written to file."
         ((or (empty? s) (minusp n)) "")
 	((= n 0) (s-first s))
 	(t (s-nth (1- n) (s-rest s)))))
+
+;;; Case
+
+;; Small wrappers around built-ins, but they fix surprises.
+
+(defun downcase (s)
+  "Return the lowercase version of `s'.
+  Calls the built-in `string-downcase', but returns nil if `s' is
+  nil (instead of the string \"nil\")."
+  (unless (null s)
+    (string-downcase s)))
+
+(defun upcase (s)
+  "Return the uppercase version of `s'.
+  Call the built-in `string-upcase', but return nil if `s' is
+  nil (instead of the string \"NIL\")."
+  (unless (null s)
+    (string-upcase s)))
+
+(defun capitalize (s)
+  "Return the capitalized version of `s'.
+  Calls the built-in `string-capitalize', but returns nil if `s' is
+  nil (instead of the string \"Nil\")."
+  (unless (null s)
+    (string-capitalize s)))
