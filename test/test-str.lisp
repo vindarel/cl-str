@@ -295,7 +295,7 @@
   (is (downcasep nil) nil "downcasep nil")
   (is (downcasep "") nil "downcasep empty string")
   (is (downcasep " ") nil "downcasep blank string")
-  (is (downcasep " e ") t "downcasep default")
+  (is (downcasep " e ") t "downcasep ok with spaces")
   (is (downcasep "rst") t "downcasep default")
   (is (downcasep " A ") nil "downcasep false default")
   (is (downcasep " aiue tsuie+- Aa ") nil "downcasep false default")
@@ -315,12 +315,12 @@
   (is (upcasep " ++YÉÉS-- ") t "upcasep default")
   ;; (is (upcasep " ++YÉÉẞ-- ") t "upcasep default")
 
-  (is (alphanump "rst124ldv") t "alphanump default")
+  (ok (alphanump "rst124ldv") "alphanump default")
   (is (alphanump " rst123ldv ") nil "alphanump no space")
   (is (alphanump "rst,123+ldv") nil "alphanump no punctuation")
   (is (alphanump ",+") nil "alphanump no punctuation")
 
-  (is (alphap "abcDEf") t "alphap default")
+  (ok (alphap "abcDEf") "alphap default")
   (is (alphap "abc,de") nil "alphap no punctuation")
   (is (alphap "abc de") nil "alphap no space")
   (is (alphap " ") nil "alphap blank")
