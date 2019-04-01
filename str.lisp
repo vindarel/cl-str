@@ -51,6 +51,18 @@
    :downcase
    :upcase
    :capitalize
+   :downcasep
+   :downcase?
+   :upcasep
+   :upcase?
+   :has-alphanum-p
+   :has-alpha-p
+   :alphanump
+   :alphanum?
+   :alphap
+   :alpha?
+   :digitp
+   :digit?
 
    :*ignore-case*
    :*omit-nulls*
@@ -415,3 +427,88 @@ Returns the string written to file."
   nil (instead of the string \"Nil\")."
   (unless (null s)
     (string-capitalize s)))
+
+;;; Case predicates.
+
+(defun alphanump (s)
+  "Return t if `s' contains at least one character and all characters are alphanumeric."
+  (unless (emptyp s)
+    ;; also regexp.
+    (every (lambda (char)
+             (alphanumericp char))
+           s)))
+
+(defun alphanum? (s)
+  (alphanump s))
+
+
+(defun alphap (s)
+  "Return t if `s' contains at least one character and all characters are alphabetical."
+  (unless (emptyp s)
+    ;; also (ppcre:scan-to-strings "^[a-zA-Z]+$" s)
+    (every (lambda (char)
+             (alpha-char-p char))
+           s)))
+
+(defun alpha? (s)
+  (alphap s))
+
+(defun digitp (s)
+  "Return t if `s' contains at least one character and all characters are numerical."
+  (unless (emptyp s)
+    ;; a regex would check sign and exponents.
+    (every (lambda (char)
+             (digit-char-p char))
+           s)))
+
+(defun digit? (s)
+  (digitp s))
+
+
+(defun numericp (s)
+  "alias for `digitp'."
+  (digitp s))
+
+(defun numeric? (s)
+  (numericp s))
+
+(defun has-alphanum-p (s)
+  "Return t if `s' has at least one alphanumeric character."
+  (unless (emptyp s)
+    (some (lambda (char)
+            (alphanumericp char))
+          s)))
+
+(defun has-alpha-p (s)
+  "Return t if `s' has at least one alphanumeric character."
+  (unless (emptyp s)
+    (some (lambda (char)
+            (alpha-char-p char))
+          s)))
+
+;; with a regexp ? These look at a sequence *twice*.
+(defun downcasep (s)
+  "Return t if all alphabetical characters of `s' are lowercase, and `s' contains at least one alphabetical character."
+  (if (has-alpha-p s)
+    (every (lambda (char)
+             (if (alpha-char-p char)
+                 (lower-case-p char)
+                 t))
+           s)))
+
+(defun downcase? (s)
+  "alias for `downcasep'."
+  (downcasep s))
+
+(defun upcasep (s)
+  "Return t if all alphabetical characters of `s' are uppercase."
+  (if (has-alpha-p s)
+    (every (lambda (char)
+             (if (alpha-char-p char)
+                 (upper-case-p char)
+                 t))
+           s)))
+
+(defun upcase? (s)
+  "alias for `upcasep'."
+  (upcasep s))

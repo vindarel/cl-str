@@ -279,17 +279,60 @@
   (is (s-nth 3 "") ""))
 
 (subtest "case"
-  (is (downcase nil) nil
-      "downcase nil returns nil, not a string.")
-  (is (downcase "Foo") "foo")
-  (is (downcase :foo) "foo"
-      "Built-in functions also work on symbols.")
-  (is (upcase nil) nil
-      "upcase nil returns nil, not a string.")
-  (is (upcase "foo") "FOO")
-  (is (capitalize nil) nil
-      "capitalize nil returns nil, not a string.")
-  (is (capitalize "foo") "Foo"))
+         (is (downcase nil) nil
+             "downcase nil returns nil, not a string.")
+         (is (downcase "Foo") "foo")
+         (is (downcase :foo) "foo"
+             "Built-in functions also work on symbols.")
+         (is (upcase nil) nil
+             "upcase nil returns nil, not a string.")
+         (is (upcase "foo") "FOO")
+         (is (capitalize nil) nil
+             "capitalize nil returns nil, not a string.")
+         (is (capitalize "foo") "Foo"))
+
+(subtest "case predicates"
+  (is (downcasep nil) nil "downcasep nil")
+  (is (downcasep "") nil "downcasep empty string")
+  (is (downcasep " ") nil "downcasep blank string")
+  (is (downcasep " e ") t "downcasep default")
+  (is (downcasep "rst") t "downcasep default")
+  (is (downcasep " A ") nil "downcasep false default")
+  (is (downcasep " aiue tsuie+- Aa ") nil "downcasep false default")
+  (is (downcasep " +,. ") nil "downcasep only punctuation")
+  (is (downcasep "123") nil "downcasep only digits")
+  (is (downcasep " a+,. ") t "downcasep with punctuation (python api)")
+  (is (downcasep " +,é. ") t "downcasep with accent")
+  ;; (is (downcasep " +,ß. ") t "downcasep with ß")
+
+  (is (upcasep nil) nil "upcasep nil")
+  (is (upcasep "") nil "upcasep empty")
+  (is (upcasep "   ") nil "upcasep blank")
+  (is (upcasep "rst") nil "upcasep lowercase letters")
+  (is (upcasep "??+,") nil "upcasep only punctuation")
+  (is (upcasep "123") nil "upcasep only digits")
+  (is (upcasep " ++YES-- ") t "upcasep default")
+  (is (upcasep " ++YÉÉS-- ") t "upcasep default")
+  ;; (is (upcasep " ++YÉÉẞ-- ") t "upcasep default")
+
+  (is (alphanump "rst124ldv") t "alphanump default")
+  (is (alphanump " rst123ldv ") nil "alphanump no space")
+  (is (alphanump "rst,123+ldv") nil "alphanump no punctuation")
+  (is (alphanump ",+") nil "alphanump no punctuation")
+
+  (is (alphap "abcDEf") t "alphap default")
+  (is (alphap "abc,de") nil "alphap no punctuation")
+  (is (alphap "abc de") nil "alphap no space")
+  (is (alphap " ") nil "alphap blank")
+
+  (is (digitp "abc") nil "digitp letters")
+  (is (digitp "123") t "digitp default")
+  (is (digitp "123,456") nil "digitp no punctuation")
+  (is (digitp "123 456") nil "digitp no space")
+
+  (is (has-alpha-p "-+,A-") t "has-alpha-p default")
+  (is (has-alphanum-p "-+, 1 ") t "has-alphanum-p default")
+  )
 
 ;; prove end
 (finalize)
