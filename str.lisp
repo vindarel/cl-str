@@ -432,23 +432,14 @@ Returns the string written to file."
 
 (defun alphanump (s)
   "Return t if `s' contains at least one character and all characters are alphanumeric."
-  (unless (emptyp s)
-    ;; also regexp.
-    (every (lambda (char)
-             (alphanumericp char))
-           s)))
+  (ppcre:scan "^[a-zA-Z0-9]+$" s))
 
 (defun alphanum? (s)
   (alphanump s))
 
-
 (defun alphap (s)
   "Return t if `s' contains at least one character and all characters are alphabetical."
-  (unless (emptyp s)
-    ;; also (ppcre:scan-to-strings "^[a-zA-Z]+$" s)
-    (every (lambda (char)
-             (alpha-char-p char))
-           s)))
+  (ppcre:scan-to-strings "^[a-zA-Z]+$" s))
 
 (defun alpha? (s)
   (alphap s))
@@ -456,7 +447,7 @@ Returns the string written to file."
 (defun digitp (s)
   "Return t if `s' contains at least one character and all characters are numerical."
   (unless (emptyp s)
-    ;; a regex would check sign and exponents.
+    ;; regex ? Check sign and exponents.
     (every (lambda (char)
              (digit-char-p char))
            s)))
