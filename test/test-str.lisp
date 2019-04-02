@@ -303,7 +303,6 @@
   (is (downcasep "123") nil "downcasep only digits")
   (is (downcasep " a+,. ") t "downcasep with punctuation (python api)")
   (is (downcasep " +,é. ") t "downcasep with accent")
-  ;; (is (downcasep " +,ß. ") t "downcasep with ß")
 
   (is (upcasep nil) nil "upcasep nil")
   (is (upcasep "") nil "upcasep empty")
@@ -312,16 +311,17 @@
   (is (upcasep "??+,") nil "upcasep only punctuation")
   (is (upcasep "123") nil "upcasep only digits")
   (is (upcasep " ++YES-- ") t "upcasep default")
-  (is (upcasep " ++YÉÉS-- ") t "upcasep default")
-  ;; (is (upcasep " ++YÉÉẞ-- ") t "upcasep default")
+  (is (upcasep " ++YÉÈS-- ") t "upcasep with accent")
 
   (ok (alphanump "rst124ldv") "alphanump default")
   (is (alphanump " rst123ldv ") nil "alphanump no space")
   (is (alphanump "rst,123+ldv") nil "alphanump no punctuation")
   (is (alphanump ",+") nil "alphanump no punctuation")
+  (is (alphanump "abcéß") nil "alphanump no accents")
 
   (ok (alphap "abcDEf") "alphap default")
   (is (alphap "abc,de") nil "alphap no punctuation")
+  (is (alphap "abcdeé") nil "alphap no accents")
   (is (alphap "abc de") nil "alphap no space")
   (is (alphap " ") nil "alphap blank")
 
@@ -331,8 +331,15 @@
   (is (digitp "123 456") nil "digitp no space")
 
   (is (has-alpha-p "-+,A-") t "has-alpha-p default")
-  (is (has-alphanum-p "-+, 1 ") t "has-alphanum-p default")
-  )
+  (is (has-alpha-p "-é-") nil "has-alpha-p no accents")
+  (is (has-alphanum-p "-+, 1 ") t "has-alphanum-p with digit"))
+
+(subtest "letters"
+  (is (lettersp "éß") t "letters with accents and ß")
+  (is (lettersp " e é,") nil "no letters")
+  (is (has-letters-p " e é ß") t "has-letters-p default")
+  (is (has-letters-p " +,-") nil "has-letters-p default nil")
+  (is (lettersnump "abcéß123") t "lettersnump default"))
 
 ;; prove end
 (finalize)

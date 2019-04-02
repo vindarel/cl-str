@@ -56,7 +56,12 @@ The only dependency is `cl-ppcre`.
             - [contains?, containsp `(substring s &key (ignore-case nil))`](#contains-containsp-substring-s-key-ignore-case-nil)
             - [prefix?, prefixp and suffix?, suffixp `(items s)`](#prefix-prefixp-and-suffix-suffixp-items-s)
         - [Case](#case)
-            - [`(downcase, upcase, capitalize s)` fixing a built-in suprise. (new in 0.11)](#downcase-upcase-capitalize-s-fixing-a-built-in-suprise-new-in-011)
+            - [downcase, upcase, capitalize `(s)` fixing a built-in suprise. (new in 0.11)](#downcase-upcase-capitalize-s-fixing-a-built-in-suprise-new-in-011)
+            - [downcasep, upcasep `(s)`](#downcasep-upcasep-s)
+            - [alphap, lettersp `(s)`](#alphap-lettersp-s)
+            - [alphanump, lettersnump `(s)`](#alphanump-lettersnump-s)
+            - [digitp `(s)`](#digitp-s)
+            - [has-alpha-p, has-letters-p, has-alphanum-p `(s)`](#has-alpha-p-has-letters-p-has-alphanum-p-s)
         - [Others](#others)
             - [replace-all `(old new s)`](#replace-all-old-new-s)
             - [prefix `(list-of-strings)` (renamed in 0.9)](#prefix-list-of-strings-renamed-in-09)
@@ -394,7 +399,7 @@ begins with `prefix` and ends with `suffix`.
 
 ### Case
 
-#### `(downcase, upcase, capitalize s)` fixing a built-in suprise. (new in 0.11)
+#### downcase, upcase, capitalize `(s)` fixing a built-in suprise. (new in 0.11)
 
 The functions `str:downcase`, `str:upcase` and `str:capitalize` return
 a new string. They call the built-in `string-downcase`,
@@ -406,6 +411,42 @@ something surprising. When the argument is `nil`, the built-ins return
     (str:downcase nil) ;; nil
 
     (string-downcase :FOO) ;; => "foo"
+
+#### downcasep, upcasep `(s)`
+
+These functions return `t` if the given string contains at least one
+letter and all its letters are lowercase or uppercase, respectively.
+
+```cl
+(is (downcasep " a+,. ") t "downcasep with one letter and punctuation is true.")
+(is (downcasep " +,. ") nil "downcasep with only punctuation or spaces is false")
+```
+
+#### alphap, lettersp `(s)`
+
+`alphap` returns t if `s` contains at least one character and all characters are
+  alpha (as in `"^[a-zA-Z]+$"`).
+
+`lettersp` works for unicode letters too.
+
+~~~lisp
+(is (alphap "abcdeé") nil "alphap is nil with accents")
+(is (lettersp "éß") t "lettersp is t with accents and ß")
+~~~
+
+#### alphanump, lettersnump `(s)`
+
+`alphanump` returns t if `s` contains at least one character and all characters are alphanumeric (as in `^[a-zA-Z0-9]+$`).
+
+`lettersnump` also works on unicode letters (as in `^[\\p{L}a-zA-Z0-9]+$`).
+
+#### digitp `(s)`
+
+Returns t if `s` contains at least one character and all characters are numerical (as for `digit-char-p`).
+
+#### has-alpha-p, has-letters-p, has-alphanum-p `(s)`
+
+Return t if `s` has at least one alpha, letter, alphanum character (as with `alphanumericp`).
 
 ### Others
 
@@ -471,6 +512,8 @@ Note that there is also http://quickdocs.org/string-case/.
 
 ## Changelog
 
+* 0.12
+  - added case predicates (`downcasep`, `alphap`, `has-x` and friends).
 * 0.11 (Quicklisp end of march, 2019, also in Ultralisp)
   - added `str:downcase`, `str:upcase` and `str:capitalize`, that fix the `nil` argument surprise.
 * 0.10
@@ -496,10 +539,9 @@ Test with [prove](https://github.com/fukamachi/prove).
 ## See also
 
 * [cl-strings](https://github.com/diogoalexandrefranco/cl-strings), a
-  similar (discovered afterwards), maybe more complete library, that
-  does not use established libraries as dependencies as we do (with
-  *potential* implementation
-  [issues](https://github.com/diogoalexandrefranco/cl-strings/issues/2)).
+  similar library (discovered afterwards), with functions to change case, with
+  potential implementation
+  [issues](https://github.com/diogoalexandrefranco/cl-strings/issues/2).
 * [cl-change-case](https://github.com/rudolfochrist/cl-change-case) to
   convert strings between camelCase, param-case, snake_case and more.
 * the [Common Lisp Cookbook](https://lispcookbook.github.io/cl-cookbook/strings.html), strings page.
