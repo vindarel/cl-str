@@ -471,11 +471,9 @@ Returns the string written to file."
           s)))
 
 (defun has-alpha-p (s)
-  "Return t if `s' has at least one alphanumeric character."
-  (unless (emptyp s)
-    (some (lambda (char)
-            (alpha-char-p char))
-          s)))
+  "Return t if `s' has at least one alpha character ([a-zA-Z])."
+  (when (ppcre:scan "[a-zA-Z]" s)
+    t))
 
 ;; with a regexp ? These look at a sequence *twice*.
 (defun downcasep (s)
