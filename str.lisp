@@ -57,9 +57,13 @@
    :upcase?
    :has-alphanum-p
    :has-alpha-p
+   :has-letters-p
    :alphanump
    :alphanum?
    :alphap
+   :lettersp
+   :letters?
+   :lettersnump
    :alpha?
    :digitp
    :digit?
@@ -431,18 +435,40 @@ Returns the string written to file."
 ;;; Case predicates.
 
 (defun alphanump (s)
-  "Return t if `s' contains at least one character and all characters are alphanumeric."
+  "Return t if `s' contains at least one character and all characters are alphanumeric.
+  See also `lettersnump' which also works on unicode letters."
   (ppcre:scan "^[a-zA-Z0-9]+$" s))
 
 (defun alphanum? (s)
   (alphanump s))
 
 (defun alphap (s)
-  "Return t if `s' contains at least one character and all characters are alphabetical."
-  (ppcre:scan-to-strings "^[a-zA-Z]+$" s))
+  "Return t if `s' contains at least one character and all characters are alpha (in [a-zA-Z]).
+  See also `lettersp', which checks for unicode letters."
+  (ppcre:scan-to-strings "^[a-zA-Z]+$" s)
+  ;; TODO: this regexp accepts é and ß: in lettersp like cuerdas ?
+  ;; and like in python, so definitely yes.
+  ;; (ppcre:scan-to-strings "^\\p{L}+$" s)
+  )
 
 (defun alpha? (s)
   (alphap s))
+
+(defun lettersp (s)
+  "Return t if `s' contains only letters (including unicode letters).
+
+   (alphap \"éß\") ;; => nil
+   (lettersp \"éß\") ;; => t"
+  (when (ppcre:scan "^\\p{L}+$" s)
+    t))
+
+(defun letters? (s)
+  (lettersp s))
+
+(defun lettersnump (s)
+  "Return t if `s' contains only letters (including unicode letters) and digits."
+  (when (ppcre:scan "^[\\p{L}a-zA-Z0-9]+$" s)
+    t))
 
 (defun digitp (s)
   "Return t if `s' contains at least one character and all characters are numerical."
@@ -475,15 +501,19 @@ Returns the string written to file."
   (when (ppcre:scan "[a-zA-Z]" s)
     t))
 
-;; with a regexp ? These look at a sequence *twice*.
+(defun has-letters-p (s)
+  "Return t if `s' contains at least one letter (considering unicode, not only alpha characters)."
+  (when (ppcre:scan "\\p{L}" s)
+    t))
+
 (defun downcasep (s)
-  "Return t if all alphabetical characters of `s' are lowercase, and `s' contains at least one alphabetical character."
-  (if (has-alpha-p s)
-    (every (lambda (char)
-             (if (alpha-char-p char)
-                 (lower-case-p char)
-                 t))
-           s)))
+  "Return t if all alphabetical characters of `s' are lowercase, and `s' contains at least one letter."
+  (if (has-letters-p s)
+      (every (lambda (char)
+               (if (alpha-char-p char)
+                   (lower-case-p char)
+                   t))
+             s)))
 
 (defun downcase? (s)
   "alias for `downcasep'."
