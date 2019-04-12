@@ -151,17 +151,26 @@
 
 
 (subtest "Lines"
-  (is '("") (lines nil))
-  (is '("") (lines ""))
-  (is '("" "") (lines "
+  (is nil (lines nil))
+  (is nil (lines ""))
+  (is nil (lines "
 "))
   (is '("1" "2" " 3") (lines "1
 2
  3"))
-  (is '("1" "2" " 3" "") (lines "1
+  (is '("1" "2" " 3") (lines "1
 2
  3
-")))
+"))
+  (is '("1" "2" "" "3") (str:lines "1
+2
+
+3"))
+  (is '("1" "2" "3") (str:lines "1
+2
+
+
+3" :omit-nulls t)))
 
 (subtest "Unlines"
   (is "" (unlines nil))
