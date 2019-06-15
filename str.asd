@@ -4,10 +4,10 @@
   :author "vindarel <vindarel@mailz.org>"
   :maintainer "vindarel <vindarel@mailz.org>"
   :license "MIT"
-  :version "0.11"
+  :version "0.13"
   :homepage "https://github.com/vindarel/cl-str"
   :bug-tracker "https://github.com/vindarel/cl-str/issues"
-  :source-control (:git "git@github.com:vindarel/cl-s.git")
+  :source-control (:git "git@github.com:vindarel/cl-str.git")
   :description "Modern, consistent and terse Common Lisp string manipulation library."
   :depends-on (:cl-ppcre)
   :components ((:file "str"))

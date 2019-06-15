@@ -29,6 +29,7 @@ The only dependency is `cl-ppcre`.
         - [To longer strings](#to-longer-strings)
             - [join `(separator list-of-strings)`](#join-separator-list-of-strings)
             - [concat `(&rest strings)`](#concat-rest-strings)
+            - [insert `(string/char index s)`](#insert-stringchar-index-s)
             - [repeat `(count s)`](#repeat-count-s)
             - [add-prefix, add-suffix `(items s)`](#add-prefix-add-suffix-items-s)
         - [To shorter strings](#to-shorter-strings)
@@ -154,6 +155,20 @@ Join strings into one.
 Simple call of the built-in [concatenate](https://lispcookbook.github.io/cl-cookbook/strings.html#concatenating-strings).
 
 We actually also have `uiop:strcat`.
+
+
+#### insert `(string/char index s)`
+
+Insert the given string (or character) at the index `index` into `s` and return a
+new string.
+
+If `index` is out of bounds, just return `s`.
+
+```cl
+(str:insert "l" 2 "helo") ; => "hello"
+
+(str:insert "o" 99 "hell") : => "hell"
+```
 
 #### repeat `(count s)`
 
@@ -512,6 +527,8 @@ Note that there is also http://quickdocs.org/string-case/.
 
 ## Changelog
 
+* 0.13 june, 2019
+  - added `insert`
 * 0.12
   - added case predicates (`downcasep`, `alphap`, `has-x` and friends).
 * 0.11 (Quicklisp end of march, 2019, also in Ultralisp)
