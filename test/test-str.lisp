@@ -34,6 +34,16 @@
   (is "foo~~~bar" (join "~" '("foo~" "~bar")))
   )
 
+(subtest "Insert"
+  (is "hello" (insert "o" 4 "hell"))
+  (is "hello" (insert "h" 0 "ello"))
+  (is "hell" (insert "l" 200 "hell") "large index")
+  (is "hell" (insert "l" -2 "hell") "negative index")
+  (is "hell" (insert nil 2 "hell") "insert nil: do nothing")
+  (is "hell" (insert "l" nil "hell") "index nil: do nothing")
+  (is nil (insert "l" 2 nil) "s nil: nil")
+  (is "hello" (insert #\o 4 "hell") "with a char"))
+
 (subtest "Split"
   (is '("foo" "bar") (split " " "foo bar"))
   (is '("foo" "bar") (split "+" "foo+bar") "separator is a regexp")

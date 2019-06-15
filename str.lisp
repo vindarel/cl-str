@@ -8,6 +8,7 @@
    :trim-right
    :trim
    :join
+   :insert
    :split
    :split-omit-nulls
    :substring
@@ -84,7 +85,7 @@
 (defvar *whitespaces* '(#\Space #\Newline #\Backspace #\Tab
                         #\Linefeed #\Page #\Return #\Rubout))
 
-(defvar +version+ "0.10")
+(defvar +version+ "0.13")
 
 (defun version ()
   (print +version+))
@@ -109,11 +110,30 @@
   (apply #'concatenate 'string strings))
 
 (defun join (separator strings)
-  " "
+  "Join all the strings of the list with a separator."
   (let ((separator (replace-all "~" "~~" separator)))
     (format nil
             (concatenate 'string "~{~a~^" separator "~}")
             strings)))
+
+(defun insert (string/char index s)
+  "Insert the given string (or character) at the `index' into `s' and return a new string.
+
+  If `index' is out of bounds, ignore and return `s'."
+  (when (characterp string/char)
+    (setf string/char (string string/char)))
+  (cond
+    ((null index)
+     s)
+    ((< index 0)
+     s)
+    ((> index (length s))
+     s)
+    (t
+     (concatenate 'string
+                  (subseq s 0 index)
+                  string/char
+                  (subseq s index)))))
 
 (defun split (separator s &key (omit-nulls *omit-nulls*))
   "Split s into substring by separator (cl-ppcre takes a regex, we do not)."
