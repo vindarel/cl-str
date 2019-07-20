@@ -48,6 +48,7 @@
   (is '("foo" "bar") (split " " "foo bar"))
   (is '("foo" "bar") (split "+" "foo+bar") "separator is a regexp")
   (is '("foo" "" "bar") (split "+" "foo++bar"))
+  (is '("foo" "bar+car+dar") (split "+" "foo+bar+car+dar" :limit 2))
   (is '("foo" "bar") (split "+" "foo+bar"))
   (is '("foo" "bar") (split "x" "fooxbar") "split with string x")
   (is '("foo" "bar") (split #\x "fooxbar") "split with character")
