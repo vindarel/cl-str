@@ -9,7 +9,8 @@
   :bug-tracker "https://github.com/vindarel/cl-str/issues"
   :source-control (:git "git@github.com:vindarel/cl-str.git")
   :description "Modern, consistent and terse Common Lisp string manipulation library."
-  :depends-on (:cl-ppcre)
+  :depends-on (:cl-ppcre
+               :cl-ppcre-unicode)
   :components ((:file "str"))
 
   :long-description
