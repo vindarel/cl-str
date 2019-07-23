@@ -44,7 +44,7 @@ The only dependency is `cl-ppcre`.
             - [unwords `(strings)`](#unwords-strings)
             - [lines `(s)`](#lines-s)
             - [unlines `(strings)`](#unlines-strings)
-            - [split `(separator s &key omit-nulls)`](#split-separator-s-key-omit-nulls)
+            - [split `(separator s &key omit-nulls limit)`](#split-separator-s-key-omit-nulls)
             - [split-omit-nulls  (in v0.6, QL january 2018)](#split-omit-nulls--in-v06-ql-january-2018)
         - [To and from files (experimental in v0.4)](#to-and-from-files-experimental-in-v04)
             - [from-file `(filename)`](#from-file-filename)
@@ -296,7 +296,7 @@ Split string by newline character and return list of lines.
 
 Join the list of strings with a newline character.
 
-#### split `(separator s &key omit-nulls)`
+#### split `(separator s &key omit-nulls limit)`
 
 Split into subtrings (unlike cl-ppcre, without a regexp). If
 `omit-nulls` is non-nil, zero-length substrings are omitted.
