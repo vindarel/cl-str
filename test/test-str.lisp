@@ -57,6 +57,7 @@
   (is '("fooxbar" "x") (split "xx" "fooxbarxxx") "split with xx, end in xxx")
   (is '("foo" "bar") (split "(*)" "foo(*)bar"))
   (is '("foo" "bar") (split "NO" "fooNObarNO") "separator at the end (cl-ppcre doesn't return an empty string).")
+  (is '("foo" "bar" "") (split "NO" "fooNObarNO" :limit 10) "but cl-ppcre does return trailing empty strings if limit is provided")
   (is '("foo" "bar") (split "+" "foo+++bar++++" :omit-nulls t) "omit-nulls argument")
   (is '("foo" "   ") (split "+" "foo+++   ++++" :omit-nulls t) "omit-nulls and blanks")
   (is '("foo" "bar") (let ((*omit-nulls* t)) (split "+" "foo+++bar++++")) "omit-nulls argument")
