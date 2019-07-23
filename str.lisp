@@ -135,8 +135,11 @@
                   string/char
                   (subseq s index)))))
 
-(defun split (separator s &key (omit-nulls *omit-nulls*) (limit nil))
-  "Split s into substring by separator (cl-ppcre takes a regex, we do not)."
+(defun split (separator s &key (omit-nulls *omit-nulls*) limit)
+  "Split s into substring by separator (cl-ppcre takes a regex, we do not).
+
+  `limit` limits the number of elements returned. (i.e. the string is
+  split at most `limit` - 1 times.)"
   ;; cl-ppcre:split doesn't return a null string if the separator appears at the end of s.
   (let* ((res (cl-ppcre:split (cl-ppcre:quote-meta-chars (string separator)) s :limit limit)))
     (if omit-nulls
