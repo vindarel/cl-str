@@ -193,8 +193,7 @@ It uses `subseq' with differences:
 
 (defun words (s &key (limit 0))
   "Return list of words, which were delimited by white space. If the optional limit is 0 (the default), trailing empty strings are removed from the result list (see cl-ppcre)."
-  (if (not s)
-      nil
+  (when s
       (cl-ppcre:split "\\s+" (trim-left s) :limit limit)))
 
 (defun unwords (strings)
