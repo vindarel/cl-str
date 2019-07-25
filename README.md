@@ -44,7 +44,7 @@ The only dependency is `cl-ppcre`.
             - [unwords `(strings)`](#unwords-strings)
             - [lines `(s)`](#lines-s)
             - [unlines `(strings)`](#unlines-strings)
-            - [split `(separator s &key omit-nulls limit)`](#split-separator-s-key-omit-nulls)
+            - [split `(separator s &key omit-nulls limit)`](#split-separator-s-key-omit-nulls-limit)
             - [split-omit-nulls  (in v0.6, QL january 2018)](#split-omit-nulls--in-v06-ql-january-2018)
         - [To and from files (experimental in v0.4)](#to-and-from-files-experimental-in-v04)
             - [from-file `(filename)`](#from-file-filename)
@@ -527,6 +527,7 @@ Note that there is also http://quickdocs.org/string-case/.
 
 ## Changelog
 
+* added `:limit` to `split`.
 * 0.13 june, 2019
   - added `insert`
 * 0.12
