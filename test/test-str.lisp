@@ -333,6 +333,9 @@
   (is (upcasep "123") nil "upcasep only digits")
   (is (upcasep " ++YES-- ") t "upcasep default")
   (is (upcasep " ++YÉÈS-- ") t "upcasep with accent")
+  (is (upcasep " ++NO ñ-- ") nil "upcasep with lower non-alpha ñ")
+  (is (upcasep " ++YES Ñ-- ") t "upcasep with non-alpha Ñ")
+  (is (upcasep " ++Ñ-- ") t "upcasep with only non-alpha")
 
   (ok (alphanump "rst124ldv") "alphanump default")
   (is (alphanump " rst123ldv ") nil "alphanump no space")

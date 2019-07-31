@@ -543,7 +543,7 @@ Returns the string written to file."
 
 (defun upcasep (s)
   "Return t if all alphabetical characters of `s' are uppercase."
-  (if (has-alpha-p s)
+  (if (has-letters-p s)
     (every (lambda (char)
              (if (alpha-char-p char)
                  (upper-case-p char)
