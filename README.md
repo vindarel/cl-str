@@ -528,10 +528,10 @@ Example:
 ~~~
 
 You might also like pattern matching. The example below with
-[optima](https://github.com/m2ym/optima) is very similar:
+[trivia](https://github.com/guicho271828/trivia/) is very similar:
 
 ~~~lisp
-(optima:match "hey"
+(trivia:match "hey"
   ("hey" (print "it matched"))
   (otherwise :nothing))
 ~~~
