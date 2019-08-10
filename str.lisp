@@ -441,8 +441,8 @@ Returns the string written to file."
   (s-count \"abc\" \"abcxabcxabc\" :start 3 :end 7)
   ;; => 1"
   (unless (or (null s)
-             (null substring)
-             (empty? substring))
+              (null substring)
+              (empty? substring))
     (loop :with substring-length := (length substring)
        :for position := (search substring s :start2 start :end2 end)
        :then (search substring s :start2 (+ position substring-length) :end2 end)
