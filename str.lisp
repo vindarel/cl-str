@@ -432,7 +432,7 @@ Returns the string written to file."
 
 (defun s-count (substring s &key (start 0) (end nil))
   "Return the non-overlapping occurrences of `substring' in `s'.
-  You could only count ocurrencies between `start' and `end'.
+  You could also count only the ocurrencies between `start' and `end'.
 
   Examples:
   (s-count \"abc\" \"abcxabcxabc\")

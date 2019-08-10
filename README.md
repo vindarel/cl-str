@@ -498,7 +498,8 @@ Return a string or nil when the input is the void list.
 Find the common suffix between strings.
 
 ### s-count `(substring s &key start end)`
-Counts the non-overlapping occurrences of `substring` in `s`. You could only count ocurrencies between `start` and `end`.
+Counts the non-overlapping occurrences of `substring` in `s`.
+You could also count only the ocurrencies between `start` and `end`.
 
 Examples:
 ~~~ lisp
