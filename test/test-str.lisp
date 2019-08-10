@@ -299,6 +299,15 @@
   (is (s-nth 6 "foobar") "")
   (is (s-nth 3 "") ""))
 
+(subtest "s-count"
+  (is (s-count nil nil) nil)
+  (is (s-count "" "abc") nil)
+  (is (s-count "ab" "abxabxab") 3)
+  (is (s-count "cd" "abxabxab") 0)
+  (is (s-count "abcd" "abcd") 1)
+  (is (s-count "abcde" "abcd") 0)
+  (is (s-count "ab" "abxabxab" :start 3 :end 7) 1))
+
 (subtest "case"
          (is (downcase nil) nil
              "downcase nil returns nil, not a string.")
