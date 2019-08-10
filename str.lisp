@@ -1,4 +1,4 @@
-3(in-package :cl-user)
+(in-package :cl-user)
 (defpackage str
   (:use :cl)
   (:export
