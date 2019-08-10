@@ -302,6 +302,8 @@
 (subtest "s-count"
   (is (s-count nil nil) nil)
   (is (s-count "" "abc") nil)
+  (is (s-count "aba" "ababab") 1)
+  (is (s-count "aba" "abababa") 2)
   (is (s-count "ab" "abxabxab") 3)
   (is (s-count "cd" "abxabxab") 0)
   (is (s-count "abcd" "abcd") 1)
