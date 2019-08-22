@@ -48,6 +48,7 @@
    :s-last
    :s-rest
    :s-nth
+   :count-substring
 
    :downcase
    :upcase
@@ -428,6 +429,26 @@ Returns the string written to file."
         ((or (empty? s) (minusp n)) "")
 	((= n 0) (s-first s))
 	(t (s-nth (1- n) (s-rest s)))))
+
+(defun count-substring (substring s &key (start 0) (end nil))
+  "Return the non-overlapping occurrences of `substring' in `s'.
+  You could also count only the ocurrencies between `start' and `end'.
+
+  Examples:
+  (count-substring \"abc\" \"abcxabcxabc\")
+  ;; => 3
+
+  (count-substring \"abc\" \"abcxabcxabc\" :start 3 :end 7)
+  ;; => 1"
+  (unless (or (null s)
+              (null substring)
+              (empty? substring))
+    (loop :with substring-length := (length substring)
+       :for position := (search substring s :start2 start :end2 end)
+       :then (search substring s :start2 (+ position substring-length) :end2 end)
+       :while (not (null position))
+       :summing 1)))
+
 
 ;;; Case
 

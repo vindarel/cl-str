@@ -299,6 +299,17 @@
   (is (s-nth 6 "foobar") "")
   (is (s-nth 3 "") ""))
 
+(subtest "count-substring"
+  (is (count-substring nil nil) nil)
+  (is (count-substring "" "abc") nil)
+  (is (count-substring "aba" "ababab") 1)
+  (is (count-substring "aba" "abababa") 2)
+  (is (count-substring "ab" "abxabxab") 3)
+  (is (count-substring "cd" "abxabxab") 0)
+  (is (count-substring "abcd" "abcd") 1)
+  (is (count-substring "abcde" "abcd") 0)
+  (is (count-substring "ab" "abxabxab" :start 3 :end 7) 1))
+
 (subtest "case"
          (is (downcase nil) nil
              "downcase nil returns nil, not a string.")
