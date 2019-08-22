@@ -299,16 +299,16 @@
   (is (s-nth 6 "foobar") "")
   (is (s-nth 3 "") ""))
 
-(subtest "s-count"
-  (is (s-count nil nil) nil)
-  (is (s-count "" "abc") nil)
-  (is (s-count "aba" "ababab") 1)
-  (is (s-count "aba" "abababa") 2)
-  (is (s-count "ab" "abxabxab") 3)
-  (is (s-count "cd" "abxabxab") 0)
-  (is (s-count "abcd" "abcd") 1)
-  (is (s-count "abcde" "abcd") 0)
-  (is (s-count "ab" "abxabxab" :start 3 :end 7) 1))
+(subtest "count-substring"
+  (is (count-substring nil nil) nil)
+  (is (count-substring "" "abc") nil)
+  (is (count-substring "aba" "ababab") 1)
+  (is (count-substring "aba" "abababa") 2)
+  (is (count-substring "ab" "abxabxab") 3)
+  (is (count-substring "cd" "abxabxab") 0)
+  (is (count-substring "abcd" "abcd") 1)
+  (is (count-substring "abcde" "abcd") 0)
+  (is (count-substring "ab" "abxabxab" :start 3 :end 7) 1))
 
 (subtest "case"
          (is (downcase nil) nil
