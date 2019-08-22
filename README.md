@@ -67,7 +67,7 @@ The only dependency is `cl-ppcre`.
             - [replace-all `(old new s)`](#replace-all-old-new-s)
             - [prefix `(list-of-strings)` (renamed in 0.9)](#prefix-list-of-strings-renamed-in-09)
             - [suffix `(list-of-strings)`](#suffix-list-of-strings)
-            - [s-count `(substring s &key start end)`](#s-count-substring-s-key-start-end)
+            - [count-substring `(substring s &key start end)`](#count-substring-substring-s-key-start-end)
     - [Macros](#macros)
         - [string-case](#string-case)
     - [Changelog](#changelog)
@@ -497,17 +497,17 @@ Return a string or nil when the input is the void list.
 
 Find the common suffix between strings.
 
-### s-count `(substring s &key start end)`
+### count-substring `(substring s &key start end)`
 Counts the non-overlapping occurrences of `substring` in `s`.
 You could also count only the ocurrencies between `start` and `end`.
 
 Examples:
 ~~~ lisp
-(s-count "abc" "abcxabcxabc")
+(count-substring "abc" "abcxabcxabc")
 ;; => 3
 ~~~
 ~~~lisp
-(s-count "abc" "abcxabcxabc" :start 3 :end 7)
+(count-substring "abc" "abcxabcxabc" :start 3 :end 7)
 ;; => 1
 ~~~
 
