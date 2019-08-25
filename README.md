@@ -38,7 +38,7 @@ The only dependency is `cl-ppcre`.
             - [s-last `(s)`](#s-last-s)
             - [s-rest `(s)`](#s-rest-s)
             - [s-nth `(n s)`](#s-nth-n-s)
-            - [Prune `(len s &key ellipsis)`](#prune-len-s-key-ellipsis)
+            - [Shorten `(len s &key ellipsis)`](#shorten-len-s-key-ellipsis)
         - [To and from lists](#to-and-from-lists)
             - [words `(s)`](#words-s)
             - [unwords `(strings)`](#unwords-strings)
@@ -257,7 +257,7 @@ You could also use
 ;; => "e"
 ~~~
 
-#### Prune `(len s &key ellipsis)`
+#### Shorten `(len s &key ellipsis)`
 
 If `s` is longer than `len`, truncate it and add an ellipsis at the
 end (`...` by default). `s` is cut down to `len` minus the length of
@@ -267,14 +267,14 @@ Optionally, give an `:ellipsis` keyword argument. Also set it globally
 with `*ellipsis*`.
 
 ~~~lisp
-(prune 8 "hello world")
+(shorten 8 "hello world")
 ;; => "hello..."
-(prune 3 "hello world")
+(shorten 3 "hello world")
 ;; => "..."
-(prune 8 "hello world" :ellipsis "-")
+(shorten 8 "hello world" :ellipsis "-")
 ;; => "hello w-"
 (let ((*ellipsis* "-"))
-  (prune 8 "hello world"))
+  (shorten 8 "hello world"))
 ;; => "hello w-"
 ~~~
 
@@ -541,6 +541,7 @@ Note that there is also http://quickdocs.org/string-case/.
 
 ## Changelog
 
+* august, 2019: deprecated `prune`, renamed to `shorten`.
 * added `:limit` to `split`.
 * 0.13 june, 2019
   - added `insert`

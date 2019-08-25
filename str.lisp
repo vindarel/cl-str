@@ -12,7 +12,8 @@
    :split
    :split-omit-nulls
    :substring
-   :prune
+   :shorten
+   :prune                               ;; "deprecated" in favor of shorten
    :repeat
    :replace-all
    :concat
@@ -181,10 +182,14 @@ It uses `subseq' with differences:
               (subseq s start end))))))
 
 (defparameter *ellipsis* "..."
-  "Ellipsis to add to the end of a pruned (truncated) string.")
+  "Ellipsis to add to the end of a truncated string (see `shorten').")
 
 (defun prune (len s &key (ellipsis *ellipsis*))
-  "If s is longer than `len', truncate it to this length and add an ellipsis at the end (\"...\" by default). Cut it down to `len' minus the length of the ellipsis."
+  "Old name for `shorten'."
+  (shorten len s :ellipsis ellipsis))
+
+(defun shorten (len s &key (ellipsis *ellipsis*))
+  "If s is longer than `len', truncate it to this length and add the `*ellipsis*' at the end (\"...\" by default). Cut it down to `len' minus the length of the ellipsis."
   (when (and len
              (< len
                 (length s)))

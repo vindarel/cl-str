@@ -119,26 +119,26 @@
   (is nil (blank? "   rst "))
   )
 
-(subtest "Prune"
-  (is "hello..." (prune 8 "hello foobar")
+(subtest "Shorten"
+  (is "hello..." (shorten 8 "hello foobar")
       "default case.")
-  (is "foo" (prune 10 "foo")
+  (is "foo" (shorten 10 "foo")
       "long, no change")
-  (is "..." (prune 1 "foo")
+  (is "..." (shorten 1 "foo")
       "short, only ellipsis")
-  (is "-" (prune 1 "foo" :ellipsis "-")
+  (is "-" (shorten 1 "foo" :ellipsis "-")
       "custom ellipsis")
   (is "-"
       (let ((str:*ellipsis* "-"))
-        (prune 1 "foo"))
+        (shorten 1 "foo"))
       "custom ellipsis with let")
-  (is "hello-" (prune 6 "hello foobar" :ellipsis "-")
+  (is "hello-" (shorten 6 "hello foobar" :ellipsis "-")
       "shorter ellipsis")
-  (is "foo" (prune nil "foo")
+  (is "foo" (shorten nil "foo")
       "length is nil")
-  (is "..." (prune -1 "foo")
+  (is "..." (shorten -1 "foo")
       "length is negative")
-  (is nil (prune 10 nil)
+  (is nil (shorten 10 nil)
       "s is nil"))
 
 (subtest "Words"
