@@ -12,7 +12,7 @@ Why ?
   - `(str:trim s)` instead of `  (string-trim '(#\Space #\Newline #\Backspace #\Tab #\Linefeed #\Page #\Return #\Rubout) s))`,
 or `str:concat strings` instead of an unusual `format` construct; one discoverable library instead of many;
 
-* consistance and composability, where `s` is always the last argument, which makes it
+* consistence and composability, where `s` is always the last argument, which makes it
   easier to feed pipes and arrows.
 
 The only dependency is `cl-ppcre`.
