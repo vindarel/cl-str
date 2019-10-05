@@ -56,7 +56,7 @@
   (is '("foo" "barx") (split "xx" "fooxxbarx") "split with xx")
   (is '("fooxbar" "x") (split "xx" "fooxbarxxx") "split with xx, end in xxx")
   (is '("foo" "bar") (split "(*)" "foo(*)bar"))
-  (is '("foo" "bar") (split "NO" "fooNObarNO") "separator at the end (cl-ppcre doesn't return an empty string).")
+  (is '("foo" "bar" "") (split "NO" "fooNObarNO") "separator at the end (cl-ppcre doesn't return an empty string), but we do.")
   (is '("foo" "bar" "") (split "NO" "fooNObarNO" :limit 10) "but cl-ppcre does return trailing empty strings if limit is provided")
   (is '("foo" "bar") (split "+" "foo+++bar++++" :omit-nulls t) "omit-nulls argument")
   (is '("foo" "   ") (split "+" "foo+++   ++++" :omit-nulls t) "omit-nulls and blanks")
@@ -165,7 +165,7 @@
 (subtest "Lines"
   (is nil (lines nil))
   (is nil (lines ""))
-  (is nil (lines "
+  (is '("") (lines "
 "))
   (is '("1" "2" " 3") (lines "1
 2

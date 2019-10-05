@@ -137,13 +137,14 @@
                   string/char
                   (subseq s index)))))
 
-(defun split (separator s &key (omit-nulls *omit-nulls*) limit)
+(defun split (separator s &key (omit-nulls *omit-nulls*) limit (start 0) end)
   "Split s into substring by separator (cl-ppcre takes a regex, we do not).
 
   `limit' limits the number of elements returned (i.e. the string is
   split at most `limit' - 1 times)."
   ;; cl-ppcre:split doesn't return a null string if the separator appears at the end of s.
-  (let* ((res (cl-ppcre:split (cl-ppcre:quote-meta-chars (string separator)) s :limit limit)))
+  (let* ((limit (or limit (1+ (length s))))
+         (res (cl-ppcre:split (cl-ppcre:quote-meta-chars (string separator)) s :limit limit :start start :end end)))
     (if omit-nulls
         (remove-if (lambda (it) (empty? it)) res)
         res)))
@@ -210,8 +211,12 @@ It uses `subseq' with differences:
   (join " " strings))
 
 (defun lines (s &key (omit-nulls *omit-nulls*))
-  "Split the string by newline characters and return a list of lines."
-  (split #\NewLine s :omit-nulls omit-nulls))
+  "Split the string by newline characters and return a list of lines. A terminal newline character does NOT result an extra empty string."
+  (when (and s (> (length s) 0))
+    (let ((end (if (eql #\Newline (elt s (1- (length s))))
+                   (1- (length s))
+                   nil)))
+     (split #\NewLine s :omit-nulls omit-nulls :end end))))
 
 (defun unlines (strings)
   "Join the list of strings with a newline character."
