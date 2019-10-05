@@ -307,17 +307,6 @@ Split into subtrings (unlike cl-ppcre, without a regexp). If
 (split "+" "foo++bar" :omit-nulls t) ;; => ("foo" "bar")
 ```
 
-It is a wrapper around
-[cl-ppcre:split](https://edicl.github.io/cl-ppcre/#split), so it comes
-with its inconsistency when the separator appears at the end of `s`:
-
-```
-(cl-ppcre:split "," ",a,b,,c,") ;; => ("" "a" "b" "" "c")
-```
-
-it doesn't return a trailing `""`.
-
-
 #### split-omit-nulls  (in v0.6, QL january 2018)
 
 Because it is a common pattern and it can be clearer than an option
