@@ -87,7 +87,7 @@
 (defvar *whitespaces* '(#\Space #\Newline #\Backspace #\Tab
                         #\Linefeed #\Page #\Return #\Rubout))
 
-(defvar +version+ "0.13")
+(defvar +version+ "0.14")
 
 (defun version ()
   (print +version+))
@@ -211,7 +211,7 @@ It uses `subseq' with differences:
   (join " " strings))
 
 (defun lines (s &key (omit-nulls *omit-nulls*))
-  "Split the string by newline characters and return a list of lines. A terminal newline character does NOT result an extra empty string."
+  "Split the string by newline characters and return a list of lines. A terminal newline character does NOT result in an extra empty string."
   (when (and s (> (length s) 0))
     (let ((end (if (eql #\Newline (elt s (1- (length s))))
                    (1- (length s))

@@ -289,15 +289,19 @@ Return list of words, which were delimited by whitespace.
 
 Join the list of strings with a whitespace.
 
-#### lines `(s)`
+#### lines `(s &key omit-nulls)`
 
 Split string by newline character and return list of lines.
+
+A terminal newline character does *not* result in an extra empty string
+(new in **v0.14**, october 2019).
+
 
 #### unlines `(strings)`
 
 Join the list of strings with a newline character.
 
-#### split `(separator s &key omit-nulls limit)`
+#### split `(separator s &key omit-nulls limit start end)`
 
 Split into subtrings (unlike cl-ppcre, without a regexp). If
 `omit-nulls` is non-nil, zero-length substrings are omitted.
@@ -306,6 +310,19 @@ Split into subtrings (unlike cl-ppcre, without a regexp). If
 (split "+" "foo++bar") ;; => ("foo" "" "bar")
 (split "+" "foo++bar" :omit-nulls t) ;; => ("foo" "bar")
 ```
+
+cl-ppcre has an inconsistency such that when the separator appears at
+the end, it doesn't return a trailing empty string. But we do **since
+v0.14** (october, 2019).
+
+~~~lisp
+(cl-ppcre:split " " "a b c ")
+("a" "b" "c")
+
+(str:split " " "a b c ")
+("a" "b" "c" "")
+~~~
+
 
 #### split-omit-nulls  (in v0.6, QL january 2018)
 
@@ -529,6 +546,22 @@ Note that there is also http://quickdocs.org/string-case/.
 
 
 ## Changelog
+
+* 0.14, october, 2019: fixed the cl-ppcre inconsistency in `split` and `lines`. A trailing separator now returns a trailing empty string.
+
+Before:
+
+~~~lisp
+(str:split " " "a b c ")
+("a" "b" "c")  ;; like cl-ppcre:split
+~~~
+
+Now:
+
+~~~lisp
+(str:split " " "a b c ")
+("a" "b" "c" "")
+~~~
 
 * august, 2019: deprecated `prune`, renamed to `shorten`.
 * added `:limit` to `split`.
