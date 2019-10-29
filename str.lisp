@@ -1,7 +1,38 @@
 (in-package :cl-user)
+
 (defpackage str
   (:use :cl)
+  (:import-from :cl-change-case
+                :no-case
+                :camel-case
+                :dot-case
+                :header-case
+                :param-case
+                :pascal-case
+                :path-case
+                :sentence-case
+                :snake-case
+                :swap-case
+                :title-case
+                :constant-case)
   (:export
+   ;; cl-change-case functions:
+   ;; (we could use cl-reexport but we don't want Alexandria in the dependencies list)
+   :no-case
+   :camel-case
+   :dot-case
+   :header-case
+   :param-case
+   :pascal-case
+   :path-case
+   :sentence-case
+   :snake-case
+   :swap-case
+   :title-case
+   :constant-case
+
+   ;; ours:
+   :remove-punctuation
    :contains?
    :containsp
    :trim-left
@@ -13,7 +44,7 @@
    :split-omit-nulls
    :substring
    :shorten
-   :prune                               ;; "deprecated" in favor of shorten
+   :prune ;; "deprecated" in favor of shorten
    :repeat
    :replace-all
    :concat
@@ -76,10 +107,10 @@
    :*ellipsis*
    :version
    :+version+
-   :?
-   ))
+   :?))
 
 (in-package :str)
+
 
 (defparameter *ignore-case* nil)
 (defparameter *omit-nulls* nil)
@@ -87,7 +118,7 @@
 (defvar *whitespaces* '(#\Space #\Newline #\Backspace #\Tab
                         #\Linefeed #\Page #\Return #\Rubout))
 
-(defvar +version+ "0.14")
+(defvar +version+ "0.15")
 
 (defun version ()
   (print +version+))
@@ -584,3 +615,7 @@ Returns the string written to file."
 (defun upcase? (s)
   "alias for `upcasep'."
   (upcasep s))
+
+(defun remove-punctuation (s &key (replacement " "))
+  "Extract the letters from `s'. Use `replacement' for other characters."
+  (cl-change-case:no-case s :replacement replacement))

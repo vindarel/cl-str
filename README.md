@@ -421,6 +421,32 @@ begins with `prefix` and ends with `suffix`.
 
 ### Case
 
+#### Functions to change case: camel-case, snake-case,... (new in 0.15)
+
+We use
+[cl-change-case](https://github.com/rudolfochrist/cl-change-case/) (go
+thank him and star the repo!).
+
+The available functions are:
+
+```
+:no-case (s &key replacement)
+:camel-case (s &key merge-numbers)
+:dot-case
+:header-case
+:param-case
+:pascal-case
+:path-case
+:sentence-case
+:snake-case
+:swap-case
+:title-case
+:constant-case
+```
+
+More documentation and examples are there.
+
+
 #### downcase, upcase, capitalize `(s)` fixing a built-in suprise. (new in 0.11)
 
 The functions `str:downcase`, `str:upcase` and `str:capitalize` return
@@ -483,6 +509,14 @@ Replace `old` by `new` (no regexs) in `s`.
 Uses
 [cl-ppcre:regex-replace-all](http://weitz.de/cl-ppcre/#regex-replace-all)
 but quotes the user input to not treat it as a regex.
+
+#### remove-punctuation (s &key replacement)
+
+An alias to `str:no-case` (itself [`cl-change-case:no-case`](https://github.com/rudolfochrist/cl-change-case/#no-case)).
+
+~~~lisp
+(str:remove-punctuation "I say: - 'hello, world?'") ;; => "i say hello world"
+~~~
 
 
 #### prefix `(list-of-strings)` (renamed in 0.9)
@@ -563,6 +597,8 @@ Now:
 ("a" "b" "c" "")
 ~~~
 
+* 0.15, october 2019: added functions to change case (based on cl-change-case).
+  added remove-punctuation.
 * august, 2019: deprecated `prune`, renamed to `shorten`.
 * added `:limit` to `split`.
 * 0.13 june, 2019
