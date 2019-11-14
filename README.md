@@ -42,11 +42,11 @@ The only dependency is `cl-ppcre`.
         - [To and from lists](#to-and-from-lists)
             - [words `(s)`](#words-s)
             - [unwords `(strings)`](#unwords-strings)
-            - [lines `(s)`](#lines-s)
+            - [lines `(s &key omit-nulls)`](#lines-s-key-omit-nulls)
             - [unlines `(strings)`](#unlines-strings)
-            - [split `(separator s &key omit-nulls limit)`](#split-separator-s-key-omit-nulls-limit)
-            - [split-omit-nulls  (in v0.6, QL january 2018)](#split-omit-nulls--in-v06-ql-january-2018)
-        - [To and from files (experimental in v0.4)](#to-and-from-files-experimental-in-v04)
+            - [split `(separator s &key omit-nulls limit start end)`](#split-separator-s-key-omit-nulls-limit-start-end)
+            - [split-omit-nulls](#split-omit-nulls)
+        - [To and from files](#to-and-from-files)
             - [from-file `(filename)`](#from-file-filename)
             - [to-file `(filename s)`](#to-file-filename-s)
         - [Predicates](#predicates)
@@ -57,6 +57,7 @@ The only dependency is `cl-ppcre`.
             - [contains?, containsp `(substring s &key (ignore-case nil))`](#contains-containsp-substring-s-key-ignore-case-nil)
             - [prefix?, prefixp and suffix?, suffixp `(items s)`](#prefix-prefixp-and-suffix-suffixp-items-s)
         - [Case](#case)
+            - [Functions to change case: camel-case, snake-case,... (new in 0.15, 2019/11)](#functions-to-change-case-camel-case-snake-case-new-in-015-201911)
             - [downcase, upcase, capitalize `(s)` fixing a built-in suprise. (new in 0.11)](#downcase-upcase-capitalize-s-fixing-a-built-in-suprise-new-in-011)
             - [downcasep, upcasep `(s)`](#downcasep-upcasep-s)
             - [alphap, lettersp `(s)`](#alphap-lettersp-s)
@@ -65,6 +66,7 @@ The only dependency is `cl-ppcre`.
             - [has-alpha-p, has-letters-p, has-alphanum-p `(s)`](#has-alpha-p-has-letters-p-has-alphanum-p-s)
         - [Others](#others)
             - [replace-all `(old new s)`](#replace-all-old-new-s)
+            - [remove-punctuation (s &key replacement)](#remove-punctuation-s-key-replacement)
             - [prefix `(list-of-strings)` (renamed in 0.9)](#prefix-list-of-strings-renamed-in-09)
             - [suffix `(list-of-strings)`](#suffix-list-of-strings)
             - [count-substring `(substring s &key start end)`](#count-substring-substring-s-key-start-end)
@@ -324,13 +326,13 @@ v0.14** (october, 2019).
 ~~~
 
 
-#### split-omit-nulls  (in v0.6, QL january 2018)
+#### split-omit-nulls
 
 Because it is a common pattern and it can be clearer than an option
 coming after many parenthesis.
 
 
-### To and from files (experimental in v0.4)
+### To and from files
 
 #### from-file `(filename)`
 
@@ -421,7 +423,7 @@ begins with `prefix` and ends with `suffix`.
 
 ### Case
 
-#### Functions to change case: camel-case, snake-case,... (new in 0.15)
+#### Functions to change case: camel-case, snake-case,... (new in 0.15, 2019/11)
 
 We use
 [cl-change-case](https://github.com/rudolfochrist/cl-change-case/) (go
@@ -537,7 +539,7 @@ Return a string or nil when the input is the void list.
 
 Find the common suffix between strings.
 
-### count-substring `(substring s &key start end)`
+#### count-substring `(substring s &key start end)`
 Counts the non-overlapping occurrences of `substring` in `s`.
 You could also count only the ocurrencies between `start` and `end`.
 
