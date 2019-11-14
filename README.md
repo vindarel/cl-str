@@ -38,7 +38,7 @@ The only dependency is `cl-ppcre`.
             - [s-last `(s)`](#s-last-s)
             - [s-rest `(s)`](#s-rest-s)
             - [s-nth `(n s)`](#s-nth-n-s)
-            - [Shorten `(len s &key ellipsis)`](#shorten-len-s-key-ellipsis)
+            - [shorten `(len s &key ellipsis)`](#shorten-len-s-key-ellipsis)
         - [To and from lists](#to-and-from-lists)
             - [words `(s)`](#words-s)
             - [unwords `(strings)`](#unwords-strings)
@@ -259,7 +259,7 @@ You could also use
 ;; => "e"
 ~~~
 
-#### Shorten `(len s &key ellipsis)`
+#### shorten `(len s &key ellipsis)`
 
 If `s` is longer than `len`, truncate it and add an ellipsis at the
 end (`...` by default). `s` is cut down to `len` minus the length of
