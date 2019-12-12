@@ -145,7 +145,17 @@ Join strings in list `list-of-strings` with `separator` in between.
 (join " " '("foo" "bar" "baz")) ;; => "foo bar baz"
 ```
 
-Uses a specific [format](http://jtra.cz/stuff/lisp/sclr/format.html) syntax.
+It uses the `{` iteration [format](http://jtra.cz/stuff/lisp/sclr/format.html) directive. See also this [quick reference](http://clqr.boundp.org/download.html):
+
+    (format nil "~{~a+~}" '(:a :b :c))  ;; the + is the separator
+    ;; => "A+B+C+"
+
+We use the caret directive ("escape upward") to not print the
+separator in the end:
+
+    (format nil "~{~a~^+~}" '(:a :b :c))
+    ;; => "A+B+C"
+
 
 #### concat `(&rest strings)`
 
