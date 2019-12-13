@@ -251,6 +251,22 @@
   (is (add-suffix '("foo" nil) "bar") '("foobar" "bar") "with a nil")
   (is (add-suffix '() "foo") '() "with void list"))
 
+(subtest "pad left, right, center"
+  (is (pad 10 "foo") "foo       "
+      "pad adds spaces on the right by default.")
+  (is (pad-right 10 "foo") (pad 10 "foo")
+      "pad-right is equivalent to pad")
+  (is (pad 10 "foo" :pad-side :left) "       foo"
+      "pad-left")
+  (is (pad 10 "foo" :pad-side :center) "   foo    "
+      "pad with pad-side :center")
+  (is (pad-center 10 "foo") (pad 10 "foo" :pad-side :center)
+      "pad-center")
+  (is (pad 10 "foo" :pad-char #\+) "foo+++++++"
+      "pad with a custom padding character.")
+  (is (pad -1 "foo") "foo"
+      "pad with a short length returns the string."))
+
 (subtest "contains?"
   (ok (contains? "foo" "blafoobar") "default")
   (ok (not (contains? "foo" "")) "with no string")

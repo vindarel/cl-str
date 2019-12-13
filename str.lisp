@@ -72,6 +72,10 @@
    :suffixp
    :add-prefix
    :add-suffix
+   :pad
+   :pad-left
+   :pad-right
+   :pad-center
    :unlines
    :from-file
    :to-file
@@ -105,6 +109,8 @@
    :*ignore-case*
    :*omit-nulls*
    :*ellipsis*
+   :*pad-char*
+   :*pad-side*
    :version
    :+version+
    :?))
@@ -114,11 +120,15 @@
 
 (defparameter *ignore-case* nil)
 (defparameter *omit-nulls* nil)
+(defparameter *pad-char* #\Space
+  "Padding character to use with `pad'. It can be a string of one character.")
+(defparameter *pad-side* :right
+  "The side of the string to add padding characters to. Can be one of :right, :left and :center.")
 
 (defvar *whitespaces* '(#\Space #\Newline #\Backspace #\Tab
                         #\Linefeed #\Page #\Return #\Rubout))
 
-(defvar +version+ "0.15")
+(defvar +version+ "0.16")
 
 (defun version ()
   (print +version+))
@@ -390,6 +400,56 @@ A simple call to the built-in `search` (which returns the position of the substr
 (defun add-suffix (items s)
   "Append s to the end of eahc items."
   (mapcar #'(lambda (item) (concat item s)) items))
+
+(defun pad (len s &key (pad-side *pad-side*) (pad-char *pad-char*))
+  "Fill `s' with characters until it is of the given length. By default, add spaces on the right.
+
+Filling with spaces can be done with format:
+
+    (format nil \"~v@a\" len s) ;; with or without the @ directive
+
+`pad-side': to pad `:right' (the default), `:left' or `:center'.
+`pad-char': padding character (or string of one character). Defaults to a space."
+  (if (< len (length s))
+      s
+      (flet ((pad-left (len s &key (pad-char *pad-char*))
+               (concatenate 'string
+                            (make-string (- len (length s)) :initial-element pad-char)
+                            s))
+             (pad-right (len s &key (pad-char *pad-char*))
+               (concatenate 'string
+                            s
+                            (make-string (- len (length s)) :initial-element pad-char)))
+             (pad-center (len s &key (pad-char *pad-char*))
+               (multiple-value-bind (q r)
+                   (floor (- len (length s)) 2)
+                 (concatenate 'string
+                              (make-string q :initial-element pad-char)
+                              s
+                              (make-string (+ q r) :initial-element pad-char)))))
+
+        (unless (characterp pad-char)
+          (if (>= (length pad-char) 2)
+              (error "pad-char must be a character or a string of one character.")
+              (setf pad-char (coerce pad-char 'character))))
+        (case pad-side
+          (:right
+           (pad-right len s :pad-char pad-char))
+          (:left
+           (pad-left len s :pad-char pad-char))
+          (:center
+           (pad-center len s :pad-char pad-char))
+          (t
+           (error "str:pad: unknown padding side with ~a" pad-side))))))
+
+(defun pad-left (len s &key (pad-char *pad-char*))
+  (pad len s :pad-side :left :pad-char pad-char))
+
+(defun pad-right (len s &key (pad-char *pad-char*))
+  (pad len s :pad-side :right :pad-char pad-char))
+
+(defun pad-center (len s &key (pad-char *pad-char*))
+  (pad len s :pad-side :center :pad-char pad-char))
 
 (defun from-file (pathname &rest keys)
   "Read the file and return its content as a string.
