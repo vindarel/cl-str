@@ -32,6 +32,7 @@ The only dependency is `cl-ppcre`.
             - [insert `(string/char index s)`](#insert-stringchar-index-s)
             - [repeat `(count s)`](#repeat-count-s)
             - [add-prefix, add-suffix `(items s)`](#add-prefix-add-suffix-items-s)
+            - [pad `(len s &key (pad-side :right) (pad-char #\Space))`, pad-left, pad-right, pad-center (new in 0.16, 2019/12)](#pad-len-s-key-pad-side-right-pad-char-space-pad-left-pad-right-pad-center-new-in-016-201912)
         - [To shorter strings](#to-shorter-strings)
             - [substring `(start end s)`](#substring-start-end-s)
             - [s-first `(s)`](#s-first-s)
@@ -194,6 +195,34 @@ Make a string of `s` repeated `count` times.
 #### add-prefix, add-suffix `(items s)`
 
 Respectively prepend or append `s` to the front of each item.
+
+
+#### pad `(len s &key (pad-side :right) (pad-char #\Space))`, pad-left, pad-right, pad-center (new in 0.16, 2019/12)
+
+Fill `s` with characters until it is of the given length. By default,
+add spaces on the right:
+
+~~~lisp
+(str:pad 10 "foo")
+"foo       "
+~~~
+
+* `pad-side`: one of `:right` (the default), `:left` or `:center`. See `*pad-side*`.
+* `pad-char`: the padding character (or string of one character). Defaults to a space. See `*pad-char*`.
+
+~~~lisp
+(str:pad 10 "foo" :pad-side :center :pad-char "+")
+"+++foo++++"
+~~~
+
+If the given length is smaller than the length o `s`, return `s`.
+
+Filling with spaces can easily be done with format:
+
+~~~lisp
+(format nil "~va" len s) ;; => "foo       "
+(format nil "~v@a" 10 "foo") ;; => "       foo" (with @)
+~~~
 
 
 ### To shorter strings
@@ -609,6 +638,7 @@ Now:
 ("a" "b" "c" "")
 ~~~
 
+* 0.16, november 2019: added `pad`, `pad-[left, right, center]`.
 * 0.15, october 2019: added functions to change case (based on cl-change-case).
   added remove-punctuation.
 * august, 2019: deprecated `prune`, renamed to `shorten`.
