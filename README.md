@@ -671,12 +671,6 @@ Test with [prove](https://github.com/fukamachi/prove).
 
 ## See also
 
-* [cl-strings](https://github.com/diogoalexandrefranco/cl-strings), a
-  similar library (discovered afterwards), with functions to change case, with
-  potential implementation
-  [issues](https://github.com/diogoalexandrefranco/cl-strings/issues/2).
-* [cl-change-case](https://github.com/rudolfochrist/cl-change-case) to
-  convert strings between camelCase, param-case, snake_case and more.
 * the [Common Lisp Cookbook](https://lispcookbook.github.io/cl-cookbook/strings.html), strings page.
 
 Inspired by the famous Emacs Lisp's [s.el](https://github.com/magnars/s.el).
