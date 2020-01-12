@@ -469,7 +469,7 @@ Returns the string written to file."
   (with-open-file (f pathname :direction :output :if-exists if-exists :if-does-not-exist if-does-not-exist)
     (write-sequence s f)))
 
-(defmacro string-case (str &rest forms)
+(defmacro string-case (str &body forms)
   "A case-like macro that works with strings (case works only with symbols).
 
   Example:
