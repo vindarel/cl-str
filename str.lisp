@@ -84,6 +84,7 @@
    :s-last
    :s-rest
    :s-nth
+   :s-assoc-value
    :count-substring
 
    :downcase
@@ -528,8 +529,15 @@ Returns the string written to file."
    ;; => \"e\""
   (cond ((null s) nil)
         ((or (empty? s) (minusp n)) "")
-	((= n 0) (s-first s))
-	(t (s-nth (1- n) (s-rest s)))))
+        ((= n 0) (s-first s))
+        (t (s-nth (1- n) (s-rest s)))))
+
+(defun s-assoc-value (alist key)
+  "Return the cdr of a cons cell in `alist' with key `key'.
+   The second return value is a generalized boolean indicating
+   whether the key was found."
+  (let ((cons (assoc key alist :test #'string-equal)))
+    (values (cdr cons) cons)))
 
 (defun count-substring (substring s &key (start 0) (end nil))
   "Return the non-overlapping occurrences of `substring' in `s'.
