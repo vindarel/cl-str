@@ -140,10 +140,11 @@ where whitespaces are `'(#\Space #\Newline #\Backspace #\Tab #\Linefeed #\Page #
 
 #### join `(separator list-of-strings)`
 
-Join strings in list `list-of-strings` with `separator` in between.
+Join strings in list `list-of-strings` with `separator` (either a string or a char) in between.
 
 ```cl
 (join " " '("foo" "bar" "baz")) ;; => "foo bar baz"
+(join #\Space '("foo" "bar" "baz")) ;; => "foo bar baz"
 ```
 
 It uses the `{` iteration [format](http://jtra.cz/stuff/lisp/sclr/format.html) directive. See also this [quick reference](http://clqr.boundp.org/download.html):
@@ -349,6 +350,7 @@ Split into subtrings (unlike cl-ppcre, without a regexp). If
 
 ```cl
 (split "+" "foo++bar") ;; => ("foo" "" "bar")
+(split #\+ "foo++bar") ;; => ("foo" "" "bar")
 (split "+" "foo++bar" :omit-nulls t) ;; => ("foo" "bar")
 ```
 
