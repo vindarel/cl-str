@@ -32,6 +32,7 @@
   (is "foo+++bar+++baz" (join "+++" '("foo" "bar" "baz")))
   (is "foo~bar" (join "~" '("foo" "bar")))
   (is "foo~~~bar" (join "~" '("foo~" "~bar")))
+  (is "foo,bar" (join #\, '("foo" "bar")))
   )
 
 (subtest "Insert"
@@ -62,6 +63,7 @@
   (is '("foo" "   ") (split "+" "foo+++   ++++" :omit-nulls t) "omit-nulls and blanks")
   (is '("foo" "bar") (let ((*omit-nulls* t)) (split "+" "foo+++bar++++")) "omit-nulls argument")
   (is '("foo" "   ") (let ((*omit-nulls* t)) (split "+" "foo+++   ++++")) "omit-nulls and blanks")
+  (is '("foo" "bar") (split #\, "foo,bar"))
   )
 
 (subtest "substring"
