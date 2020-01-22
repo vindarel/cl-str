@@ -154,7 +154,7 @@
 
 (defun join (separator strings)
   "Join all the strings of the list with a separator."
-  (let ((separator (replace-all "~" "~~" separator)))
+  (let ((separator (replace-all "~" "~~" (string separator))))
     (format nil
             (concatenate 'string "~{~a~^" separator "~}")
             strings)))
