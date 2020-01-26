@@ -460,7 +460,7 @@ Example: (str:from-file \"path/to/file.txt\" :external-format :utf-8)
 
 - external-format: if nil, the system default. Can be bound to :utf-8.
 "
-  (uiop:read-file-string pathname keys))
+  (apply #'uiop:read-file-string pathname keys))
 
 (defun to-file (pathname s &key (if-exists :supersede) (if-does-not-exist :create))
   "Write string `s' to file `pathname'. If the file does not exist, create it (use `:if-does-not-exist'), if it already exists, replace its content (`:if-exists').
