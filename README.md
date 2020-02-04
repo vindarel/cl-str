@@ -598,7 +598,8 @@ Examples:
 
 ### string-case
 
-A case-like macro that works with strings (CL's case only works with symbols).
+A case-like macro that works with strings (CL case's test function is
+`eql`, and that isn't enough for strings).
 
 Example:
 

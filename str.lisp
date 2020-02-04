@@ -454,7 +454,7 @@ Filling with spaces can be done with format:
 (defun from-file (pathname &rest keys)
   "Read the file and return its content as a string.
 
-   From v0.7 simply uses uiop:read-file-string. There is also read-file-lines.
+It simply uses uiop:read-file-string. There is also uiop:read-file-lines.
 
 Example: (str:from-file \"path/to/file.txt\" :external-format :utf-8)
 
