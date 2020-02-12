@@ -39,7 +39,6 @@ The only dependency is `cl-ppcre`.
             - [s-last `(s)`](#s-last-s)
             - [s-rest `(s)`](#s-rest-s)
             - [s-nth `(n s)`](#s-nth-n-s)
-            - [s-assoc-value `(alist key)`](#s-assoc-value-alist-key)
             - [shorten `(len s &key ellipsis)`](#shorten-len-s-key-ellipsis)
         - [To and from lists](#to-and-from-lists)
             - [words `(s)`](#words-s)
@@ -72,6 +71,7 @@ The only dependency is `cl-ppcre`.
             - [prefix `(list-of-strings)` (renamed in 0.9)](#prefix-list-of-strings-renamed-in-09)
             - [suffix `(list-of-strings)`](#suffix-list-of-strings)
             - [count-substring `(substring s &key start end)`](#count-substring-substring-s-key-start-end)
+            - [s-assoc-value `(alist key)`](#s-assoc-value-alist-key)
     - [Macros](#macros)
         - [string-case](#string-case)
     - [Changelog](#changelog)
@@ -298,21 +298,6 @@ You could also use
 (string (elt "test" 1))
 ;; => "e"
 ~~~
-
-#### s-assoc-value `(alist key)`
-
-Returns the cdr of a cons cell in `alist` with key `key`, tested
-with `string=`. The second return value is a generalized boolean indicating
-whether the key was found.
-
-The arguments are in the opposite order of `cl:assoc`'s, but are consistent
-with `alexandria:assoc-value`.
-
-```lisp
-(s-assoc-value '(("hello" . 1) ("world" . 2)) "world")
-;; => 1
-;;    ("world" . 2)
-```
 
 #### shorten `(len s &key ellipsis)`
 
@@ -607,6 +592,21 @@ Examples:
 (count-substring "abc" "abcxabcxabc" :start 3 :end 7)
 ;; => 1
 ~~~
+
+#### s-assoc-value `(alist key)`
+
+Returns the cdr of a cons cell in `alist` with key `key`, tested
+with `string=`. The second return value is a generalized boolean indicating
+whether the key was found.
+
+The arguments are in the opposite order of `cl:assoc`'s, but are consistent
+with `alexandria:assoc-value`.
+
+```lisp
+(s-assoc-value '(("hello" . 1) ("world" . 2)) "world")
+;; => 1
+;;    ("world" . 2)
+```
 
 ## Macros
 
