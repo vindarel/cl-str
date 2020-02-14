@@ -317,6 +317,12 @@
   (is (s-nth 6 "foobar") "")
   (is (s-nth 3 "") ""))
 
+(subtest "s-assoc-value"
+  (let ((alist '(("test" . 1) ("another test" . 2))))
+    (is (s-assoc-value alist "test") (values 1 (first alist)))
+    (is (s-assoc-value alist "another test") (values 2 (second alist)))
+    (is (s-assoc-value alist "a third test") (values nil nil))))
+
 (subtest "count-substring"
   (is (count-substring nil nil) nil)
   (is (count-substring "" "abc") nil)
@@ -329,17 +335,17 @@
   (is (count-substring "ab" "abxabxab" :start 3 :end 7) 1))
 
 (subtest "case"
-         (is (downcase nil) nil
-             "downcase nil returns nil, not a string.")
-         (is (downcase "Foo") "foo")
-         (is (downcase :foo) "foo"
-             "Built-in functions also work on symbols.")
-         (is (upcase nil) nil
-             "upcase nil returns nil, not a string.")
-         (is (upcase "foo") "FOO")
-         (is (capitalize nil) nil
-             "capitalize nil returns nil, not a string.")
-         (is (capitalize "foo") "Foo"))
+  (is (downcase nil) nil
+      "downcase nil returns nil, not a string.")
+  (is (downcase "Foo") "foo")
+  (is (downcase :foo) "foo"
+      "Built-in functions also work on symbols.")
+  (is (upcase nil) nil
+      "upcase nil returns nil, not a string.")
+  (is (upcase "foo") "FOO")
+  (is (capitalize nil) nil
+      "capitalize nil returns nil, not a string.")
+  (is (capitalize "foo") "Foo"))
 
 (subtest "case predicates"
   (is (downcasep nil) nil "downcasep nil")
