@@ -597,17 +597,29 @@ Examples:
 
 #### s-assoc-value `(alist key)`
 
-Returns the cdr of a cons cell in `alist` with key `key`, tested
-with `string=`. The second return value is a generalized boolean indicating
-whether the key was found.
+Returns the value of a cons cell in `alist` with key `key`, when `key` is a string.
+The second return value is the cons cell, if any was matched.
 
 The arguments are in the opposite order of `cl:assoc`'s, but are consistent
-with `alexandria:assoc-value`.
+with `alexandria:assoc-value` (and `str`).
 
 ```lisp
 (s-assoc-value '(("hello" . 1) ("world" . 2)) "world")
 ;; => 1
 ;;    ("world" . 2)
+
+(alexandria:assoc-value '(("hello" . 1)) "hello")
+;; NIL
+(alexandria:assoc-value '(("hello" . 1)) "hello" :test #'string=)
+;; 1
+;; ("hello" . 1)
+
+(assoc "hello" '(("hello" . 1)))
+;; NIL
+(assoc "hello" '(("hello" . 1)) :test #'string=)
+;; ("hello" . 1)
+(cdr *)
+;; 1
 ```
 
 ## Macros

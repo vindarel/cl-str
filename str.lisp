@@ -533,9 +533,9 @@ Returns the string written to file."
         (t (s-nth (1- n) (s-rest s)))))
 
 (defun s-assoc-value (alist key)
-  "Return the cdr of a cons cell in `alist' with key `key'.
-   The second return value is a generalized boolean indicating
-   whether the key was found."
+  "Return the value of a cons cell in `alist' with key `key', tested
+with `string='.
+  The second return value is the cons cell."
   (let ((cons (assoc key alist :test #'string-equal)))
     (values (cdr cons) cons)))
 
