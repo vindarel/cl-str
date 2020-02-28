@@ -15,6 +15,9 @@ or `str:concat strings` instead of an unusual `format` construct; one discoverab
 * consistence and composability, where `s` is always the last argument, which makes it
   easier to feed pipes and arrows.
 
+* fixing built-in surprises: `(string-downcase nil`)  => `"nil"` the string, whereas `(str:downcase nil)` => `nil`.
+
+
 The only dependency is `cl-ppcre`.
 
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
