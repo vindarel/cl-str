@@ -2,8 +2,7 @@
 (defpackage test-str
   (:use :cl
         :prove
-        :str
-        ))
+        :str))
 
 (in-package :test-str)
 
@@ -13,27 +12,31 @@
 (subtest "Trim"
   (is "rst " (trim-left "   rst "))
   (is " rst" (trim-right " rst   "))
-  (is "rst" (trim "  rst  "))
-  )
+  (is "rst" (trim "  rst  ")))
+
+(subtest "Collapse whitespaces"
+  (is "foo bar baz" (collapse-whitespaces "foo  bar
+
+
+  baz")
+      "collapse whitespaces"))
+
 
 (subtest "Concat"
   (is "foo" (concat "f" "o" "o"))
-  (is "" (concat))
-  )
+  (is "" (concat)))
 
 (subtest "Replace"
   (is "foo" (replace-all "a" "o" "faa"))
   (is "foo" (replace-all "^a" "o" "fo^a"))
-  (is "foo" (replace-all "^aa+" "o" "fo^aa+"))
-  )
+  (is "foo" (replace-all "^aa+" "o" "fo^aa+")))
 
 (subtest "Join"
   (is "foo bar baz" (join " " '("foo" "bar" "baz")))
   (is "foo+++bar+++baz" (join "+++" '("foo" "bar" "baz")))
   (is "foo~bar" (join "~" '("foo" "bar")))
   (is "foo~~~bar" (join "~" '("foo~" "~bar")))
-  (is "foo,bar" (join #\, '("foo" "bar")))
-  )
+  (is "foo,bar" (join #\, '("foo" "bar"))))
 
 (subtest "Insert"
   (is "hello" (insert "o" 4 "hell"))
@@ -63,8 +66,7 @@
   (is '("foo" "   ") (split "+" "foo+++   ++++" :omit-nulls t) "omit-nulls and blanks")
   (is '("foo" "bar") (let ((*omit-nulls* t)) (split "+" "foo+++bar++++")) "omit-nulls argument")
   (is '("foo" "   ") (let ((*omit-nulls* t)) (split "+" "foo+++   ++++")) "omit-nulls and blanks")
-  (is '("foo" "bar") (split #\, "foo,bar"))
-  )
+  (is '("foo" "bar") (split #\, "foo,bar")))
 
 (subtest "substring"
   (is "abcd" (substring 0 4 "abcd") "normal case")
@@ -83,8 +85,7 @@
   (is "" (substring 100 1 "abcd") "start is too big")
   (is "abcd" (substring -100 4 "abcd") "start is too low")
   (is "abcd" (substring -100 100 "abcd") "start and end are too low and big")
-  (is "" (substring 100 -100 "abcd") "start and end are too big and low")
-  )
+  (is "" (substring 100 -100 "abcd") "start and end are too big and low"))
 
 (subtest "Repeat"
   (is "" (repeat 10 ""))
@@ -93,8 +94,7 @@
 (subtest "Empty-p"
   (ok (empty? nil))
   (ok (emptyp ""))
-  (is nil (empty? " "))
-  )
+  (is nil (empty? " ")))
 
 (subtest "non-empty string"
   (is nil (non-empty-string-p 8))
@@ -118,8 +118,7 @@
 (subtest "Blank string"
   (ok (blankp "  "))
   (ok (blank? "  "))
-  (is nil (blank? "   rst "))
-  )
+  (is nil (blank? "   rst ")))
 
 (subtest "Shorten"
   (is "hello..." (shorten 8 "hello foobar")
@@ -153,8 +152,7 @@
   (is '("foo" "bar baz ") (words " foo bar baz " :limit 2))
   (is '("foo" "bar" "baz" "?") (words "  foo bar  baz ?"))
   (is '("foo" "bar" "baz" "?") (words "  foo
- bar  baz ?"))
-  )
+ bar  baz ?")))
 
 (subtest "Unwords"
   (is "" (unwords nil))
@@ -204,16 +202,14 @@
   (ok (not (starts-with? "FOO" "foobar")) "don't ignore case")
   (ok (starts-with-p "f" "foo") "starts-with-p alias")
   (ok (starts-with? "FOO" "foobar" :ignore-case t) "ignore case")
-  (ok (let ((*ignore-case* t)) (starts-with? "FOO" "foobar")) "ignore case")
-  )
+  (ok (let ((*ignore-case* t)) (starts-with? "FOO" "foobar")) "ignore case"))
 
 (subtest "ends-with?"
   (ok (ends-with? "bar" "foobar") "default case")
   (ok (ends-with-p "bar" "foobar") "ends-with-p alias")
   (ok (not (ends-with? "BAR" "foobar")) "don't ignore case")
   (ok (ends-with? "BAR" "foobar" :ignore-case t) "ignore case")
-  (ok (let ((*ignore-case* t)) (ends-with? "BAR" "foobar")) "ignore case")
-  )
+  (ok (let ((*ignore-case* t)) (ends-with? "BAR" "foobar")) "ignore case"))
 
 (subtest "prefix"
   (is (prefix '("foobar" "footeam")) "foo" "default case")
@@ -277,8 +273,7 @@
   (ok (not (contains? "Foo" "blafoobar")) "with case")
   (ok (contains? "Foo" "blafoobar" :ignore-case t) "ignore case")
   (ok (containsp "Foo" "blafoobar" :ignore-case t) "containsp alias")
-  (ok (let ((*ignore-case* t)) (contains? "Foo" "blafoobar")) "ignore case")
-  )
+  (ok (let ((*ignore-case* t)) (contains? "Foo" "blafoobar")) "ignore case"))
 
 (subtest "string-case"
   (ok (string-case "hello"

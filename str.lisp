@@ -38,6 +38,7 @@
    :trim-left
    :trim-right
    :trim
+   :collapse-whitespaces
    :join
    :insert
    :split
@@ -148,6 +149,11 @@
 (trim \"  foo \") ;; => \"foo\"
 @end(code)"
   (string-trim *whitespaces* s))
+
+(defun collapse-whitespaces (s)
+  "Ensure there is only one space character between words.
+  Remove newlines."
+  (ppcre:regex-replace-all "\\s+" s " "))
 
 (defun concat (&rest strings)
   "Join all the string arguments into one string."

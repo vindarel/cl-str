@@ -26,6 +26,7 @@ The only dependency is `cl-ppcre`.
     - [Functions](#functions)
         - [Tweak whitespace](#tweak-whitespace)
             - [trim `(s)`](#trim-s)
+            - [collapse-whitespaces `(s)`](#collapse-whitespaces-s)
         - [To longer strings](#to-longer-strings)
             - [join `(separator list-of-strings)`](#join-separator-list-of-strings)
             - [concat `(&rest strings)`](#concat-rest-strings)
@@ -136,6 +137,20 @@ Also `trim-left` and `trim-right`.
 Uses the built-in
 [string-trim](https://lispcookbook.github.io/cl-cookbook/strings.html#trimming-blanks-from-the-ends-of-a-string)
 where whitespaces are `'(#\Space #\Newline #\Backspace #\Tab #\Linefeed #\Page #\Return #\Rubout)`.
+
+#### collapse-whitespaces `(s)`
+
+Ensure there is only one space character between words. Remove newlines.
+
+~~~lisp
+(collapse-whitespaces "foo  bar
+
+
+  baz")
+;; "foo bar baz"
+;;T
+~~~
+
 
 ### To longer strings
 
@@ -698,6 +713,9 @@ Now:
 ## Dev and test
 
 Test with [prove](https://github.com/fukamachi/prove).
+
+  (ql:quickload :str.test)
+  (load "test/test-str.lisp")
 
 
 ## See also
