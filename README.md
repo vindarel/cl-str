@@ -70,6 +70,7 @@ The only dependency is `cl-ppcre`.
             - [digitp `(s)`](#digitp-s)
             - [has-alpha-p, has-letters-p, has-alphanum-p `(s)`](#has-alpha-p-has-letters-p-has-alphanum-p-s)
         - [Others](#others)
+            - [replace-first `(old new s)`](#replace-first-old-new-s)
             - [replace-all `(old new s)`](#replace-all-old-new-s)
             - [remove-punctuation (s &key replacement)](#remove-punctuation-s-key-replacement)
             - [prefix `(list-of-strings)` (renamed in 0.9)](#prefix-list-of-strings-renamed-in-09)
@@ -560,9 +561,22 @@ Return t if `s` has at least one alpha, letter, alphanum character (as with `alp
 
 ### Others
 
+#### replace-first `(old new s)`
+
+Replace the first occurence of `old` by `new` in `s`. Arguments are not regexs.
+
+
+```cl
+(replace-all "a" "o" "faa") ;; => "foo"
+```
+
+Uses
+[cl-ppcre:regex-replace](http://weitz.de/cl-ppcre/#regex-replace)
+but quotes the user input to not treat it as a regex.
+
 #### replace-all `(old new s)`
 
-Replace `old` by `new` (no regexs) in `s`.
+Replace all occurences of `old` by `new` in `s`. Arguments are not regexs.
 
 ```cl
 (replace-all "a" "o" "faa") ;; => "foo"
