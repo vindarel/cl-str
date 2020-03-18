@@ -47,6 +47,7 @@
    :shorten
    :prune ;; "deprecated" in favor of shorten
    :repeat
+   :replace-first
    :replace-all
    :concat
    :empty?
@@ -277,8 +278,14 @@ It uses `subseq' with differences:
       (setf result (cons s result)))
     (apply #'concat result)))
 
+(defun replace-first (old new s)
+  "Replace the first occurence of `old` by `new` in `s`. Arguments are not regexs."
+  (let* ((cl-ppcre:*allow-quoting* t)
+         (old (concatenate 'string  "\\Q" old))) ;; treat metacharacters as normal.
+    (cl-ppcre:regex-replace old s new)))
+
 (defun replace-all (old new s)
-  "Replace `old` by `new` in `s`. Arguments are not regexs."
+  "Replace all occurences of `old` by `new` in `s`. Arguments are not regexs."
   (let* ((cl-ppcre:*allow-quoting* t)
          (old (concatenate 'string  "\\Q" old))) ;; treat metacharacters as normal.
     (cl-ppcre:regex-replace-all old s new)))

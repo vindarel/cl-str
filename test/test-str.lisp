@@ -29,7 +29,8 @@
 (subtest "Replace"
   (is "foo" (replace-all "a" "o" "faa"))
   (is "foo" (replace-all "^a" "o" "fo^a"))
-  (is "foo" (replace-all "^aa+" "o" "fo^aa+")))
+  (is "foo" (replace-all "^aa+" "o" "fo^aa+"))
+  (is "fooaa" (replace-first "aa" "oo" "faaaa")))
 
 (subtest "Join"
   (is "foo bar baz" (join " " '("foo" "bar" "baz")))
