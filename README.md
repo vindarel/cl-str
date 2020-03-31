@@ -132,7 +132,7 @@ is equivalent to
 #### trim `(s)`
 Remove whitespaces at the beginning and end of `s`.
 
-```cl
+```lisp
 (trim "  rst  ") ;; => "rst"
 ```
 
@@ -162,7 +162,7 @@ Ensure there is only one space character between words. Remove newlines.
 
 Join strings in list `list-of-strings` with `separator` (either a string or a char) in between.
 
-```cl
+```lisp
 (join " " '("foo" "bar" "baz")) ;; => "foo bar baz"
 (join #\Space '("foo" "bar" "baz")) ;; => "foo bar baz"
 ```
@@ -183,7 +183,7 @@ separator in the end:
 
 Join strings into one.
 
-```cl
+```lisp
 (concat "f" "o" "o") ;; => "foo"
 ```
 
@@ -199,7 +199,7 @@ new string.
 
 If `index` is out of bounds, just return `s`.
 
-```cl
+```lisp
 (str:insert "l" 2 "helo") ; => "hello"
 
 (str:insert "o" 99 "hell") : => "hell"
@@ -209,7 +209,7 @@ If `index` is out of bounds, just return `s`.
 
 Make a string of `s` repeated `count` times.
 
-```cl
+```lisp
 (repeat 3 "foo") ;; => "foofoofoo"
 ```
 
@@ -368,7 +368,7 @@ Join the list of strings with a newline character.
 Split into subtrings (unlike cl-ppcre, without a regexp). If
 `omit-nulls` is non-nil, zero-length substrings are omitted.
 
-```cl
+```lisp
 (split "+" "foo++bar") ;; => ("foo" "" "bar")
 (split #\+ "foo++bar") ;; => ("foo" "" "bar")
 (split "+" "foo++bar" :omit-nulls t) ;; => ("foo" "bar")
@@ -428,7 +428,7 @@ Returns the string written to file.
 
 True if `s` is nil or the empty string:
 
-```cl
+```lisp
   (empty? nil) ;; => T
   (empty? "")  ;; => T
   (empty? " ") ;; => NIL
@@ -528,7 +528,7 @@ something surprising. When the argument is `nil`, the built-ins return
 These functions return `t` if the given string contains at least one
 letter and all its letters are lowercase or uppercase, respectively.
 
-```cl
+```lisp
 (is (downcasep " a+,. ") t "downcasep with one letter and punctuation is true.")
 (is (downcasep " +,. ") nil "downcasep with only punctuation or spaces is false")
 ```
@@ -578,7 +578,7 @@ but quotes the user input to not treat it as a regex.
 
 Replace all occurences of `old` by `new` in `s`. Arguments are not regexs.
 
-```cl
+```lisp
 (replace-all "a" "o" "faa") ;; => "foo"
 ```
 
