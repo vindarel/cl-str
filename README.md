@@ -566,8 +566,8 @@ Return t if `s` has at least one alpha, letter, alphanum character (as with `alp
 Replace the first occurence of `old` by `new` in `s`. Arguments are not regexs.
 
 
-```cl
-(replace-all "a" "o" "faa") ;; => "foo"
+```lisp
+(replace-first "a" "o" "faa") ;; => "foa"
 ```
 
 Uses
