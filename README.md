@@ -588,11 +588,14 @@ but quotes the user input to not treat it as a regex.
 
 #### remove-punctuation (s &key replacement)
 
-An alias to `str:no-case` (itself [`cl-change-case:no-case`](https://github.com/rudolfochrist/cl-change-case/#no-case)).
+Remove the punctuation characters from `s`, replace them with
+`replacement` (defaults to a space) and strip continuous whitespace.
 
 ~~~lisp
-(str:remove-punctuation "I say: - 'hello, world?'") ;; => "i say hello world"
+(str:remove-punctuation "I say: - 'Hello, world?'") ;; => "I say Hello world"
 ~~~
+
+Use `str:no-case` to remove punctuation and return the string as lower-case.
 
 
 #### prefix `(list-of-strings)` (renamed in 0.9)
@@ -701,6 +704,7 @@ Now:
 ("a" "b" "c" "")
 ~~~
 
+* 0.17, april 2020: fixed `remove-punctuation` that did not respect the case. Use `no-case` for this.
 * 0.16, november 2019: added `pad`, `pad-[left, right, center]`.
 * 0.15, october 2019: added functions to change case (based on cl-change-case).
   added remove-punctuation.

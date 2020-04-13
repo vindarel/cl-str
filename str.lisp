@@ -131,7 +131,7 @@
 (defvar *whitespaces* '(#\Space #\Newline #\Backspace #\Tab
                         #\Linefeed #\Page #\Return #\Rubout))
 
-(defvar +version+ "0.16")
+(defvar +version+ "0.17")
 
 (defun version ()
   (print +version+))
@@ -698,5 +698,19 @@ with `string='.
   (upcasep s))
 
 (defun remove-punctuation (s &key (replacement " "))
-  "Extract the letters from `s'. Use `replacement' for other characters."
-  (cl-change-case:no-case s :replacement replacement))
+  "Remove the punctuation characters from `s', replace them with `replacement' (defaults to a space) and strip continuous whitespace."
+  (flet ((replace-non-word (string)
+           (ppcre:regex-replace-all
+            "[^\\p{L}\\p{N}]+"
+            string
+            (lambda (target start end match-start match-end reg-starts reg-ends)
+              (declare (ignore target start reg-starts reg-ends))
+              ;; completely remove trailing and leading non-word chars
+              (if (or (zerop match-start)
+                      (= match-start (- end (- match-end match-start))))
+                  ""
+                  ;; use replacement kwarg for non-space chars inbetween
+                  replacement)))))
+    (if (null s)
+        ""
+        (replace-non-word s))))
