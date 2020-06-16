@@ -49,6 +49,7 @@
    :repeat
    :replace-first
    :replace-all
+   :replace-using
    :concat
    :empty?
    :emptyp
@@ -289,6 +290,24 @@ It uses `subseq' with differences:
   (let* ((cl-ppcre:*allow-quoting* t)
          (old (concatenate 'string  "\\Q" old))) ;; treat metacharacters as normal.
     (cl-ppcre:regex-replace-all old s new)))
+
+(defun replace-using (plist s)
+  "Replace all associations given by pairs in a plist and return a new string.
+
+  The plist is a list alternating a string to replace (case sensitive) and its replacement.
+
+  Example:
+  (replace-using (list \"{{phone}}\" \"987\")
+                 \"call {{phone}}\")
+  =>
+  \"call 987\"
+
+  It calls `replace-all' as many times as there are replacements to do."
+  (check-type plist list)
+  (dotimes (i (- (length plist)
+                 1))
+    (setf s (str:replace-all (nth i plist) (nth (incf i) plist) s)))
+  s)
 
 (defun empty? (s)
   "Is s nil or the empty string ?"

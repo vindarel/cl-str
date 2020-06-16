@@ -32,6 +32,13 @@
   (is "foo" (replace-all "^aa+" "o" "fo^aa+"))
   (is "fooaa" (replace-first "aa" "oo" "faaaa")))
 
+(subtest "Replace using"
+  (is "foo" (replace-using (list "a" "o") "faa"))
+  (is "fooAA" (replace-using (list "a" "o") "faaAA"))
+  (is "faa" (replace-using (list "a") "faa"))
+  (is "fooAA" (replace-using (list "a" "o" "A") "faaAA"))
+  (is "faa" (replace-using nil "faa")))
+
 (subtest "Join"
   (is "foo bar baz" (join " " '("foo" "bar" "baz")))
   (is "foo+++bar+++baz" (join "+++" '("foo" "bar" "baz")))

@@ -586,6 +586,20 @@ Uses
 [cl-ppcre:regex-replace-all](http://weitz.de/cl-ppcre/#regex-replace-all)
 but quotes the user input to not treat it as a regex.
 
+#### replace-using `(plist s)`
+
+Replace all associations given by pairs in a plist and return a new string.
+
+The plist is a list alternating a string to replace (case sensitive) and its replacement.
+
+Example:
+
+```lisp
+(replace-using (list "%phone%" "987")
+               "call %phone%")
+;; "call 987"
+```
+
 #### remove-punctuation (s &key replacement)
 
 Remove the punctuation characters from `s`, replace them with
@@ -688,7 +702,16 @@ Note that there is also http://quickdocs.org/string-case/.
 
 ## Changelog
 
-* 0.14, october, 2019: fixed the cl-ppcre inconsistency in `split` and `lines`. A trailing separator now returns a trailing empty string.
+* 0.18, June, 2020: added `replace-using`.
+* 0.17, April 2020:
+  - added `collapse-whitespaces`
+  - `join` and `split` also accept a char as separator
+  - fixed `remove-punctuation` that did not respect the case. Use `no-case` for this
+  - fixed `from-file` "odd number of arguments" error.
+* 0.16, November 2019: added `pad`, `pad-[left, right, center]`.
+* 0.15, October 2019: added functions to change case (based on cl-change-case).
+  added remove-punctuation.
+* 0.14, October, 2019: fixed the cl-ppcre inconsistency in `split` and `lines`. A trailing separator now returns a trailing empty string.
 
 Before:
 
@@ -704,10 +727,6 @@ Now:
 ("a" "b" "c" "")
 ~~~
 
-* 0.17, april 2020: fixed `remove-punctuation` that did not respect the case. Use `no-case` for this.
-* 0.16, november 2019: added `pad`, `pad-[left, right, center]`.
-* 0.15, october 2019: added functions to change case (based on cl-change-case).
-  added remove-punctuation.
 * august, 2019: deprecated `prune`, renamed to `shorten`.
 * added `:limit` to `split`.
 * 0.13 june, 2019
