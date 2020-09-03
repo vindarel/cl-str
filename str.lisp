@@ -139,18 +139,21 @@
 
 (defun trim-left (s)
   "Remove whitespaces at the beginning of s. "
-  (string-left-trim *whitespaces* s))
+  (when s
+    (string-left-trim *whitespaces* s)))
 
 (defun trim-right (s)
   "Remove whitespaces at the end of s."
-  (string-right-trim *whitespaces* s))
+  (when s
+    (string-right-trim *whitespaces* s)))
 
 (defun trim (s)
   "Remove whitespaces at the beginning and end of s.
 @begin[lang=lisp](code)
 (trim \"  foo \") ;; => \"foo\"
 @end(code)"
-  (string-trim *whitespaces* s))
+  (when s
+    (string-trim *whitespaces* s)))
 
 (defun collapse-whitespaces (s)
   "Ensure there is only one space character between words.

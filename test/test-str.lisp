@@ -12,7 +12,10 @@
 (subtest "Trim"
   (is "rst " (trim-left "   rst "))
   (is " rst" (trim-right " rst   "))
-  (is "rst" (trim "  rst  ")))
+  (is "rst" (trim "  rst  "))
+  (is nil (trim-left nil))
+  (is nil (trim-right nil))
+  (is nil (trim nil)))
 
 (subtest "Collapse whitespaces"
   (is "foo bar baz" (collapse-whitespaces "foo  bar
