@@ -702,6 +702,7 @@ Note that there is also http://quickdocs.org/string-case/.
 
 ## Changelog
 
+*0.18.1, September, 2020: fix replace-all edge case when the replacement string ends with two backslashes and a single quote.
 * 0.18, June, 2020: added `replace-using`.
 * 0.17, April 2020:
   - added `collapse-whitespaces`

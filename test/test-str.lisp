@@ -30,6 +30,8 @@
   (is "foo" (replace-all "a" "o" "faa"))
   (is "foo" (replace-all "^a" "o" "fo^a"))
   (is "foo" (replace-all "^aa+" "o" "fo^aa+"))
+  (is "foo'\\'bar" (replace-all "+" "'\\'" "foo+bar")
+      "Edge case with a double backslash and a single quote.")
   (is "fooaa" (replace-first "aa" "oo" "faaaa")))
 
 (subtest "Replace using"

@@ -132,7 +132,7 @@
 (defvar *whitespaces* '(#\Space #\Newline #\Backspace #\Tab
                         #\Linefeed #\Page #\Return #\Rubout))
 
-(defvar +version+ "0.17")
+(defvar +version+ "0.18.1")
 
 (defun version ()
   (print +version+))
@@ -289,7 +289,18 @@ It uses `subseq' with differences:
   "Replace all occurences of `old` by `new` in `s`. Arguments are not regexs."
   (let* ((cl-ppcre:*allow-quoting* t)
          (old (concatenate 'string  "\\Q" old))) ;; treat metacharacters as normal.
-    (cl-ppcre:regex-replace-all old s new)))
+    ;; We need the (list new): see !52
+    (cl-ppcre:regex-replace-all old s (list new))))
+
+;; About the (list new) above:
+#+nil
+(progn
+  ;; This is wrong:
+  (format t "~&This replacement is wrong: ~a~&" (ppcre:regex-replace-all "8" "foo8bar" "\\'"))
+  ;; => foobarbar
+  (format t "and this is OK: ~a~&" (ppcre:regex-replace-all "8" "foo8bar" (list "\\'")))
+  ;; foo\'bar
+  )
 
 (defun replace-using (plist s)
   "Replace all associations given by pairs in a plist and return a new string.
