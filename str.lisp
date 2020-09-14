@@ -286,14 +286,14 @@ It uses `subseq' with differences:
   "Replace the first occurence of `old` by `new` in `s`. Arguments are not regexs."
   (let* ((cl-ppcre:*allow-quoting* t)
          (old (concatenate 'string  "\\Q" old))) ;; treat metacharacters as normal.
-    (cl-ppcre:regex-replace old s new)))
+    ;; We need the (list new): see !52
+    (cl-ppcre:regex-replace old s (list new))))
 
 (defun replace-all (old new s)
   "Replace all occurences of `old` by `new` in `s`. Arguments are not regexs."
   (let* ((cl-ppcre:*allow-quoting* t)
          (old (concatenate 'string  "\\Q" old))) ;; treat metacharacters as normal.
-    ;; We need the (list new): see !52
-    (cl-ppcre:regex-replace-all old s (list new))))
+    (ppcre:regex-replace-all old s (list new))))
 
 ;; About the (list new) above:
 #+nil
