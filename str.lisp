@@ -197,7 +197,7 @@
   split at most `limit' - 1 times)."
   ;; cl-ppcre:split doesn't return a null string if the separator appears at the end of s.
   (let* ((limit (or limit (1+ (length s))))
-         (res (cl-ppcre:split (cl-ppcre:quote-meta-chars (string separator)) s :limit limit :start start :end end)))
+         (res (ppcre:split (ppcre:quote-meta-chars (string separator)) s :limit limit :start start :end end)))
     (if omit-nulls
         (remove-if (lambda (it) (empty? it)) res)
         res)))
@@ -257,7 +257,7 @@ It uses `subseq' with differences:
 (defun words (s &key (limit 0))
   "Return list of words, which were delimited by white space. If the optional limit is 0 (the default), trailing empty strings are removed from the result list (see cl-ppcre)."
   (when s
-      (cl-ppcre:split "\\s+" (trim-left s) :limit limit)))
+      (ppcre:split "\\s+" (trim-left s) :limit limit)))
 
 (defun unwords (strings)
   "Join the list of strings with a whitespace."
@@ -284,14 +284,14 @@ It uses `subseq' with differences:
 
 (defun replace-first (old new s)
   "Replace the first occurence of `old` by `new` in `s`. Arguments are not regexs."
-  (let* ((cl-ppcre:*allow-quoting* t)
+  (let* ((ppcre:*allow-quoting* t)
          (old (concatenate 'string  "\\Q" old))) ;; treat metacharacters as normal.
     ;; We need the (list new): see !52
-    (cl-ppcre:regex-replace old s (list new))))
+    (ppcre:regex-replace old s (list new))))
 
 (defun replace-all (old new s)
   "Replace all occurences of `old` by `new` in `s`. Arguments are not regexs."
-  (let* ((cl-ppcre:*allow-quoting* t)
+  (let* ((ppcre:*allow-quoting* t)
          (old (concatenate 'string  "\\Q" old))) ;; treat metacharacters as normal.
     (ppcre:regex-replace-all old s (list new))))
 
