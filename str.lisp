@@ -110,6 +110,8 @@
    :alpha?
    :digitp
    :digit?
+   :whitespacep
+   :whitespace?
 
    :*ignore-case*
    :*omit-nulls*
@@ -117,11 +119,17 @@
    :*pad-char*
    :*pad-side*
    :*sharedp*
+   :*negative-wrap*
    :version
    :+version+
    :?
 
-   :base-displacement))
+   :base-displacement
+   :negative-index
+   :index
+   :with-indices
+
+   ))
 
 (in-package :str)
 
@@ -134,6 +142,8 @@
   "The side of the string to add padding characters to. Can be one of :right, :left and :center.")
 (defparameter *sharedp* nil
   "When NIL, functions always return fresh strings; otherwise, they may share storage with their inputs.")
+(defparameter *negative-wrap* nil
+  "Negative indices wrap around")
 
 ;; FIXME? not the same as CL-PPCRE, which is
 ;;        '(#\Space #\Tab #\Linefeed #\Return #\Page)
@@ -148,10 +158,76 @@
 (defun version ()
   (print +version+))
 
-(declaim (inline slice%))
-(defun slice% (start end s sharedp)
-  #+sbcl ;; inlining: notes in caller code
-  (declare (sb-ext:muffle-conditions sb-ext:compiler-note))
+;; as a dedicated condition to help detect it in tests
+;; (up to 0.18.1 a negative index would mean zero)
+(define-condition negative-index (warning) ()
+  (:report
+   "STR possible breaking change: negative index means 'from end' now"))
+
+(declaim (inline index))
+
+(defun index (string/length index
+              &key
+                (warnp t)
+                (negative-wrap *negative-wrap*))
+  ""
+  (declare (type (or null fixnum) index)
+           (type (or vector array-total-size) string/length))
+  (let ((length (etypecase string/length
+                  (string (length string/length))
+                  (array-total-size string/length))))
+    (cond
+      ((member index '(nil t)) length)
+      ((= 0 length) 0)
+      (t
+       (locally (declare (type (and fixnum (not (eql 0))) length))
+         (cond
+           (negative-wrap
+            (when (and warnp (< index 0))
+              (warn 'negative-index))
+            (multiple-value-bind (quotient mod) (floor index length)
+              (if (<= -1 quotient 0)
+                  ;; wrap when index is between -length and length
+                  mod
+                  ;; otherwise clamp to either side
+                  (if (< quotient 0) 0 length))))
+           (t (min (max index 0) length))))))))
+
+(defmacro with-indices ((&rest indices) length-designator
+                        &body body)
+  "Ensure INDICES are computed by function INDEX in BODY.
+
+LENGTH-DESIGNATOR is a string or a non-negative integer.
+
+INDICES is a list of either a symbol NAME or a couple (NAME VALUE); if
+only NAME is provided, NAME is expected to be bound in the current
+context to the VALUE associated with NAME.
+
+Inside BODY, each NAME is bound by LET* to (INDEX STRING VALUE).
+
+    (with-indices ((x (or x 0)) y) \"abc\" ...)
+
+is equivalent to:
+
+    (let* ((x (index \"abc\" (or x 0)))
+           (y (index \"abc\" y)))
+      ...)
+
+"
+  (let ((length-var (gensym "LENGTH-")))
+    `(let ((,length-var ,length-designator))
+       ,(flet ((let-binding (index)
+                 (let ((index (if (listp index) index (list index))))
+                   (destructuring-bind (name &optional value) index
+                     (let ((index-expr (or value name)))
+                       `(,name (index ,length-var ,index-expr)))))))
+          `(let* ,(mapcar #'let-binding indices)
+             ,@body)))))
+
+(declaim (inline unsafe-slice))
+
+(defun unsafe-slice (start end s sharedp)
+  "START and END are expected to be valid indices for string S"
   (let ((length (- end start)))
     (cond
       ((<= length 0) "")
@@ -161,13 +237,15 @@
                      :displaced-to s
                      :displaced-index-offset start)))))
 
-(defun slice (start end s &optional (sharedp *sharedp*))
+(defun slice (start end s &key (sharedp *sharedp*))
   (when s
-    (slice% start end s sharedp)))
+    (with-indices ((start (or start 0)) end) (s :warnp nil)
+      (unsafe-slice start end s sharedp))))
 
-;; internal
 (defun whitespacep (char)
   (member char *whitespaces*))
+
+(setf (fdefinition 'whitespace?) #'whitespacep)
 
 ;; internal
 (defun trim-left-if (p s)
@@ -227,24 +305,18 @@
   (let ((separator (replace-all "~" "~~" (string separator))))
     (format nil (concat "~{~a~^" separator "~}") strings)))
 
-(defun insert (string/char index s)
+(defun insert (string/char index s &key (wrap nil))
   "Insert the given string (or character) at the `index' into `s' and return a new string.
 
-  If `index' is out of bounds, ignore and return `s'."
-  (when (characterp string/char)
-    (setf string/char (string string/char)))
+   If `index' or `string/char' is NIL, ignore and return `s'."
   (cond
-    ((null index)
-     s)
-    ((< index 0)
-     s)
-    ((> index (length s))
-     s)
-    (t
-     (concatenate 'string
-                  (subseq s 0 index)
-                  string/char
-                  (subseq s index)))))
+    ((and s index string/char)
+     ;; insert _ in "abcd" at -1 means "abcd_", not "abc_d"
+     (with-indices (index) ((1+ (length s)) :negative-wrap wrap)
+       (concat (slice 0 index s :sharedp t)
+               (string string/char)
+               (slice index t s :sharedp t))))
+    (t s)))
 
 (defun split (separator s &key (omit-nulls *omit-nulls*) limit (start 0) end)
   "Split s into substring by separator (cl-ppcre takes a regex, we do not).
@@ -307,7 +379,7 @@ It uses `subseq' with differences:
     (let ((end (max (- len (length ellipsis))
                     0)))
       (setf s (concat
-               (slice% 0 end s t)
+               (unsafe-slice 0 end s t)
                ellipsis))))
   s)
 
@@ -645,6 +717,7 @@ Returns the string written to file."
    (string (elt \"test\" 1))
    ;; => \"e\""
   (cond ((null s) nil)
+        ;; TODO negative index
         ((or (empty? s) (minusp n)) "")
         ((= n 0) (s-first s))
         (t (s-nth (1- n) (s-rest s)))))
@@ -669,11 +742,12 @@ with `string='.
   (unless (or (null s)
               (null substring)
               (empty? substring))
-    (loop :with substring-length := (length substring)
-       :for position := (search substring s :start2 start :end2 end)
-       :then (search substring s :start2 (+ position substring-length) :end2 end)
-       :while (not (null position))
-       :summing 1)))
+    (with-indices ((start (or start 0)) end) s
+      (loop :with substring-length := (length substring)
+         :for position := (search substring s :start2 start :end2 end)
+         :then (search substring s :start2 (+ position substring-length) :end2 end)
+         :while (not (null position))
+         :summing 1))))
 
 
 ;;; Case
