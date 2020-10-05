@@ -135,6 +135,11 @@
 (defparameter *sharedp* nil
   "When NIL, functions always return fresh strings; otherwise, they may share storage with their inputs.")
 
+;; FIXME? not the same as CL-PPCRE, which is
+;;        '(#\Space #\Tab #\Linefeed #\Return #\Page)
+;;        Some functions use *WHITESPACES* (trim) while other
+;;        functions use a regex "\\s+" (e.g. collapse-whitespaces),
+;;        a.k.a. implicitly the above list
 (defvar *whitespaces* '(#\Space #\Newline #\Backspace #\Tab
                         #\Linefeed #\Page #\Return #\Rubout))
 
@@ -207,6 +212,10 @@
 (defun collapse-whitespaces (s)
   "Ensure there is only one space character between words.
   Remove newlines."
+  ;; FIXME? use \\s everywhere we need whitespace? trim could be based
+  ;; on regexes too; OR, match against
+  ;; '(:greedy-repetition 1 NIL (:char-class #.*WHITESPACES*))
+  ;; (is *WHITESPACES* supposed to be constant?)
   (ppcre:regex-replace-all "\\s+" s " "))
 
 (defun concat (&rest strings)
@@ -496,12 +505,14 @@ Return either ARRAY or a new array displaced to a non-displaced array."
   (when items
     (base-displacement (reduce #'suffix-1 items))))
 
+;; FIXME? Is (prefix? '("boo" "boomerang") "bo") T or NIL?
 (defun prefix? (items s)
   "Return s if s is common prefix between items."
   (when (string= s (prefix items)) s))
 
 (setf (fdefinition 'prefixp) #'prefix?)
 
+;; FIXME? Same as prefix?
 (defun suffix? (items s)
   "Return s if s is common suffix between items."
   (when (string= s (suffix items)) s))
