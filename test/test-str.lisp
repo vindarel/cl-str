@@ -9,6 +9,9 @@
 (setf prove:*enable-colors* t)
 (plan nil)
 
+(subtest "Slice"
+  (is (slice -2 nil "abcdef" t) "ef"))
+
 (subtest "Trim"
   (is "rst " (trim-left "   rst "))
   (is " rst" (trim-right " rst   "))

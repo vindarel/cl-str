@@ -43,6 +43,7 @@
    :insert
    :split
    :split-omit-nulls
+   :slice
    :substring
    :shorten
    :prune ;; "deprecated" in favor of shorten
@@ -115,9 +116,12 @@
    :*ellipsis*
    :*pad-char*
    :*pad-side*
+   :*sharedp*
    :version
    :+version+
-   :?))
+   :?
+
+   :base-displacement))
 
 (in-package :str)
 
@@ -128,6 +132,8 @@
   "Padding character to use with `pad'. It can be a string of one character.")
 (defparameter *pad-side* :right
   "The side of the string to add padding characters to. Can be one of :right, :left and :center.")
+(defparameter *sharedp* nil
+  "When NIL, functions always return fresh strings; otherwise, they may share storage with their inputs.")
 
 (defvar *whitespaces* '(#\Space #\Newline #\Backspace #\Tab
                         #\Linefeed #\Page #\Return #\Rubout))
@@ -137,15 +143,58 @@
 (defun version ()
   (print +version+))
 
+(declaim (inline slice%))
+(defun slice% (start end s sharedp)
+  #+sbcl ;; inlining: notes in caller code
+  (declare (sb-ext:muffle-conditions sb-ext:compiler-note))
+  (let ((length (- end start)))
+    (cond
+      ((<= length 0) "")
+      ((not sharedp) (subseq s start end))
+      (t (make-array length
+                     :element-type (array-element-type s)
+                     :displaced-to s
+                     :displaced-index-offset start)))))
+
+(defun slice (start end s &optional (sharedp *sharedp*))
+  (when s
+    (slice% start end s sharedp)))
+
+;; internal
+(defun whitespacep (char)
+  (member char *whitespaces*))
+
+;; internal
+(defun trim-left-if (p s)
+  (let ((beg (position-if-not p s)))
+    (if beg
+        (slice beg nil s)
+        "")))
+
+;; internal
+(defun trim-right-if (p s)
+  (let ((end (position-if-not p s :from-end t)))
+    (if end
+        (slice 0 (1+ end) s)
+        "")))
+
+;; internal
+(defun trim-if (p s)
+  (let ((beg (position-if-not p s))
+        (end (position-if-not p s :from-end t)))
+    (if (and beg end)
+        (slice beg (1+ end) s)
+        "")))
+
 (defun trim-left (s)
   "Remove whitespaces at the beginning of s. "
   (when s
-    (string-left-trim *whitespaces* s)))
+    (trim-left-if #'whitespacep s)))
 
 (defun trim-right (s)
   "Remove whitespaces at the end of s."
   (when s
-    (string-right-trim *whitespaces* s)))
+    (trim-right-if #'whitespacep s)))
 
 (defun trim (s)
   "Remove whitespaces at the beginning and end of s.
@@ -153,7 +202,7 @@
 (trim \"  foo \") ;; => \"foo\"
 @end(code)"
   (when s
-    (string-trim *whitespaces* s)))
+    (trim-if #'whitespacep s)))
 
 (defun collapse-whitespaces (s)
   "Ensure there is only one space character between words.
@@ -197,7 +246,8 @@
   split at most `limit' - 1 times)."
   ;; cl-ppcre:split doesn't return a null string if the separator appears at the end of s.
   (let* ((limit (or limit (1+ (length s))))
-         (res (cl-ppcre:split (cl-ppcre:quote-meta-chars (string separator)) s :limit limit :start start :end end)))
+         (res (cl-ppcre:split (cl-ppcre:quote-meta-chars (string separator))
+                              s :limit limit :start start :end end :sharedp *sharedp*)))
     (if omit-nulls
         (remove-if (lambda (it) (empty? it)) res)
         res)))
@@ -250,14 +300,14 @@ It uses `subseq' with differences:
     (let ((end (max (- len (length ellipsis))
                     0)))
       (setf s (concat
-               (subseq s 0 end)
+               (slice% 0 end s t)
                ellipsis))))
   s)
 
 (defun words (s &key (limit 0))
   "Return list of words, which were delimited by white space. If the optional limit is 0 (the default), trailing empty strings are removed from the result list (see cl-ppcre)."
   (when s
-      (cl-ppcre:split "\\s+" (trim-left s) :limit limit)))
+    (cl-ppcre:split "\\s+" (trim-left s) :limit limit :sharedp *sharedp*)))
 
 (defun unwords (strings)
   "Join the list of strings with a whitespace."
@@ -388,8 +438,26 @@ A simple call to the built-in `search` (which returns the position of the substr
 
 (setf (fdefinition 'containsp) #'contains?)
 
+(defun base-displacement (array)
+  "Flatten the displacement chain from ARRAY up to a base array.
+
+Return either ARRAY or a new array displaced to a non-displaced array."
+  (labels ((recurse (array origin)
+             (multiple-value-bind (parent index) (array-displacement array)
+               (if parent
+                   (recurse parent (+ origin index))
+                   (values array origin)))))
+    (multiple-value-bind (base offset) (recurse array 0)
+      (if (or (eq base array)
+              (eq base (array-displacement array)))
+          array
+          (make-array (length array)
+                      :element-type (array-element-type base)
+                      :displaced-to base
+                      :displaced-index-offset offset)))))
+
 (defun prefix-1 (item1 item2)
-  (subseq item1 0 (or (mismatch item1 item2) (length item1))))
+  (slice 0 (mismatch item1 item2) item1))
 
 (defun prefix (items)
   "Find the common prefix between strings.
@@ -404,14 +472,14 @@ A simple call to the built-in `search` (which returns the position of the substr
 
   "
   (when items
-    (reduce #'prefix-1 items)))
+    (base-displacement (reduce #'prefix-1 items))))
 
 (defun common-prefix (items)
   (warn "common-prefix is deprecated, use prefix instead.")
   (prefix items))
 
 (defun suffix-1 (item1 item2)
-  (subseq item1 (or (mismatch item1 item2 :from-end t) 0)))
+  (slice (mismatch item1 item2 :from-end t) nil item1))
 
 (defun suffix (items)
   "Find the common suffix between strings.
@@ -426,7 +494,7 @@ A simple call to the built-in `search` (which returns the position of the substr
 
   "
   (when items
-    (reduce #'suffix-1 items)))
+    (base-displacement (reduce #'suffix-1 items))))
 
 (defun prefix? (items s)
   "Return s if s is common prefix between items."
@@ -549,7 +617,7 @@ Returns the string written to file."
       nil
       (if (empty? s)
           ""
-          (subseq s 0 1))))
+          (slice 0 1 s))))
 
 (defun s-last (s)
   "Return the last substring of `s'."
@@ -557,7 +625,7 @@ Returns the string written to file."
       nil
       (if (empty? s)
           ""
-          (substring (1- (length s)) t s))))
+          (slice (1- (length s)) nil s))))
 
 (defun s-rest (s)
   "Return the rest substring of `s'."
@@ -565,7 +633,7 @@ Returns the string written to file."
       nil
       (if (empty? s)
           ""
-          (subseq s 1))))
+          (slice 1 nil s))))
 
 (defun s-nth (n s)
   "Return the nth substring of `s'.
