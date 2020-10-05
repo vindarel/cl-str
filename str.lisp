@@ -225,9 +225,7 @@
 (defun join (separator strings)
   "Join all the strings of the list with a separator."
   (let ((separator (replace-all "~" "~~" (string separator))))
-    (format nil
-            (concatenate 'string "~{~a~^" separator "~}")
-            strings)))
+    (format nil (concat "~{~a~^" separator "~}") strings)))
 
 (defun insert (string/char index s)
   "Insert the given string (or character) at the `index' into `s' and return a new string.
@@ -538,20 +536,15 @@ Filling with spaces can be done with format:
   (if (< len (length s))
       s
       (flet ((pad-left (len s &key (pad-char *pad-char*))
-               (concatenate 'string
-                            (make-string (- len (length s)) :initial-element pad-char)
-                            s))
+               (concat (repeat (- len (length s)) pad-char) s))
              (pad-right (len s &key (pad-char *pad-char*))
-               (concatenate 'string
-                            s
-                            (make-string (- len (length s)) :initial-element pad-char)))
+               (concat s (repeat (- len (length s)) pad-char)))
              (pad-center (len s &key (pad-char *pad-char*))
                (multiple-value-bind (q r)
                    (floor (- len (length s)) 2)
-                 (concatenate 'string
-                              (make-string q :initial-element pad-char)
-                              s
-                              (make-string (+ q r) :initial-element pad-char)))))
+                 (concat (repeat q pad-char)
+                         s
+                         (repeat (+ q r) pad-char)))))
 
         (unless (characterp pad-char)
           (if (>= (length pad-char) 2)
