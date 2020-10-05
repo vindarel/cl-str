@@ -256,7 +256,7 @@
          (res (cl-ppcre:split (cl-ppcre:quote-meta-chars (string separator))
                               s :limit limit :start start :end end :sharedp *sharedp*)))
     (if omit-nulls
-        (remove-if (lambda (it) (empty? it)) res)
+        (delete-if #'empty? res)
         res)))
 
 (defun split-omit-nulls (separator s)
