@@ -334,12 +334,11 @@ It uses `subseq' with differences:
   "Join the list of strings with a newline character."
   (join (make-string 1 :initial-element #\Newline) strings))
 
-(defun repeat (count s)
+(defun repeat (count string/char)
   "Make a string of S repeated COUNT times."
-  (let ((result nil))
-    (dotimes (i count)
-      (setf result (cons s result)))
-    (apply #'concat result)))
+  (etypecase string/char
+    (character (make-string count :initial-element string/char))
+    (string (apply #'concat (make-list count :initial-element string/char)))))
 
 (defun replace-first (old new s)
   "Replace the first occurence of `old` by `new` in `s`. Arguments are not regexs."
