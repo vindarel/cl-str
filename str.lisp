@@ -169,7 +169,7 @@
   (apply #'concatenate 'string strings))
 
 (declaim (ftype (function ((or character string)
-                           (cons string))
+                           (or null (cons string)))
                           string)
                 join))
 (defun join (separator strings)
