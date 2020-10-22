@@ -161,8 +161,8 @@
   Remove newlines."
   (ppcre:regex-replace-all "\\s+" s " "))
 
-(declaim (ftype (function (&rest (or string))
-                          (or string))
+(declaim (ftype (function (&rest (or null string))
+                          string)
                 concat))
 (defun concat (&rest strings)
   "Join all the string arguments into one string."
