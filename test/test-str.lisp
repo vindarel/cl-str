@@ -49,7 +49,8 @@
   (is "foo+++bar+++baz" (join "+++" '("foo" "bar" "baz")))
   (is "foo~bar" (join "~" '("foo" "bar")))
   (is "foo~~~bar" (join "~" '("foo~" "~bar")))
-  (is "foo,bar" (join #\, '("foo" "bar"))))
+  (is "foo,bar" (join #\, '("foo" "bar")))
+  (is "" (join nil nil)))
 
 (subtest "Insert"
   (is "hello" (insert "o" 4 "hell"))

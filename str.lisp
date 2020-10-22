@@ -168,7 +168,7 @@
   "Join all the string arguments into one string."
   (apply #'concatenate 'string strings))
 
-(declaim (ftype (function ((or character string)
+(declaim (ftype (function ((or null character string)
                            (or null (cons string)))
                           string)
                 join))
