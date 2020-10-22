@@ -161,10 +161,17 @@
   Remove newlines."
   (ppcre:regex-replace-all "\\s+" s " "))
 
+(declaim (ftype (function (&rest (or string))
+                          (or string))
+                concat))
 (defun concat (&rest strings)
   "Join all the string arguments into one string."
   (apply #'concatenate 'string strings))
 
+(declaim (ftype (function ((or character string)
+                           (cons string))
+                          string)
+                join))
 (defun join (separator strings)
   "Join all the strings of the list with a separator."
   (let ((separator (replace-all "~" "~~" (string separator))))
