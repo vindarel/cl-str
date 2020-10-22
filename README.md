@@ -472,6 +472,18 @@ case with `:ignore-case t` (don't ignore by default).
 Based on a simple call to the built-in `search` (which returns the
 position of the substring).
 
+#### s-member `(list s &key (ignore-case *ignore-case*) (test #'string=))`
+
+Return T if `s' is a member of `list'. Do not ignore case by default.
+
+NOTE: `s-member`'s arguments' order is the reverse of CL's `member`.
+
+If `:ignore-case` or `*ignore-case*` are not nil, ignore case (using
+`string-equal` instead of `string=`).
+
+Unlike CL's `member`, `s-member` returns T or NIL, instead of the tail of LIST whose first element satisfies the test.
+
+
 #### prefix?, prefixp and suffix?, suffixp `(items s)`
 
 Return `s` if it is a common prefix (or suffix) between items.
@@ -702,6 +714,7 @@ Note that there is also http://quickdocs.org/string-case/.
 
 ## Changelog
 
+* 0.19, October, 2020: added s-member
 *0.18.1, September, 2020: fix replace-all edge case when the replacement string ends with two backslashes and a single quote.
 * 0.18, June, 2020: added `replace-using`.
 * 0.17, April 2020:
