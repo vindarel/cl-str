@@ -91,6 +91,8 @@ Install with [Quicklisp](https://www.quicklisp.org/beta/):
 
     (ql:quickload :str)
 
+Add it in your .asd's project dependencies, and call functions with the `str` prefix. It is not recommended to `:use :str` in a package. It's safer to use the `str` prefix.
+
 Check its version:
 
     (str:version)
