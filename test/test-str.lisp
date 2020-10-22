@@ -331,6 +331,21 @@
     (is (s-assoc-value alist "another test") (values 2 (second alist)))
     (is (s-assoc-value alist "a third test") (values nil nil))))
 
+(subtest "s-member"
+  (is t (s-member '("bar" "foo") "foo")
+      "downcase")
+  (is t (s-member '("bar" "FOO") "FOO")
+      "upcase")
+  (is nil (s-member '("bar" "foo") "FOO")
+      "significant case by default")
+  (is t (s-member '("bar" "foo") "FOO" :ignore-case t)
+      "with ignore-case")
+  (is t (let ((*ignore-case* t))
+          (s-member '("bar" "foo") "FOO"))
+      "with *ignore-case*")
+  (is t (s-member '("bar" "foo") "FOO" :test #'string-equal)
+      "with :test"))
+
 (subtest "count-substring"
   (is (count-substring nil nil) nil)
   (is (count-substring "" "abc") nil)

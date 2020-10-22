@@ -35,6 +35,7 @@
    :remove-punctuation
    :contains?
    :containsp
+   :s-member
    :trim-left
    :trim-right
    :trim
@@ -132,7 +133,7 @@
 (defvar *whitespaces* '(#\Space #\Newline #\Backspace #\Tab
                         #\Linefeed #\Page #\Return #\Rubout))
 
-(defvar +version+ "0.18.1")
+(defvar +version+ "0.19")
 
 (defun version ()
   (print +version+))
@@ -584,6 +585,20 @@ with `string='.
   The second return value is the cons cell."
   (let ((cons (assoc key alist :test #'string-equal)))
     (values (cdr cons) cons)))
+
+(defun s-member (list s &key (test #'string=)
+                          (ignore-case *ignore-case*))
+  "Return T if `s' is a member of `list'. Do not ignore case by default.
+
+  NOTE: S-MEMBER's arguments' order is the reverse of CL:MEMBER.
+
+  If `:ignore-case' or `*ignore-case*' are not nil, ignore case (using `string-equal' instead of `string=').
+
+  Unlike CL:MEMBER, S-MEMBER returns T or NIL, instead of the tail of LIST whose first element satisfies the test."
+   ;; Maybe: have `str:member' for the same argument order.
+  (when (member s list
+                :test (if ignore-case #'string-equal test))
+    t))
 
 (defun count-substring (substring s &key (start 0) (end nil))
   "Return the non-overlapping occurrences of `substring' in `s'.
