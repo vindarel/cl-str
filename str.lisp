@@ -43,6 +43,7 @@
    :join
    :insert
    :split
+   :rsplit
    :split-omit-nulls
    :substring
    :shorten
@@ -209,6 +210,15 @@
     (if omit-nulls
         (remove-if (lambda (it) (empty? it)) res)
         res)))
+
+(defun rsplit (sep s &key (omit-nulls *omit-nulls*) limit)
+  "Similar to `split`, example we split from the end. In particular,
+the results will be be different when `limit` is provided."
+  (nreverse
+   (mapcar 'nreverse
+           (split (reverse (string sep)) (reverse s)
+                  :omit-nulls omit-nulls
+                  :limit limit))))
 
 (defun split-omit-nulls (separator s)
   "Call split with :omit-nulls to t.
