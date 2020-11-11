@@ -212,7 +212,7 @@
         res)))
 
 (defun rsplit (sep s &key (omit-nulls *omit-nulls*) limit)
-  "Similar to `split`, example we split from the end. In particular,
+  "Similar to `split`, except we split from the end. In particular,
 the results will be be different when `limit` is provided."
   (nreverse
    (mapcar 'nreverse
