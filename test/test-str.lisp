@@ -80,7 +80,9 @@
   (is '("foo" "   ") (split "+" "foo+++   ++++" :omit-nulls t) "omit-nulls and blanks")
   (is '("foo" "bar") (let ((*omit-nulls* t)) (split "+" "foo+++bar++++")) "omit-nulls argument")
   (is '("foo" "   ") (let ((*omit-nulls* t)) (split "+" "foo+++   ++++")) "omit-nulls and blanks")
-  (is '("foo" "bar") (split #\, "foo,bar")))
+  (is '("foo" "bar") (split #\, "foo,bar"))
+  (is '("foo" "ABbar") (split "ABAB" "fooABABABbar"))
+  )
 
 
 (subtest "rsplit"
@@ -91,7 +93,8 @@
   (is '("/var" "log" "mail.log") (rsplit "/" "/var/log/mail.log" :limit 3))
   (is '("" "var" "log" "mail.log") (rsplit "/" "/var/log/mail.log" :limit 4))
   (is '("foo" "bar") (rsplit "LONG" "fooLONGbar"))
-  (is '("foo" "bar" "") (rsplit "LONG" "fooLONGbarLONG")))
+  (is '("foo" "bar" "") (rsplit "LONG" "fooLONGbarLONG" :limit 3))
+  (is '("fooAB" "bar") (rsplit "ABAB" "fooABABABbar")))
 
 (subtest "substring"
   (is "abcd" (substring 0 4 "abcd") "normal case")
