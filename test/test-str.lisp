@@ -81,9 +81,7 @@
   (is '("foo" "bar") (let ((*omit-nulls* t)) (split "+" "foo+++bar++++")) "omit-nulls argument")
   (is '("foo" "   ") (let ((*omit-nulls* t)) (split "+" "foo+++   ++++")) "omit-nulls and blanks")
   (is '("foo" "bar") (split #\, "foo,bar"))
-  (is '("foo" "ABbar") (split "ABAB" "fooABABABbar"))
-  )
-
+  (is '("foo" "ABbar") (split "ABAB" "fooABABABbar")))
 
 (subtest "rsplit"
   (is '("foo" "bar") (rsplit " " "foo bar"))
