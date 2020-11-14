@@ -43,6 +43,7 @@
    :join
    :insert
    :split
+   :rsplit
    :split-omit-nulls
    :substring
    :shorten
@@ -205,10 +206,19 @@
   split at most `limit' - 1 times)."
   ;; cl-ppcre:split doesn't return a null string if the separator appears at the end of s.
   (let* ((limit (or limit (1+ (length s))))
-         (res (ppcre:split (ppcre:quote-meta-chars (string separator)) s :limit limit :start start :end end)))
+         (res (ppcre:split `(:sequence ,(string separator)) s :limit limit :start start :end end)))
     (if omit-nulls
         (remove-if (lambda (it) (empty? it)) res)
         res)))
+
+(defun rsplit (sep s &key (omit-nulls *omit-nulls*) limit)
+  "Similar to `split`, except we split from the end. In particular,
+the results will be be different when `limit` is provided."
+  (nreverse
+   (mapcar 'nreverse
+           (split (reverse (string sep)) (reverse s)
+                  :omit-nulls omit-nulls
+                  :limit limit))))
 
 (defun split-omit-nulls (separator s)
   "Call split with :omit-nulls to t.

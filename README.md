@@ -50,6 +50,7 @@ The only dependency is `cl-ppcre`.
             - [lines `(s &key omit-nulls)`](#lines-s-key-omit-nulls)
             - [unlines `(strings)`](#unlines-strings)
             - [split `(separator s &key omit-nulls limit start end)`](#split-separator-s-key-omit-nulls-limit-start-end)
+            - [rsplit `(separator s &key limit)`](#rsplit-separator-s-key-limit)
             - [split-omit-nulls](#split-omit-nulls)
         - [To and from files](#to-and-from-files)
             - [from-file `(filename)`](#from-file-filename)
@@ -379,6 +380,17 @@ Split into subtrings (unlike cl-ppcre, without a regexp). If
 cl-ppcre has an inconsistency such that when the separator appears at
 the end, it doesn't return a trailing empty string. But we do **since
 v0.14** (october, 2019).
+
+#### rsplit `(separator s &key limit)`
+
+Similar to `split`, but split from the end. In particular, this will
+be different from `split` when a `:limit` is provided, but in more
+obscure cases it can be different when there are multiple different
+ways to split the string.
+
+```lisp
+(rsplit "/" "/var/log/mail.log" :limit 2) ;; => ("/var/log" "mail.log")
+```
 
 ~~~lisp
 (cl-ppcre:split " " "a b c ")
