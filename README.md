@@ -679,9 +679,9 @@ The arguments are in the opposite order of `cl:assoc`'s, but are consistent
 with `alexandria:assoc-value` (and `str`).
 
 ```lisp
-(s-assoc-value '(("hello" . 1) ("world" . 2)) "world")
-;; => 1
-;;    ("world" . 2)
+(s-assoc-value '(("hello" . 1)) "hello")
+;; 1
+;; ("hello" . 1)
 
 (alexandria:assoc-value '(("hello" . 1)) "hello")
 ;; NIL
