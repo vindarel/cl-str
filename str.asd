@@ -12,7 +12,8 @@
   :depends-on (:cl-ppcre
                :cl-ppcre-unicode
                :cl-change-case)
-  :components ((:file "str"))
+  :components ((:file "str")
+               (:static-file "README.md"))
 
   :long-description
   #.(uiop:read-file-string
