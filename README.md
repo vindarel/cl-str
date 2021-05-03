@@ -612,6 +612,12 @@ Uses
 [cl-ppcre:regex-replace-all](http://weitz.de/cl-ppcre/#regex-replace-all)
 but quotes the user input to not treat it as a regex.
 
+If the replacement is only one character, you can use `substitute`:
+
+    (substitute #\+ #\Space "foo bar baz")
+    ;; "foo+bar+baz"
+
+
 #### replace-using `(plist s)`
 
 Replace all associations given by pairs in a plist and return a new string.
