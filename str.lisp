@@ -134,7 +134,7 @@
 (defvar *whitespaces* '(#\Space #\Newline #\Backspace #\Tab
                         #\Linefeed #\Page #\Return #\Rubout))
 
-(defvar +version+ "0.19")
+(defvar +version+ (asdf:component-version (asdf:find-system "str")))
 
 (defun version ()
   (print +version+))
