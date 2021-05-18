@@ -170,18 +170,6 @@ Join strings in list `list-of-strings` with `separator` (either a string or a ch
 (join #\Space '("foo" "bar" "baz")) ;; => "foo bar baz"
 ```
 
-It uses the `{` iteration [format](http://jtra.cz/stuff/lisp/sclr/format.html) directive. See also this [quick reference](http://clqr.boundp.org/download.html):
-
-    (format nil "~{~a+~}" '(:a :b :c))  ;; the + is the separator
-    ;; => "A+B+C+"
-
-We use the caret directive ("escape upward") to not print the
-separator in the end:
-
-    (format nil "~{~a~^+~}" '(:a :b :c))
-    ;; => "A+B+C"
-
-
 #### concat `(&rest strings)`
 
 Join strings into one.
@@ -734,6 +722,7 @@ Note that there is also http://quickdocs.org/string-case/.
 
 ## Changelog
 
+* 0.19.1, May, 2021: speed up `join` (by a factor of 4).
 * 0.19, October, 2020: added s-member
 *0.18.1, September, 2020: fix replace-all edge case when the replacement string ends with two backslashes and a single quote.
 * 0.18, June, 2020: added `replace-using`.

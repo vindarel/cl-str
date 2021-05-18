@@ -174,11 +174,19 @@
                           string)
                 join))
 (defun join (separator strings)
-  "Join all the strings of the list with a separator."
-  (let ((separator (replace-all "~" "~~" (string separator))))
-    (format nil
-            (concatenate 'string "~{~a~^" separator "~}")
-            strings)))
+  "Join all the strings of the list with a separator.
+
+  `separator' can be a string or a character.
+
+  Example:
+  (str:join \",\" '(\"a\" \"b\" \"c\")
+  => \"a,b,c\""
+  (let ((sep (string separator)))
+    (with-output-to-string (out)
+      (loop for (s . rest) on strings
+         do (write-string s out)
+         unless (null rest)
+         do (write-string sep out)))))
 
 (defun insert (string/char index s)
   "Insert the given string (or character) at the `index' into `s' and return a new string.
