@@ -105,6 +105,8 @@
    :alphanump
    :alphanum?
    :alphap
+   :ascii-char-p
+   :ascii-p
    :lettersp
    :letters?
    :lettersnump
@@ -743,6 +745,31 @@ with `string='.
   "Return t if `s' contains at least one letter (considering unicode, not only alpha characters)."
   (when (ppcre:scan "\\p{L}" s)
     t))
+
+(declaim (inline ascii-char-p))
+(defun ascii-char-p (char)
+  "Return t if `char' is an ASCII char (its char code is below 128)."
+  ;; Inspired by Serapeum
+  (when (and (< (char-code char) 128)
+             char)
+    t))
+
+(declaim (ftype (function ((or null character string))
+                          boolean)
+                ascii-p))
+(declaim (inline ascii-p))
+(defun ascii-p (char/s)
+  "If `char/s' is a character, return t if it is an ASCII character (its char code is below 128).
+   If `char/s' is a string, return t if every character is ASCII."
+  ;; Inspired by Serapeum.
+  (declare (type (or null character string) char/s))
+  (when char/s
+    (typecase char/s
+      (character
+       (ascii-char-p char/s))
+      (string
+       ;; we could return the string itself as it is usually done on CL functions.
+       (every #'ascii-char-p char/s)))))
 
 (defun downcasep (s)
   "Return t if all alphabetical characters of `s' are lowercase, and `s' contains at least one letter."

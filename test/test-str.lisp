@@ -436,5 +436,12 @@
   (is (has-letters-p " +,-") nil "has-letters-p default nil")
   (is (lettersnump "abcéß123") t "lettersnump default"))
 
+(subtest "ascii-p"
+  (ok (ascii-p #\a) "with a character")
+  (ok (ascii-p "abc") "with a string")
+  (is (ascii-p "abcéèö") nil "bad string")
+  (is (ascii-p #\é) nil "bad character")
+  (is (ascii-p nil) nil "with nil"))
+
 ;; prove end
 (finalize)

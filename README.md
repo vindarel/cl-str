@@ -565,6 +565,12 @@ letter and all its letters are lowercase or uppercase, respectively.
 
 `lettersnump` also works on unicode letters (as in `^[\\p{L}a-zA-Z0-9]+$`).
 
+#### ascii-p `(char/s)`
+
+Return t if the character / string is an ASCII character / is composed of ASCII characters.
+
+An ASCII character has a `char-code` inferior to 128.
+
 #### digitp `(s)`
 
 Returns t if `s` contains at least one character and all characters are numerical (as for `digit-char-p`).
@@ -722,6 +728,7 @@ Note that there is also http://quickdocs.org/string-case/.
 
 ## Changelog
 
+* 0.20, May, 2021: added `ascii-p`.
 * 0.19.1, May, 2021: speed up `join` (by a factor of 4).
 * 0.19, October, 2020: added s-member
 *0.18.1, September, 2020: fix replace-all edge case when the replacement string ends with two backslashes and a single quote.
