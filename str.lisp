@@ -142,7 +142,7 @@
   (print +version+))
 
 (defun trim-left (s)
-  "Remove whitespaces at the beginning of s. "
+  "Remove whitespaces at the beginning of s."
   (when s
     (string-left-trim *whitespaces* s)))
 
