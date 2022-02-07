@@ -281,6 +281,8 @@
   (is (pad-right 10 "foo") (pad 10 "foo")
       "pad-right is equivalent to pad")
   (is (pad 10 "foo" :pad-side :left) "       foo"
+      "pad with pad-site :left")
+  (is (pad-left 10 "foo") (pad 10 "foo" :pad-side :left)
       "pad-left")
   (is (pad 10 "foo" :pad-side :center) "   foo    "
       "pad with pad-side :center")

@@ -487,15 +487,15 @@ Filling with spaces can be done with format:
 `pad-char': padding character (or string of one character). Defaults to a space."
   (if (< len (length s))
       s
-      (flet ((pad-left (len s &key (pad-char *pad-char*))
+      (flet ((%pad-left (len s &key (pad-char *pad-char*))
                (concatenate 'string
                             (make-string (- len (length s)) :initial-element pad-char)
                             s))
-             (pad-right (len s &key (pad-char *pad-char*))
+             (%pad-right (len s &key (pad-char *pad-char*))
                (concatenate 'string
                             s
                             (make-string (- len (length s)) :initial-element pad-char)))
-             (pad-center (len s &key (pad-char *pad-char*))
+             (%pad-center (len s &key (pad-char *pad-char*))
                (multiple-value-bind (q r)
                    (floor (- len (length s)) 2)
                  (concatenate 'string
@@ -509,11 +509,11 @@ Filling with spaces can be done with format:
               (setf pad-char (coerce pad-char 'character))))
         (case pad-side
           (:right
-           (pad-right len s :pad-char pad-char))
+           (%pad-right len s :pad-char pad-char))
           (:left
-           (pad-left len s :pad-char pad-char))
+           (%pad-left len s :pad-char pad-char))
           (:center
-           (pad-center len s :pad-char pad-char))
+           (%pad-center len s :pad-char pad-char))
           (t
            (error "str:pad: unknown padding side with ~a" pad-side))))))
 
