@@ -44,6 +44,8 @@ The only dependency is `cl-ppcre`.
             - [s-rest `(s)`](#s-rest-s)
             - [s-nth `(n s)`](#s-nth-n-s)
             - [shorten `(len s &key ellipsis)`](#shorten-len-s-key-ellipsis)
+        - [To a fixed length](#to-a-fixed-length)
+            - [fit `(len s)`](#fit-len-s)
         - [To and from lists](#to-and-from-lists)
             - [words `(s)`](#words-s)
             - [unwords `(strings)`](#unwords-strings)
@@ -61,6 +63,7 @@ The only dependency is `cl-ppcre`.
             - [starts-with?, starts-with-p `(start s &key ignore-case)`](#starts-with-starts-with-p-start-s-key-ignore-case)
             - [ends-with?, ends-with-p `(end s &key ignore-case)`](#ends-with-ends-with-p-end-s-key-ignore-case)
             - [contains?, containsp `(substring s &key (ignore-case nil))`](#contains-containsp-substring-s-key-ignore-case-nil)
+            - [s-member `(list s &key (ignore-case *ignore-case*) (test #'string=))`](#s-member-list-s-key-ignore-case-ignore-case-test-string)
             - [prefix?, prefixp and suffix?, suffixp `(items s)`](#prefix-prefixp-and-suffix-suffixp-items-s)
         - [Case](#case)
             - [Functions to change case: camel-case, snake-case,... (new in 0.15, 2019/11)](#functions-to-change-case-camel-case-snake-case-new-in-015-201911)
@@ -68,11 +71,13 @@ The only dependency is `cl-ppcre`.
             - [downcasep, upcasep `(s)`](#downcasep-upcasep-s)
             - [alphap, lettersp `(s)`](#alphap-lettersp-s)
             - [alphanump, lettersnump `(s)`](#alphanump-lettersnump-s)
+            - [ascii-p `(char/s)`](#ascii-p-chars)
             - [digitp `(s)`](#digitp-s)
             - [has-alpha-p, has-letters-p, has-alphanum-p `(s)`](#has-alpha-p-has-letters-p-has-alphanum-p-s)
         - [Others](#others)
             - [replace-first `(old new s)`](#replace-first-old-new-s)
             - [replace-all `(old new s)`](#replace-all-old-new-s)
+            - [replace-using `(plist s)`](#replace-using-plist-s)
             - [remove-punctuation (s &key replacement)](#remove-punctuation-s-key-replacement)
             - [prefix `(list-of-strings)` (renamed in 0.9)](#prefix-list-of-strings-renamed-in-09)
             - [suffix `(list-of-strings)`](#suffix-list-of-strings)
@@ -329,6 +334,70 @@ with `*ellipsis*`.
 (let ((*ellipsis* "-"))
   (shorten 8 "hello world"))
 ;; => "hello w-"
+~~~
+
+### To a fixed length
+
+#### fit `(len s)`
+
+Fit this string to the given length:
+
+- if it's too long, shorten it (showing the `ellipsis`),
+- if it's too short, add paddding (to the side `pad-side`, adding the
+  character `pad-char`).
+
+As such, it accepts the same key arguments as `str:shorten` and
+`str:pad`: `ellipsis`, `pad-side`, `pad-char`…
+
+~~~lisp
+CL-USER> (str:fit 10 "hello" :pad-char "+")
+"hello+++++"
+
+CL-USER> (str:fit 10 "hello world" :ellipsis "…")
+"hello wor…"
+~~~
+
+If, like me, you want to print a list of data as a table, see:
+
+- [cl-ansi-term](https://github.com/vindarel/cl-ansi-term/)
+
+~~~lisp
+CL-USER> (ql:quickload "cl-ansi-term")
+CL-USER> (term:table '(("name" "age" "email")
+              ("me" 7 "some@blah")
+              ("me" 7 "some@with-some-longer.email"))
+             :column-width '(10 4 20))
++---------+---+-------------------+
+|name     |age|email              |
++---------+---+-------------------+
+|me       |7  |some@blah          |
++---------+---+-------------------+
+|me       |7  |some@with-some-l(…)|
++---------+---+-------------------+
+~~~
+
+- [cl-ascii-table](https://github.com/telephil/cl-ascii-table/)
+
+~~~lisp
+CL-USER> (ql:quickload "cl-ascii-table")
+CL-USER> (let ((table (ascii-table:make-table '("Id" "Name" "Amount") :header "Infos")))
+  (ascii-table:add-row table '(1 "Bob" 150))
+  (ascii-table:add-row table '(2 "Joe" 200))
+  (ascii-table:add-separator table)
+  (ascii-table:add-row table '("" "Total" 350))
+  (ascii-table:display table))
+
+.---------------------.
+|        Infos        |
++----+-------+--------+
+| Id | Name  | Amount |
++----+-------+--------+
+|  1 | Bob   |    150 |
+|  2 | Joe   |    200 |
++----+-------+--------+
+|    | Total |    350 |
++----+-------+--------+
+NIL
 ~~~
 
 
@@ -728,6 +797,7 @@ Note that there is also http://quickdocs.org/string-case/.
 
 ## Changelog
 
+* Feb, 2022: added `fit`: fit the string to the given length: either shorten it, either padd padding.
 * 0.20, May, 2021: added `ascii-p`.
 * 0.19.1, May, 2021: speed up `join` (by a factor of 4).
 * 0.19, October, 2020: added s-member
