@@ -82,6 +82,7 @@
    :pad-left
    :pad-right
    :pad-center
+   :fit
    :unlines
    :from-file
    :to-file
@@ -527,6 +528,21 @@ Filling with spaces can be done with format:
 (defun pad-center (len s &key (pad-char *pad-char*))
   (pad len s :pad-side :center :pad-char pad-char))
 
+(defun fit (len s &key (pad-char *pad-char*) (pad-side :right) (ellipsis *ellipsis*))
+  "Fit this string to the given length:
+  - if it's too long, shorten it (showing the `ellipsis'),
+  - if it's too short, add paddding (to the side `pad-side', adding the character `pad-char')."
+  (assert  (and len
+                (numberp len))
+           nil
+           "str:fit error: the given LEN must be a number.")
+  (cond
+    ((= (length s) len)
+     s)
+    ((> (length s) len)
+     (shorten len s :ellipsis ellipsis))
+    ((< (length s) len)
+     (pad len s :pad-side pad-side :pad-char pad-char))))
 (defun from-file (pathname &rest keys)
   "Read the file and return its content as a string.
 

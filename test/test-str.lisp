@@ -293,6 +293,14 @@
   (is (pad -1 "foo") "foo"
       "pad with a short length returns the string."))
 
+(subtest "fit"
+  (is (fit 5 "hello") "hello"
+      "fit - base case, do nothing")
+  (is (fit 10 "hello" :pad-char "+") "hello+++++"
+      "fit -> pad")
+  (is (fit 3 "hello" :ellipsis "…") "he…"
+      "fit -> shorten"))
+
 (subtest "contains?"
   (ok (contains? "foo" "blafoobar") "default")
   (ok (not (contains? "foo" "")) "with no string")
