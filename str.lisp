@@ -17,7 +17,8 @@
                 :constant-case)
   (:export
    ;; cl-change-case functions:
-   ;; (we could use cl-reexport but we don't want Alexandria in the dependencies list)
+   ;; (we don't re-export all of them. Otherwise, use UIOP:define-package's :reexport)
+   ;; (for example, we define downcasep instead of re-exporting string-lower-case-p)
    :no-case
    :camel-case
    :dot-case
