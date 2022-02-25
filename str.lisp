@@ -774,6 +774,11 @@ with `string='.
 
 (defun downcasep (s)
   "Return t if all alphabetical characters of `s' are lowercase, and `s' contains at least one letter."
+  (if (characterp s)
+      (return-from downcasep (lower-case-p s)))
+
+  (assert (or (null s)
+              (stringp s)))
   (if (has-letters-p s)
       (every (lambda (char)
                (if (alpha-char-p char)
@@ -787,12 +792,17 @@ with `string='.
 
 (defun upcasep (s)
   "Return t if all alphabetical characters of `s' are uppercase."
+  (if (characterp s)
+      (return-from upcasep (upper-case-p s)))
+
+  (assert (or (null s)
+              (stringp s)))
   (if (has-letters-p s)
-    (every (lambda (char)
-             (if (alpha-char-p char)
-                 (upper-case-p char)
-                 t))
-           s)))
+      (every (lambda (char)
+               (if (alpha-char-p char)
+                   (upper-case-p char)
+                   t))
+             s)))
 
 (defun upcase? (s)
   "alias for `upcasep'."
