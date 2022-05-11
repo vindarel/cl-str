@@ -861,5 +861,8 @@ Test with [prove](https://github.com/fukamachi/prove).
 ## See also
 
 * the [Common Lisp Cookbook](https://lispcookbook.github.io/cl-cookbook/strings.html), strings page.
+* my [Common Lisp course on Udemy: from novice to effective developer](https://www.udemy.com/course/common-lisp-programming/?referralCode=2F3D698BBC4326F94358). Check out my blog for regular coupons.
+* https://lisp-journey.gitlab.io/
+* video: [how to create a Common Lisp project from scratch with our project generator](https://www.youtube.com/watch?v=XFc513MJjos): it sums up in 5 minutes what took me a much longer time to gather.
 
 Inspired by the famous Emacs Lisp's [s.el](https://github.com/magnars/s.el).
