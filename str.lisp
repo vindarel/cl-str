@@ -384,10 +384,12 @@ It uses `subseq' with differences:
        (not (blankp s))))
 
 (defun starts-with? (start s &key (ignore-case *ignore-case*))
-  "Return t if s starts with the substring 'start', nil otherwise."
-  (when (>= (length s) (length start))
+  "Return t if S starts with the substring `START', nil otherwise.
+
+  START can be a string or a character."
+  (when (>= (length s) (length (string start)))
     (let ((fn (if ignore-case #'string-equal #'string=)))
-      (funcall fn s start :start1 0 :end1 (length start)))))
+      (funcall fn s start :start1 0 :end1 (length (string start))))))
 
 ;; An alias:
 (setf (fdefinition 'starts-with-p) #'starts-with?)
