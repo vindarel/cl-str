@@ -279,6 +279,34 @@
   (is (add-suffix '("foo" nil) "bar") '("foobar" "bar") "with a nil")
   (is (add-suffix '() "foo") '() "with void list"))
 
+(subtest "ensure-starts-with"
+  (is (ensure-starts-with "/" "/abc") "/abc" "default case")
+  (is (ensure-starts-with "/" "abc") "/abc" "default case 2")
+  (is (ensure-starts-with "/" "") "/" "default case void string")
+  (is (ensure-starts-with #\/ "") "/" "with a char")
+  (is (ensure-starts-with "" "") "" "void strings")
+  (is (ensure-starts-with nil "") nil "nil")
+  (is (ensure-starts-with "/" "///abc") "///abc" "lots of slashes, but that's ok"))
+
+(subtest "ensure-ends-with"
+  (is (ensure-ends-with "/" "/abc/") "/abc/" "default case")
+  (is (ensure-ends-with "/" "abc") "abc/" "default case 2")
+  (is (ensure-ends-with "/" "") "/" "default case void string")
+  (is (ensure-ends-with #\/ "") "/" "with a char")
+  (is (ensure-ends-with "" "") "" "void strings")
+  (is (ensure-ends-with nil "") nil "nil")
+  (is (ensure-ends-with "/" "abc///") "abc///" "lots of slashes, but that's ok"))
+
+(subtest "ensure-enclosed-by"
+  (is (ensure-enclosed-by "/" "/abc/") "/abc/" "default case")
+  (is (ensure-enclosed-by "/" "abc") "/abc/" "default case 2")
+  (is (ensure-enclosed-by "/" "") "/" "default case void string")
+  (is (ensure-enclosed-by #\/ "") "/" "with a char")
+  (is (ensure-enclosed-by "" "") "" "void strings")
+  (is (ensure-enclosed-by nil "") nil "nil")
+  (is (ensure-enclosed-by nil nil) nil "nils")
+  (is (ensure-enclosed-by "/" "abc///") "/abc///" "lots of slashes, but that's ok"))
+
 (subtest "pad left, right, center"
   (is (pad 10 "foo") "foo       "
       "pad adds spaces on the right by default.")
