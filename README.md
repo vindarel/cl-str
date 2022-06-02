@@ -557,7 +557,7 @@ Unlike CL's `member`, `s-member` returns T or NIL, instead of the tail of LIST w
 
 #### prefix?, prefixp and suffix?, suffixp `(items s)`
 
-Return `s` if it is a common prefix (or suffix) between items.
+Return `s` if all `items` start (or end) with it.
 
 See also `uiop:string-prefix-p prefix s`, which returns `t` if
 `prefix` is a prefix of `s`,
@@ -797,6 +797,7 @@ Note that there is also http://quickdocs.org/string-case/.
 
 ## Changelog
 
+* June, 2022: small breaking change: fixed `prefix?` when used with a smaller prefix: "f" was not recognized as a prefix of "foobar" and "foobuz", only "foo" was. Now it is fixed. Same for `suffix?`.
 * Feb, 2022: added `fit`: fit the string to the given length: either shorten it, either padd padding.
 * 0.20, May, 2021: added `ascii-p`.
 * 0.19.1, May, 2021: speed up `join` (by a factor of 4).

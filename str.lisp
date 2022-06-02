@@ -460,15 +460,22 @@ A simple call to the built-in `search` (which returns the position of the substr
   (when items
     (reduce #'suffix-1 items)))
 
-(defun prefix? (items s)
-  "Return s if s is common prefix between items."
-  (when (string= s (prefix items)) s))
+(defun prefix? (items prefix)
+  "Return PREFIX if all ITEMS start with it."
+  (when (every (lambda (s)
+                 (str:starts-with-p prefix s))
+               items)
+    prefix))
 
 (setf (fdefinition 'prefixp) #'prefix?)
 
-(defun suffix? (items s)
-  "Return s if s is common suffix between items."
-  (when (string= s (suffix items)) s))
+(defun suffix? (items suffix)
+  "Return `suffix' if all items end with it.
+  Otherwise, retur nil"
+  (when (every (lambda (s)
+               (str:ends-with-p suffix s))
+             items)
+    suffix))
 
 (setf (fdefinition 'suffixp) #'suffix?)
 

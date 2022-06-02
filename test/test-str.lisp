@@ -246,7 +246,9 @@
 
 (subtest "prefix?"
   (is (prefix? '("foobar" "footeam") "foo") "foo" "default case")
-  (is (prefix?'("foobar" "barfoo") "") "" "no common prefix")
+  (is (prefix? '("foobar" "footeam") "f") "f" "smaller prefix")
+  (is (prefix?'("foobar" "barfoo") "x") nil "not a common prefix")
+  (is (prefix?'("foobar" "barfoo") "") "" "prefix is a void string")
   (is (prefix? '("foobar" "") "") "" "with empty string")
   (is (prefix? '("foobar" nil) "") "" "with a nil")
   (is (prefix? '() nil) nil "with void list"))
@@ -260,9 +262,11 @@
 
 (subtest "suffix?"
   (is (suffix? '("foobar" "teambar") "bar") "bar" "default case")
-  (is (suffix?'("foobar" "barfoo") "") "" "no common suffix")
+  (is (suffix? '("foobar" "teambar") "r") "r" "smaller suffix")
+  (is (suffix?'("foobar" "barfoo") "x") nil "not a common suffix")
+  (is (suffix?'("foobar" "barfoo") "") "" "suffix is a a void string")
   (is (suffix? '("foobar" "") "") "" "with empty string")
-  (is (suffix? '("foobar" nil) "") "" "with a nil")
+  (is (suffix? '("foobar" nil) "") nil "with a nil")
   (is (suffix? '() nil) nil "with void list"))
 
 (subtest "add-prefix"
