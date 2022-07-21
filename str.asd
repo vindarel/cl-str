@@ -18,4 +18,4 @@
   :long-description
   #.(uiop:read-file-string
      (uiop:subpathname *load-pathname* "README.md"))
-  :in-order-to ((test-op (test-op :str.test))))
+  :in-order-to ((test-op (test-op "str.test"))))
