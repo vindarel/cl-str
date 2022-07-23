@@ -383,7 +383,7 @@ It uses `subseq' with differences:
   (and (stringp s)
        (not (blankp s))))
 
-(defun starts-with? (start s &key (ignore-case *ignore-case*))
+(defun starts-with-p (start s &key (ignore-case *ignore-case*))
   "Return t if S starts with the substring `START', nil otherwise.
 
   START can be a string or a character."
@@ -392,15 +392,15 @@ It uses `subseq' with differences:
       (funcall fn s start :start1 0 :end1 (length (string start))))))
 
 ;; An alias:
-(setf (fdefinition 'starts-with-p) #'starts-with?)
+(setf (fdefinition 'starts-with?) #'starts-with-p)
 
-(defun ends-with? (end s &key (ignore-case *ignore-case*))
+(defun ends-with-p (end s &key (ignore-case *ignore-case*))
   "Return t if s ends with the substring 'end', nil otherwise."
   (when (>= (length s) (length end))
     (let ((fn (if ignore-case #'string-equal #'string=)))
       (funcall fn s end :start1 (- (length s) (length end))))))
 
-(setf (fdefinition 'ends-with-p) #'ends-with?)
+(setf (fdefinition 'ends-with?) #'ends-with-p)
 
 (defun contains? (substring s &key (ignore-case *ignore-case*))
   "Return `t` if `s` contains `substring`, nil otherwise. Ignore the case with `:ignore-case t`.
