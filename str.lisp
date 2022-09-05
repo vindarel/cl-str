@@ -223,7 +223,7 @@
   (let* ((limit (or limit (1+ (length s))))
          (res (ppcre:split `(:sequence ,(string separator)) s :limit limit :start start :end end)))
     (if omit-nulls
-        (remove-if (lambda (it) (empty? it)) res)
+        (remove-if (lambda (it) (emptyp it)) res)
         res)))
 
 (defun rsplit (sep s &key (omit-nulls *omit-nulls*) limit)
@@ -359,7 +359,7 @@ It uses `subseq' with differences:
 (defun non-empty-string-p (s)
   "Return t if `s' is a string and is non-empty.
 
-  Like `(not (empty? s))', with a `stringp' check. Useful in context."
+  Like `(not (emptyp s))', with a `stringp' check. Useful in context."
   (and (stringp s)
        (not (emptyp s))))
 
@@ -370,7 +370,7 @@ It uses `subseq' with differences:
 (defun non-blank-string-p (s)
   "Return t if `s' is a string and is non blank (it doesn't exclusively contain whitespace characters).
 
-  Like `(not (blank? s))', with a `stringp' check. Useful in context."
+  Like `(not (blankp s))', with a `stringp' check. Useful in context."
   (and (stringp s)
        (not (blankp s))))
 
@@ -398,7 +398,7 @@ A simple call to the built-in `search` (which returns the position of the substr
                (string-downcase s)
                s)))
     ;; weird case: (search "" nil) => 0
-    (if (and (blank? substring)
+    (if (and (blankp substring)
              (null s))
         nil
         (if (search a b)
@@ -577,7 +577,7 @@ Returns the string written to file."
   "Return the first substring of `s'."
   (if (null s)
       nil
-      (if (empty? s)
+      (if (emptyp s)
           ""
           (subseq s 0 1))))
 
@@ -585,7 +585,7 @@ Returns the string written to file."
   "Return the last substring of `s'."
   (if (null s)
       nil
-      (if (empty? s)
+      (if (emptyp s)
           ""
           (substring (1- (length s)) t s))))
 
@@ -593,7 +593,7 @@ Returns the string written to file."
   "Return the rest substring of `s'."
   (if (null s)
       nil
-      (if (empty? s)
+      (if (emptyp s)
           ""
           (subseq s 1))))
 
@@ -604,7 +604,7 @@ Returns the string written to file."
    (string (elt \"test\" 1))
    ;; => \"e\""
   (cond ((null s) nil)
-        ((or (empty? s) (minusp n)) "")
+        ((or (emptyp s) (minusp n)) "")
         ((= n 0) (s-first s))
         (t (s-nth (1- n) (s-rest s)))))
 
@@ -641,7 +641,7 @@ with `string='.
   ;; => 1"
   (unless (or (null s)
               (null substring)
-              (empty? substring))
+              (emptyp substring))
     (loop :with substring-length := (length substring)
        :for position := (search substring s :start2 start :end2 end)
        :then (search substring s :start2 (+ position substring-length) :end2 end)
