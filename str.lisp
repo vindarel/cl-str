@@ -34,7 +34,6 @@
 
    ;; ours:
   #:remove-punctuation
-  #:contains?
   #:containsp
   #:s-member
   #:trim-left
@@ -48,33 +47,25 @@
   #:split-omit-nulls
   #:substring
   #:shorten
-  #:prune ;; "deprecated" in favor of shorten
   #:repeat
   #:replace-first
   #:replace-all
   #:replace-using
   #:concat
-  #:empty?
   #:emptyp
   #:non-empty-string-p
   #:non-blank-string-p
-  #:blank?
   #:blankp
   #:blank-str-p
-  #:blank-str?
   #:words
   #:unwords
   #:lines
-  #:starts-with?
   #:starts-with-p
-  #:ends-with?
   #:ends-with-p
   #:common-prefix
   #:prefix
   #:suffix
-  #:prefix?
   #:prefixp
-  #:suffix?
   #:suffixp
   #:add-prefix
   #:add-suffix
@@ -98,23 +89,35 @@
   #:upcase
   #:capitalize
   #:downcasep
-  #:downcase?
   #:upcasep
-  #:upcase?
   #:has-alphanum-p
   #:has-alpha-p
   #:has-letters-p
   #:alphanump
-  #:alphanum?
   #:alphap
   #:ascii-char-p
   #:ascii-p
   #:lettersp
-  #:letters?
   #:lettersnump
-  #:alpha?
   #:digitp
+  #:numericp ;; An alias for digitp
+
+  ;; "deprecated" alias for predicates
+  #:empty?
+  #:blank?
+  #:starts-with?
+  #:ends-with?
+  #:contains?
+  #:prefix?
+  #:suffix?
+  #:alphanum?
+  #:alpha?
+  #:letters?
   #:digit?
+  #:numeric?
+  #:downcase?
+  #:upcase?
+  #:prune ;; "deprecated" alias for shorten
 
   #:*ignore-case*
   #:*omit-nulls*
@@ -268,10 +271,6 @@ It uses `subseq' with differences:
 (defparameter *ellipsis* "..."
   "Ellipsis to add to the end of a truncated string (see `shorten').")
 
-(defun prune (len s &key (ellipsis *ellipsis*))
-  "Old name for `shorten'."
-  (shorten len s :ellipsis ellipsis))
-
 (defun shorten (len s &key (ellipsis *ellipsis*))
   "If s is longer than `len', truncate it to this length and add the `*ellipsis*' at the end (\"...\" by default). Cut it down to `len' minus the length of the ellipsis."
   (when (and len
@@ -353,13 +352,9 @@ It uses `subseq' with differences:
     (setf s (str:replace-all (nth i plist) (nth (incf i) plist) s)))
   s)
 
-(defun empty? (s)
-  "Is s nil or the empty string ?"
-  (or (null s) (string-equal "" s)))
-
 (defun emptyp (s)
   "Is s nil or the empty string ?"
-  (empty? s))
+  (or (null s) (string-equal "" s)))
 
 (defun non-empty-string-p (s)
   "Return t if `s' is a string and is non-empty.
@@ -368,13 +363,9 @@ It uses `subseq' with differences:
   (and (stringp s)
        (not (emptyp s))))
 
-(defun blank? (s)
-  "Is s nil or only contains whitespaces ?"
-  (or (null s) (string-equal "" (trim s))))
-
 (defun blankp (s)
   "Is s nil or only contains whitespaces ?"
-  (blank? s))
+  (or (null s) (string-equal "" (trim s))))
 
 (defun non-blank-string-p (s)
   "Return t if `s' is a string and is non blank (it doesn't exclusively contain whitespace characters).
@@ -391,18 +382,13 @@ It uses `subseq' with differences:
     (let ((fn (if ignore-case #'string-equal #'string=)))
       (funcall fn s start :start1 0 :end1 (length (string start))))))
 
-;; An alias:
-(setf (fdefinition 'starts-with?) #'starts-with-p)
-
 (defun ends-with-p (end s &key (ignore-case *ignore-case*))
   "Return t if s ends with the substring 'end', nil otherwise."
   (when (>= (length s) (length end))
     (let ((fn (if ignore-case #'string-equal #'string=)))
       (funcall fn s end :start1 (- (length s) (length end))))))
 
-(setf (fdefinition 'ends-with?) #'ends-with-p)
-
-(defun contains? (substring s &key (ignore-case *ignore-case*))
+(defun containsp (substring s &key (ignore-case *ignore-case*))
   "Return `t` if `s` contains `substring`, nil otherwise. Ignore the case with `:ignore-case t`.
 A simple call to the built-in `search` (which returns the position of the substring)."
   (let ((a (if ignore-case
@@ -417,8 +403,6 @@ A simple call to the built-in `search` (which returns the position of the substr
         nil
         (if (search a b)
             t))))
-
-(setf (fdefinition 'containsp) #'contains?)
 
 (defun prefix-1 (item1 item2)
   (subseq item1 0 (or (mismatch item1 item2) (length item1))))
@@ -460,24 +444,20 @@ A simple call to the built-in `search` (which returns the position of the substr
   (when items
     (reduce #'suffix-1 items)))
 
-(defun prefix? (items prefix)
+(defun prefixp (items prefix)
   "Return PREFIX if all ITEMS start with it."
   (when (every (lambda (s)
                  (str:starts-with-p prefix s))
                items)
     prefix))
 
-(setf (fdefinition 'prefixp) #'prefix?)
-
-(defun suffix? (items suffix)
+(defun suffixp (items suffix)
   "Return `suffix' if all items end with it.
   Otherwise, retur nil"
   (when (every (lambda (s)
                (str:ends-with-p suffix s))
              items)
     suffix))
-
-(setf (fdefinition 'suffixp) #'suffix?)
 
 (defun add-prefix (items s)
   "Prepend s to the front of each items."
@@ -701,9 +681,6 @@ with `string='.
   See also `lettersnump' which also works on unicode letters."
   (ppcre:scan "^[a-zA-Z0-9]+$" s))
 
-(defun alphanum? (s)
-  (alphanump s))
-
 (defun alphap (s)
   "Return t if `s' contains at least one character and all characters are alpha (in [a-zA-Z]).
   See also `lettersp', which checks for unicode letters."
@@ -713,9 +690,6 @@ with `string='.
   ;; (ppcre:scan-to-strings "^\\p{L}+$" s)
   )
 
-(defun alpha? (s)
-  (alphap s))
-
 (defun lettersp (s)
   "Return t if `s' contains only letters (including unicode letters).
 
@@ -723,9 +697,6 @@ with `string='.
    (lettersp \"éß\") ;; => t"
   (when (ppcre:scan "^\\p{L}+$" s)
     t))
-
-(defun letters? (s)
-  (lettersp s))
 
 (defun lettersnump (s)
   "Return t if `s' contains only letters (including unicode letters) and digits."
@@ -740,16 +711,8 @@ with `string='.
              (digit-char-p char))
            s)))
 
-(defun digit? (s)
-  (digitp s))
-
-
-(defun numericp (s)
-  "alias for `digitp'."
-  (digitp s))
-
-(defun numeric? (s)
-  (numericp s))
+;; An alias for digitp
+(setf (fdefinition 'numericp) #'digitp)
 
 (defun has-alphanum-p (s)
   "Return t if `s' has at least one alphanumeric character."
@@ -807,10 +770,6 @@ with `string='.
                    t))
              s)))
 
-(defun downcase? (s)
-  "alias for `downcasep'."
-  (downcasep s))
-
 (defun upcasep (s)
   "Return t if all alphabetical characters of `s' are uppercase."
   (if (characterp s)
@@ -824,10 +783,6 @@ with `string='.
                    (upper-case-p char)
                    t))
              s)))
-
-(defun upcase? (s)
-  "alias for `upcasep'."
-  (upcasep s))
 
 (defun remove-punctuation (s &key (replacement " "))
   "Remove the punctuation characters from `s', replace them with `replacement' (defaults to a space) and strip continuous whitespace."
@@ -846,3 +801,20 @@ with `string='.
     (if (null s)
         ""
         (replace-non-word s))))
+
+;; "deprecated" function alias
+(setf (fdefinition 'prune)        #'shorten
+      (fdefinition 'empty?)       #'emptyp
+      (fdefinition 'blank?)       #'blankp
+      (fdefinition 'starts-with?) #'starts-with-p
+      (fdefinition 'ends-with?)   #'ends-with-p
+      (fdefinition 'contains?)    #'containsp
+      (fdefinition 'prefix?)      #'prefixp
+      (fdefinition 'suffix?)      #'suffixp
+      (fdefinition 'alphanum?)    #'alphanump
+      (fdefinition 'alpha?)       #'alphap
+      (fdefinition 'letters?)     #'lettersp
+      (fdefinition 'digit?)       #'digitp
+      (fdefinition 'numeric?)     #'digitp
+      (fdefinition 'downcase?)    #'downcasep
+      (fdefinition 'upcase?)      #'upcasep)
