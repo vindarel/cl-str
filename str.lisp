@@ -294,11 +294,12 @@ It uses `subseq' with differences:
 
 (defun lines (s &key (omit-nulls *omit-nulls*))
   "Split the string by newline characters and return a list of lines. A terminal newline character does NOT result in an extra empty string."
-  (when (and s (> (length s) 0))
-    (let ((end (if (eql #\Newline (elt s (1- (length s))))
-                   (1- (length s))
-                   nil)))
-     (split #\NewLine s :omit-nulls omit-nulls :end end))))
+  (let ((s-length (length s)))
+    (when (and s (> s-length 0))
+      (let ((end (if (eql #\Newline (elt s (1- s-length)))
+                     (1- s-length)
+                     nil)))
+        (split #\NewLine s :omit-nulls omit-nulls :end end)))))
 
 (defun unlines (strings)
   "Join the list of strings with a newline character."
@@ -378,15 +379,18 @@ It uses `subseq' with differences:
   "Return t if S starts with the substring `START', nil otherwise.
 
   START can be a string or a character."
-  (when (>= (length s) (length (string start)))
-    (let ((fn (if ignore-case #'string-equal #'string=)))
-      (funcall fn s start :start1 0 :end1 (length (string start))))))
+  (let ((start-length (length (string start))))
+    (when (>= (length s) start-length)
+      (let ((fn (if ignore-case #'string-equal #'string=)))
+        (funcall fn s start :start1 0 :end1 start-length)))))
 
 (defun ends-with-p (end s &key (ignore-case *ignore-case*))
   "Return t if s ends with the substring 'end', nil otherwise."
-  (when (>= (length s) (length end))
-    (let ((fn (if ignore-case #'string-equal #'string=)))
-      (funcall fn s end :start1 (- (length s) (length end))))))
+  (let ((s-length (length s))
+        (end-length (length end)))
+    (when (>= s-length end-length)
+      (let ((fn (if ignore-case #'string-equal #'string=)))
+        (funcall fn s end :start1 (- s-length end-length))))))
 
 (defun containsp (substring s &key (ignore-case *ignore-case*))
   "Return `t` if `s` contains `substring`, nil otherwise. Ignore the case with `:ignore-case t`.
@@ -476,33 +480,33 @@ Filling with spaces can be done with format:
 
 `pad-side': to pad `:right' (the default), `:left' or `:center'.
 `pad-char': padding character (or string of one character). Defaults to a space."
-  (if (< len (length s))
-      s
-      (flet ((%pad-left ()
-               (concatenate 'string
-                            (make-string (- len (length s)) :initial-element pad-char)
-                            s))
-             (%pad-right ()
-               (concatenate 'string
-                            s
-                            (make-string (- len (length s)) :initial-element pad-char)))
-             (%pad-center ()
-               (multiple-value-bind (q r)
-                   (floor (- len (length s)) 2)
+  (let ((s-length (length s)))
+    (if (< len s-length)
+        s
+        (flet ((%pad-left ()
                  (concatenate 'string
-                              (make-string q :initial-element pad-char)
+                              (make-string (- len s-length) :initial-element pad-char)
+                              s))
+               (%pad-right ()
+                 (concatenate 'string
                               s
-                              (make-string (+ q r) :initial-element pad-char)))))
-
-        (unless (characterp pad-char)
-          (if (>= (length pad-char) 2)
-              (error "pad-char must be a character or a string of one character.")
-              (setf pad-char (coerce pad-char 'character))))
-        (case pad-side
-          (:right (%pad-right))
-          (:left (%pad-left))
-          (:center (%pad-center))
-          (t (error "str:pad: unknown padding side with ~a" pad-side))))))
+                              (make-string (- len s-length) :initial-element pad-char)))
+               (%pad-center ()
+                 (multiple-value-bind (q r)
+                     (floor (- len s-length) 2)
+                   (concatenate 'string
+                                (make-string q :initial-element pad-char)
+                                s
+                                (make-string (+ q r) :initial-element pad-char)))))
+          (unless (characterp pad-char)
+            (if (>= (length pad-char) 2)
+                (error "pad-char must be a character or a string of one character.")
+                (setf pad-char (coerce pad-char 'character))))
+          (case pad-side
+            (:right (%pad-right))
+            (:left (%pad-left))
+            (:center (%pad-center))
+            (t (error "str:pad: unknown padding side with ~a" pad-side)))))))
 
 (defun pad-left (len s &key (pad-char *pad-char*))
   (pad len s :pad-side :left :pad-char pad-char))
@@ -521,13 +525,15 @@ Filling with spaces can be done with format:
                 (numberp len))
            nil
            "str:fit error: the given LEN must be a number.")
-  (cond
-    ((= (length s) len)
-     s)
-    ((> (length s) len)
-     (shorten len s :ellipsis ellipsis))
-    ((< (length s) len)
-     (pad len s :pad-side pad-side :pad-char pad-char))))
+  (let ((s-length (length s)))
+    (cond
+      ((= s-length len)
+       s)
+      ((> s-length len)
+       (shorten len s :ellipsis ellipsis))
+      ((< s-length len)
+       (pad len s :pad-side pad-side :pad-char pad-char)))))
+
 (defun from-file (pathname &rest keys)
   "Read the file and return its content as a string.
 
