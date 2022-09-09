@@ -401,11 +401,11 @@ A simple call to the built-in `search` (which returns the position of the substr
                (string-downcase s)
                s)))
     ;; weird case: (search "" nil) => 0
-    (if (and (blankp substring)
-             (null s))
-        nil
-        (if (search a b)
-            t))))
+    (cond ((and (blankp substring)
+                (null s))
+           nil)
+          ((search a b)
+           t))))
 
 (defun prefix-1 (item1 item2)
   (subseq item1 0 (or (mismatch item1 item2) (length item1))))
@@ -577,27 +577,30 @@ Returns the string written to file."
 
 (defun s-first (s)
   "Return the first substring of `s'."
-  (if (null s)
-      nil
-      (if (emptyp s)
-          ""
-          (subseq s 0 1))))
+  (cond ((null s)
+         nil)
+        ((emptyp s)
+         "")
+        (t
+         (subseq s 0 1))))
 
 (defun s-last (s)
   "Return the last substring of `s'."
-  (if (null s)
-      nil
-      (if (emptyp s)
-          ""
-          (substring (1- (length s)) t s))))
+  (cond ((null s)
+         nil)
+        ((emptyp s)
+         "")
+        (t
+         (substring (1- (length s)) t s))))
 
 (defun s-rest (s)
   "Return the rest substring of `s'."
-  (if (null s)
-      nil
-      (if (emptyp s)
-          ""
-          (subseq s 1))))
+  (cond ((null s)
+         nil)
+        ((emptyp s)
+         "")
+        (t
+         (subseq s 1))))
 
 (defun s-nth (n s)
   "Return the nth substring of `s'.
