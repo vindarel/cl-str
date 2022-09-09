@@ -763,8 +763,8 @@ with `string-equal' (case-insensitive).
 
 (defun downcasep (s)
   "Return t if all alphabetical characters of `s' are lowercase, and `s' contains at least one letter."
-  (if (characterp s)
-      (return-from downcasep (lower-case-p s)))
+  (when (characterp s)
+    (return-from downcasep (lower-case-p s)))
 
   (assert (or (null s)
               (stringp s)))
@@ -777,8 +777,8 @@ with `string-equal' (case-insensitive).
 
 (defun upcasep (s)
   "Return t if all alphabetical characters of `s' are uppercase."
-  (if (characterp s)
-      (return-from upcasep (upper-case-p s)))
+  (when (characterp s)
+    (return-from upcasep (upper-case-p s)))
 
   (assert (or (null s)
               (stringp s)))
