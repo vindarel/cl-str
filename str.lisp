@@ -662,21 +662,21 @@ with `string='.
   "Return the lowercase version of `s'.
   Calls the built-in `string-downcase', but returns nil if `s' is
   nil (instead of the string \"nil\")."
-  (unless (null s)
+  (when s
     (string-downcase s)))
 
 (defun upcase (s)
   "Return the uppercase version of `s'.
   Call the built-in `string-upcase', but return nil if `s' is
   nil (instead of the string \"NIL\")."
-  (unless (null s)
+  (when s
     (string-upcase s)))
 
 (defun capitalize (s)
   "Return the capitalized version of `s'.
   Calls the built-in `string-capitalize', but returns nil if `s' is
   nil (instead of the string \"Nil\")."
-  (unless (null s)
+  (when s
     (string-capitalize s)))
 
 ;;; Case predicates.
