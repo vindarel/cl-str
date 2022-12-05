@@ -616,7 +616,7 @@ Returns the string written to file."
 
 (defun s-assoc-value (alist key)
   "Return the value of a cons cell in `alist' with key `key', tested
-with `string='.
+with `string-equal' (case-insensitive).
   The second return value is the cons cell."
   (let ((cons (assoc key alist :test #'string-equal)))
     (values (cdr cons) cons)))
