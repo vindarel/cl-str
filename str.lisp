@@ -209,9 +209,10 @@
     ((> index (length s))
      s)
     (t
-     (concat (subseq s 0 index)
-             string/char
-             (subseq s index)))))
+     (concatenate 'string
+                  (subseq s 0 index)
+                  string/char
+                  (subseq s index)))))
 
 (defun split (separator s &key (omit-nulls *omit-nulls*) limit (start 0) end)
   "Split s into substring by separator (cl-ppcre takes a regex, we do not).
@@ -314,14 +315,14 @@ It uses `subseq' with differences:
 (defun replace-first (old new s)
   "Replace the first occurence of `old` by `new` in `s`. Arguments are not regexs."
   (let* ((ppcre:*allow-quoting* t)
-         (old (concat "\\Q" old))) ;; treat metacharacters as normal.
+         (old (concatenate 'string "\\Q" old))) ;; treat metacharacters as normal.
     ;; We need the (list new): see !52
     (ppcre:regex-replace old s (list new))))
 
 (defun replace-all (old new s)
   "Replace all occurences of `old` by `new` in `s`. Arguments are not regexs."
   (let* ((ppcre:*allow-quoting* t)
-         (old (concat "\\Q" old))) ;; treat metacharacters as normal.
+         (old (concatenate 'string "\\Q" old))) ;; treat metacharacters as normal.
     (ppcre:regex-replace-all old s (list new))))
 
 ;; About the (list new) above:
@@ -483,17 +484,20 @@ Filling with spaces can be done with format:
     (if (< len s-length)
         s
         (flet ((%pad-left ()
-                 (concat (make-string (- len s-length) :initial-element pad-char)
-                         s))
+                 (concatenate 'string
+                              (make-string (- len s-length) :initial-element pad-char)
+                              s))
                (%pad-right ()
-                 (concat s
-                         (make-string (- len s-length) :initial-element pad-char)))
+                 (concatenate 'string
+                              s
+                              (make-string (- len s-length) :initial-element pad-char)))
                (%pad-center ()
                  (multiple-value-bind (q r)
                      (floor (- len s-length) 2)
-                   (concat (make-string q :initial-element pad-char)
-                           s
-                           (make-string (+ q r) :initial-element pad-char)))))
+                   (concatenate 'string
+                                (make-string q :initial-element pad-char)
+                                s
+                                (make-string (+ q r) :initial-element pad-char)))))
           (unless (characterp pad-char)
             (if (>= (length pad-char) 2)
                 (error "pad-char must be a character or a string of one character.")
