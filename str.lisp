@@ -62,7 +62,6 @@
   #:lines
   #:starts-with-p
   #:ends-with-p
-  #:common-prefix
   #:prefix
   #:suffix
   #:prefixp
@@ -118,6 +117,7 @@
   #:downcase?
   #:upcase?
   #:prune ;; "deprecated" alias for shorten
+  #:common-prefix ;; "deprecated" alias for prefix
 
   #:*ignore-case*
   #:*omit-nulls*
@@ -425,10 +425,6 @@ A simple call to the built-in `search` (which returns the position of the substr
   "
   (when items
     (reduce #'prefix-1 items)))
-
-(defun common-prefix (items)
-  (warn "common-prefix is deprecated, use prefix instead.")
-  (prefix items))
 
 (defun suffix-1 (item1 item2)
   (subseq item1 (or (mismatch item1 item2 :from-end t) 0)))
@@ -813,6 +809,7 @@ with `string-equal' (case-insensitive).
 
 ;; "deprecated" function alias
 (setf (fdefinition 'prune)        #'shorten
+      (fdefinition 'common-prefix) #'prefix
       (fdefinition 'empty?)       #'emptyp
       (fdefinition 'blank?)       #'blankp
       (fdefinition 'starts-with?) #'starts-with-p
