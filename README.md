@@ -58,13 +58,13 @@ The only dependency is `cl-ppcre`.
             - [from-file `(filename)`](#from-file-filename)
             - [to-file `(filename s)`](#to-file-filename-s)
         - [Predicates](#predicates)
-            - [empty?, emptyp `(s)`](#empty-emptyp-s)
-            - [blank?, blankp `(s)`](#blank-blankp-s)
-            - [starts-with?, starts-with-p `(start s &key ignore-case)`](#starts-with-starts-with-p-start-s-key-ignore-case)
-            - [ends-with?, ends-with-p `(end s &key ignore-case)`](#ends-with-ends-with-p-end-s-key-ignore-case)
-            - [contains?, containsp `(substring s &key (ignore-case nil))`](#contains-containsp-substring-s-key-ignore-case-nil)
+            - [emptyp `(s)`](#empty-emptyp-s)
+            - [blankp `(s)`](#blank-blankp-s)
+            - [starts-with-p `(start s &key ignore-case)`](#starts-with-starts-with-p-start-s-key-ignore-case)
+            - [ends-with-p `(end s &key ignore-case)`](#ends-with-ends-with-p-end-s-key-ignore-case)
+            - [containsp `(substring s &key (ignore-case nil))`](#contains-containsp-substring-s-key-ignore-case-nil)
             - [s-member `(list s &key (ignore-case *ignore-case*) (test #'string=))`](#s-member-list-s-key-ignore-case-ignore-case-test-string)
-            - [prefix?, prefixp and suffix?, suffixp `(items s)`](#prefix-prefixp-and-suffix-suffixp-items-s)
+            - [prefixp and suffixp `(items s)`](#prefix-prefixp-and-suffix-suffixp-items-s)
         - [Case](#case)
             - [Functions to change case: camel-case, snake-case,... (new in 0.15, 2019/11)](#functions-to-change-case-camel-case-snake-case-new-in-015-201911)
             - [downcase, upcase, capitalize `(s)` fixing a built-in suprise. (new in 0.11)](#downcase-upcase-capitalize-s-fixing-a-built-in-suprise-new-in-011)
@@ -124,13 +124,13 @@ Consequently we can also manage them with global parameters:
 
 ~~~lisp
 (let ((str:*ignore-case* t))
-  (str:ends-with? "BAR" "foobar"))
+  (str:ends-with-p "BAR" "foobar"))
 ~~~
 
 is equivalent to
 
 ~~~lisp
-(str:ends-with? "BAR" "foobar" :ignore-case t)
+(str:ends-with-p "BAR" "foobar" :ignore-case t)
 ~~~
 
 ## Functions
@@ -495,19 +495,19 @@ Returns the string written to file.
 
 ### Predicates
 
-#### empty?, emptyp `(s)`
+#### emptyp `(s)`
 
 True if `s` is nil or the empty string:
 
 ```lisp
-  (empty? nil) ;; => T
-  (empty? "")  ;; => T
-  (empty? " ") ;; => NIL
+  (emptyp nil) ;; => T
+  (emptyp "")  ;; => T
+  (emptyp " ") ;; => NIL
 ```
 
 See also `str:non-empty-string-p`, which adds a `stringp` check.
 
-#### blank?, blankp `(s)`
+#### blankp `(s)`
 
 True if `s` is empty or only contains whitespaces.
 
@@ -517,25 +517,25 @@ True if `s` is empty or only contains whitespaces.
 
 See also `str:non-blank-string-p`.
 
-#### starts-with?, starts-with-p `(start s &key ignore-case)`
+#### starts-with-p `(start s &key ignore-case)`
 
 True if `s` starts with the substring `start`, nil otherwise. Ignore
 case by default.
 
-    (starts-with? "foo" "foobar") ;; => T
-    (starts-with? "FOO" "foobar") ;; => NIL
-    (starts-with? "FOO" "foobar" :ignore-case t) ;; => T
+    (starts-with-p "foo" "foobar") ;; => T
+    (starts-with-p "FOO" "foobar") ;; => NIL
+    (starts-with-p "FOO" "foobar" :ignore-case t) ;; => T
 
 Calls `string=` or `string-equal` depending on the case, with their
 `:start` and `:end` delimiters.
 
-#### ends-with?, ends-with-p `(end s &key ignore-case)`
+#### ends-with-p `(end s &key ignore-case)`
 
 True if `s` ends with the substring `end`. Ignore case by default.
 
-    (ends-with? "bar" "foobar") ;; => T
+    (ends-with-p "bar" "foobar") ;; => T
 
-#### contains?, containsp `(substring s &key (ignore-case nil))`
+#### containsp `(substring s &key (ignore-case nil))`
 
 Return true if `s` contains `substring`, nil otherwise. Ignore the
 case with `:ignore-case t` (don't ignore by default).
@@ -555,7 +555,7 @@ If `:ignore-case` or `*ignore-case*` are not nil, ignore case (using
 Unlike CL's `member`, `s-member` returns T or NIL, instead of the tail of LIST whose first element satisfies the test.
 
 
-#### prefix?, prefixp and suffix?, suffixp `(items s)`
+#### prefixp and suffixp `(items s)`
 
 Return `s` if all `items` start (or end) with it.
 
