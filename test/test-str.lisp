@@ -15,7 +15,10 @@
   (is "rst" (trim "  rst  "))
   (is nil (trim-left nil))
   (is nil (trim-right nil))
-  (is nil (trim nil)))
+  (is nil (trim nil))
+  (is "rst " (trim-left "abrst " :char-bag "ab"))
+  (is " rst" (trim-right " rstbc" :char-bag (list #\b #\c)))
+  (is "rst" (trim "drste" :char-bag "de")))
 
 (subtest "Collapse whitespaces"
   (is "foo bar baz" (collapse-whitespaces "foo  bar

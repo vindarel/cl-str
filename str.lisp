@@ -146,23 +146,29 @@
 (defun version ()
   (print +version+))
 
-(defun trim-left (s)
-  "Remove whitespaces at the beginning of s."
-  (when s
-    (string-left-trim *whitespaces* s)))
+(defun trim-left (s &key (char-bag *whitespaces*))
+  "Removes all characters in `char-bag` (default: whitespaces) at the end of `s`.
+   If supplied, char-bag has to be a sequence (e.g. string or list of characters).
 
-(defun trim-right (s)
-  "Remove whitespaces at the end of s."
+   Example: (trim-left \"abrstcd\" :char-bag (list #\a #\d) ;; => \"abrstc\""
   (when s
-    (string-right-trim *whitespaces* s)))
+    (string-left-trim char-bag s)))
 
-(defun trim (s)
-  "Remove whitespaces at the beginning and end of s.
-@begin[lang=lisp](code)
-(trim \"  foo \") ;; => \"foo\"
-@end(code)"
+(defun trim-right (s &key (char-bag *whitespaces*))
+  "Removes all characters in `char-bag` (default: whitespaces) at the end of `s`.
+   If supplied, char-bag has to be a sequence (e.g. string or list of characters).
+
+   Example: (trim-right \"abrstcd\" :char-bag \"ad\")) ;; => \"abrstc\""
   (when s
-    (string-trim *whitespaces* s)))
+    (string-right-trim char-bag s)))
+
+(defun trim (s &key (char-bag *whitespaces*))
+  "Removes all characters in `char-bag` (default: whitespaces) at the beginning and end of `s`.
+   If supplied, char-bag has to be a sequence (e.g. string or list of characters).
+
+   Example: (trim \"abrstcd\" :char-bag (concat \"a\" \"d\")) ;; => \"brstc\""
+  (when s
+    (string-trim char-bag s)))
 
 (defun collapse-whitespaces (s)
   "Ensure there is only one space character between words.

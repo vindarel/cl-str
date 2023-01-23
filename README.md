@@ -137,11 +137,15 @@ is equivalent to
 
 ### Tweak whitespace
 
-#### trim `(s)`
-Remove whitespaces at the beginning and end of `s`.
+#### trim `(s &key (char-bag *whitespaces*))`
+Removes all characters in `char-bag` (default: whitespaces) at the beginning and end of `s`.
+If supplied, `char-bag` has to be a sequence (e.g. string or list of characters).
 
 ```lisp
 (trim "  rst  ") ;; => "rst"
+(trim "abrstcd" :char-bag "ad") ;; => "brstc"
+(trim "efrstg" :char-bag (list #\e #\g)) => "frst"
+(trim "cdefgh" :char-bag (concat "c" "d" "h")) => "efg"
 ```
 
 Also `trim-left` and `trim-right`.
