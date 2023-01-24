@@ -147,10 +147,11 @@
   (print +version+))
 
 (defun trim-left (s &key (char-bag *whitespaces*))
-  "Removes all characters in `char-bag` (default: whitespaces) at the end of `s`.
+  "Removes all characters in `char-bag` (default: whitespaces) at the beginning of `s`.
    If supplied, char-bag has to be a sequence (e.g. string or list of characters).
 
-   Example: (trim-left \"abrstcd\" :char-bag (list #\a #\d) ;; => \"abrstc\""
+   Examples: (trim-left \"  foo \") => \"foo \"
+             (trim-left \"abrstcd\" :char-bag (list #\a #\d) ;; => \"abrstc\""
   (when s
     (string-left-trim char-bag s)))
 
@@ -158,7 +159,8 @@
   "Removes all characters in `char-bag` (default: whitespaces) at the end of `s`.
    If supplied, char-bag has to be a sequence (e.g. string or list of characters).
 
-   Example: (trim-right \"abrstcd\" :char-bag \"ad\")) ;; => \"abrstc\""
+   Examples: (trim-right \"  foo \") => \"  foo\"
+             (trim-right \"abrstcd\" :char-bag \"ad\")) ;; => \"abrstc\""
   (when s
     (string-right-trim char-bag s)))
 
@@ -166,7 +168,8 @@
   "Removes all characters in `char-bag` (default: whitespaces) at the beginning and end of `s`.
    If supplied, char-bag has to be a sequence (e.g. string or list of characters).
 
-   Example: (trim \"abrstcd\" :char-bag (concat \"a\" \"d\")) ;; => \"brstc\""
+   Examples: (trim \"  foo \") => \"foo\"
+             (trim \"abrstcd\" :char-bag (concat \"a\" \"d\")) => \"brstc\""
   (when s
     (string-trim char-bag s)))
 
