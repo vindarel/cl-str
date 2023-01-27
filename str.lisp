@@ -394,9 +394,11 @@ It uses `subseq' with differences:
         (funcall fn s start :start1 0 :end1 start-length)))))
 
 (defun ends-with-p (end s &key (ignore-case *ignore-case*))
-  "Return t if s ends with the substring 'end', nil otherwise."
+  "Return t if s ends with the substring 'end', nil otherwise.
+
+  END can be a character or a string."
   (let ((s-length (length s))
-        (end-length (length end)))
+        (end-length (length (string end))))
     (when (>= s-length end-length)
       (let ((fn (if ignore-case #'string-equal #'string=)))
         (funcall fn s end :start1 (- s-length end-length))))))

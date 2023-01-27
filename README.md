@@ -539,6 +539,8 @@ True if `s` ends with the substring `end`. Ignore case by default.
 
     (ends-with-p "bar" "foobar") ;; => T
 
+`end` can be a string or a character.
+
 #### containsp `(substring s &key (ignore-case nil))`
 
 Return true if `s` contains `substring`, nil otherwise. Ignore the
