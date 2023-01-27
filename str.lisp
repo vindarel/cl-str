@@ -151,7 +151,8 @@
    If supplied, char-bag has to be a sequence (e.g. string or list of characters).
 
    Examples: (trim-left \"  foo \") => \"foo \"
-             (trim-left \"abrstcd\" :char-bag (list #\a #\d) ;; => \"abrstc\""
+             (trim-right \"+-*foo-bar*-+\" :char-bag \"+-*\") => \"foo-bar*-+\"
+             (trim-left \"afood\" :char-bag (list #\a #\d) ;; => \"food\""
   (when s
     (string-left-trim char-bag s)))
 
@@ -160,7 +161,8 @@
    If supplied, char-bag has to be a sequence (e.g. string or list of characters).
 
    Examples: (trim-right \"  foo \") => \"  foo\"
-             (trim-right \"abrstcd\" :char-bag \"ad\")) ;; => \"abrstc\""
+             (trim-right \"+-*foo-bar*-+\" :char-bag \"+-*\") => \"+-*foo-bar\"
+             (trim-right \"afood\" :char-bag (list #\a #\d) ;; => \"afoo\""
   (when s
     (string-right-trim char-bag s)))
 
@@ -169,7 +171,8 @@
    If supplied, char-bag has to be a sequence (e.g. string or list of characters).
 
    Examples: (trim \"  foo \") => \"foo\"
-             (trim \"abrstcd\" :char-bag (concat \"a\" \"d\")) => \"brstc\""
+             (trim \"+-*foo-bar*-+\" :char-bag \"+-*\") => \"foo-bar\"
+             (trim \"afood\" :char-bag (str:concat \"a\" \"d\")) => \"foo\""
   (when s
     (string-trim char-bag s)))
 

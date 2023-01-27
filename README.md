@@ -138,14 +138,15 @@ is equivalent to
 ### Tweak whitespace
 
 #### trim `(s &key (char-bag *whitespaces*))`
+
 Removes all characters in `char-bag` (default: whitespaces) at the beginning and end of `s`.
 If supplied, `char-bag` has to be a sequence (e.g. string or list of characters).
 
 ```lisp
-(trim "  rst  ") ;; => "rst"
-(trim "abrstcd" :char-bag "ad") ;; => "brstc"
-(trim "efrstg" :char-bag (list #\e #\g)) => "frst"
-(trim "cdefgh" :char-bag (concat "c" "d" "h")) => "efg"
+(str:trim "  rst  ") ;; => "rst"
+(str:trim "+-*foo-bar*-+" :char-bag "+-*") => "foo-bar"
+(str:trim "afood" :char-bag (concat "a" "d")) => "foo""
+(str:trim "cdoooh" :char-bag (str:concat "c" "d" "h")) => "ooo"
 ```
 
 Also `trim-left` and `trim-right`.
@@ -159,7 +160,7 @@ where whitespaces are `'(#\Space #\Newline #\Backspace #\Tab #\Linefeed #\Page #
 Ensure there is only one space character between words. Remove newlines.
 
 ~~~lisp
-(collapse-whitespaces "foo  bar
+(str:collapse-whitespaces "foo  bar
 
 
   baz")
@@ -803,6 +804,8 @@ Note that there is also http://quickdocs.org/string-case/.
 
 ## Changelog
 
+* January, 2023: added the `:char-barg` parameter to `trim`, `trim-left`, `trim-right`.
+  - minor: `ends-with-p` now works with a character.
 * June, 2022: small breaking change: fixed `prefix?` when used with a smaller prefix: "f" was not recognized as a prefix of "foobar" and "foobuz", only "foo" was. Now it is fixed. Same for `suffix?`.
 * Feb, 2022: added `fit`: fit the string to the given length: either shorten it, either padd padding.
 * 0.20, May, 2021: added `ascii-p`.
