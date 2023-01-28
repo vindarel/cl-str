@@ -138,8 +138,8 @@
 (defparameter *pad-side* :right
   "The side of the string to add padding characters to. Can be one of :right, :left and :center.")
 
-(defvar *whitespaces* '(#\Space #\Newline #\Backspace #\Tab
-                        #\Linefeed #\Page #\Return #\Rubout))
+(defvar *whitespaces* '(#\Backspace #\Tab #\Linefeed #\Newline #\Vt #\Page
+                        #\Return #\Space #\Rubout #\Next-Line #\No-break_space))
 
 (defvar +version+ (asdf:component-version (asdf:find-system "str")))
 
