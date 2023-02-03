@@ -124,6 +124,7 @@
   #:*ellipsis*
   #:*pad-char*
   #:*pad-side*
+  #:*whitespaces*
   #:version
   #:+version+
   #:?))
