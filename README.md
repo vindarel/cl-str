@@ -9,7 +9,7 @@ Why ?
 
 * modernity, simplicity and discoverability:
 
-  - `(str:trim s)` instead of `  (string-trim '(#\Space #\Newline #\Backspace #\Tab #\Linefeed #\Page #\Return #\Rubout) s))`,
+  - `(str:trim s)` instead of `(string-trim '(#\Backspace #\Tab #\Linefeed #\Newline #\Vt #\Page #\Return #\Space #\Rubout #\Next-Line #\No-break_space) s))`,
 or `str:concat strings` instead of an unusual `format` construct; one discoverable library instead of many;
 
 * consistence and composability, where `s` is always the last argument, which makes it
