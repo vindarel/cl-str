@@ -78,9 +78,9 @@
    :suffixp
    :add-prefix
    :add-suffix
-   :ensure-starts-with
-   :ensure-ends-with
-   :ensure-enclosed-by
+   :ensure-start
+   :ensure-end
+   :ensure-wrapped-in
    :enclosed-by-p
 
    :pad
@@ -494,16 +494,16 @@ A simple call to the built-in `search` (which returns the position of the substr
   "Append s to the end of eahc items."
   (mapcar #'(lambda (item) (concat item s)) items))
 
-(defun ensure-starts-with (start s)
+(defun ensure-start (start s)
   "Ensure that `s' starts with `start'.
   Return a new string with its prefix added, if necessary.
 
 Example:
 
-  (str:ensure-starts-with \"/\" \"abc/\") ;; => \"/abc/\"
-  (str:ensure-starts-with \"/\" \"/abc/\") ;; => \"/abc/\" (does nothing)
+  (str:ensure-start \"/\" \"abc/\") ;; => \"/abc/\"
+  (str:ensure-start \"/\" \"/abc/\") ;; => \"/abc/\" (does nothing)
 
-See also `str:ensure-ends-with' and `str:ensure-enclosed-by'."
+See also `str:ensure-end' and `str:ensure-wrapped-in'."
   (cond
     ((null start)
      s)
@@ -515,16 +515,16 @@ See also `str:ensure-ends-with' and `str:ensure-enclosed-by'."
            (str:concat start-s s)
            s)))))
 
-(defun ensure-ends-with (end s)
+(defun ensure-end (end s)
   "Ensure that `s' ends with `end'.
 Return a new string with its suffix added, if necessary.
 
 Example:
 
-  (str:ensure-ends-with \"/\" \"/abc\") ;; => \"/abc/\"
-  (str:ensure-ends-with \"/\" \"/abc/\") ;; => \"/abc/\" (does nothing)
+  (str:ensure-end \"/\" \"/abc\") ;; => \"/abc/\"
+  (str:ensure-end \"/\" \"/abc/\") ;; => \"/abc/\" (does nothing)
 
-See also `str:ensure-starts-with' and `str:ensure-enclosed-by'."
+See also `str:ensure-start' and `str:ensure-wrapped-in'."
   (cond
     ((null end)
      s)
@@ -536,20 +536,20 @@ See also `str:ensure-starts-with' and `str:ensure-enclosed-by'."
            (str:concat s end-s)
            s)))))
 
-(defun ensure-enclosed-by (start/end s)
+(defun ensure-wrapped-in (start/end s)
   "Ensure that S starts and ends with `START/END'.
 Return a new string.
 
   Example:
 
-    (str:ensure-enclosed-by \"/\" \"abc\") ;; => \"/abc/\"
-    (str:ensure-enclosed-by \"/\" \"/abc/\") ;; => \"/abc/\" (does nothing)
+    (str:ensure-wrapped-in \"/\" \"abc\") ;; => \"/abc/\"
+    (str:ensure-wrapped-in \"/\" \"/abc/\") ;; => \"/abc/\" (does nothing)
 
   See also: `str:enclosed-by-p'."
-  (str:ensure-starts-with start/end (str:ensure-ends-with start/end s)))
+  (str:ensure-start start/end (str:ensure-end start/end s)))
 
-(defun enclosed-by-p (start/end s)
-  "Does S starts and ends with `START/END'?
+(defun wrapped-in-p (start/end s)
+  "Does S start and end with `START/END'?
 If true, return S. Otherwise, return nil.
 
 Example:

@@ -281,38 +281,38 @@
   (is (add-suffix '("foo" nil) "bar") '("foobar" "bar") "with a nil")
   (is (add-suffix '() "foo") '() "with void list"))
 
-(subtest "ensure-starts-with"
-  (is (ensure-starts-with "/" "/abc") "/abc" "default case: existing prefix.")
-  (is (ensure-starts-with "/" "abc") "/abc" "default case: add prefix.")
-  (is (ensure-starts-with "/" "") "/" "blank string: add prefix")
-  (is (ensure-starts-with #\/ "") "/" "with a char")
-  (is (ensure-starts-with "" "") "" "blank strings")
-  (is (ensure-starts-with nil "") "" "prefix is nil, we want s")
-  (is (ensure-starts-with nil nil) nil "prefix and s are nil")
-  (is (ensure-starts-with "/" nil) nil "s is nil")
-  (is (ensure-starts-with "/" "///abc") "///abc" "lots of slashes, but that's ok"))
+(subtest "ensure-start"
+  (is (ensure-start "/" "/abc") "/abc" "default case: existing prefix.")
+  (is (ensure-start "/" "abc") "/abc" "default case: add prefix.")
+  (is (ensure-start "/" "") "/" "blank string: add prefix")
+  (is (ensure-start #\/ "") "/" "with a char")
+  (is (ensure-start "" "") "" "blank strings")
+  (is (ensure-start nil "") "" "prefix is nil, we want s")
+  (is (ensure-start nil nil) nil "prefix and s are nil")
+  (is (ensure-start "/" nil) nil "s is nil")
+  (is (ensure-start "/" "///abc") "///abc" "lots of slashes, but that's ok"))
 
-(subtest "ensure-ends-with"
-  (is (ensure-ends-with "/" "/abc/") "/abc/" "default case")
-  (is (ensure-ends-with "/" "abc") "abc/" "default case 2")
-  (is (ensure-ends-with "/" "") "/" "default case void string")
-  (is (ensure-ends-with #\/ "") "/" "with a char")
-  (is (ensure-ends-with "" "") "" "void strings")
-  (is (ensure-ends-with nil "foo") "foo" "prefix is nil, we want s")
-  (is (ensure-ends-with "/" "abc///") "abc///" "lots of slashes, but that's ok"))
+(subtest "ensure-end"
+  (is (ensure-end "/" "/abc/") "/abc/" "default case")
+  (is (ensure-end "/" "abc") "abc/" "default case 2")
+  (is (ensure-end "/" "") "/" "default case void string")
+  (is (ensure-end #\/ "") "/" "with a char")
+  (is (ensure-end "" "") "" "void strings")
+  (is (ensure-end nil "foo") "foo" "prefix is nil, we want s")
+  (is (ensure-end "/" "abc///") "abc///" "lots of slashes, but that's ok"))
 
-(subtest "ensure-enclosed-by"
-  (is (ensure-enclosed-by "/" "/abc/") "/abc/" "default case")
-  (is (ensure-enclosed-by "/" "abc") "/abc/" "default case 2")
-  (is (ensure-enclosed-by "/" "") "/" "default case void string")
-  (is (ensure-enclosed-by #\/ "") "/" "with a char")
-  (is (ensure-enclosed-by "" "") "" "blank strings")
-  (is (ensure-enclosed-by nil "") "" "prefix is nil, we want s")
+(subtest "ensure-wrapped-in"
+  (is (ensure-wrapped-in "/" "/abc/") "/abc/" "default case")
+  (is (ensure-wrapped-in "/" "abc") "/abc/" "default case 2")
+  (is (ensure-wrapped-in "/" "") "/" "default case void string")
+  (is (ensure-wrapped-in #\/ "") "/" "with a char")
+  (is (ensure-wrapped-in "" "") "" "blank strings")
+  (is (ensure-wrapped-in nil "") "" "prefix is nil, we want s")
   ;; The following line is different that the original behaviour of starts-with-p:
-  (is (ensure-enclosed-by "" nil) nil "blank prefix, s is nil")
+  (is (ensure-wrapped-in "" nil) nil "blank prefix, s is nil")
   ;; (starts-with-p "" nil) ;; => T but below, we expect NIL.
-  (is (ensure-enclosed-by nil nil) nil "nils")
-  (is (ensure-enclosed-by "/" "abc///") "/abc///" "lots of slashes, but that's ok"))
+  (is (ensure-wrapped-in nil nil) nil "nils")
+  (is (ensure-wrapped-in "/" "abc///") "/abc///" "lots of slashes, but that's ok"))
 
 (subtest "enclosed-by-p"
   (is (enclosed-by-p "/" "/foo/") "/foo/" "default case")

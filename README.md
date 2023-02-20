@@ -65,8 +65,8 @@ The only dependency is `cl-ppcre`.
             - [contains?, containsp `(substring s &key (ignore-case nil))`](#contains-containsp-substring-s-key-ignore-case-nil)
             - [s-member `(list s &key (ignore-case *ignore-case*) (test #'string=))`](#s-member-list-s-key-ignore-case-ignore-case-test-string)
             - [prefix?, prefixp and suffix?, suffixp `(items s)`](#prefix-prefixp-and-suffix-suffixp-items-s)
-            - [ensure-starts-with, ensure-ends-with `(start/end s)` NEW in June, 2022](#ensure-starts-with-ensure-ends-with-startend-s-new-in-june-2022)
-            - [ensure-enclosed-by `(start/end s)`](#ensure-enclosed-by-startend-s)
+            - [ensure-start, ensure-end `(start/end s)` NEW in February, 2023](#ensure-start-ensure-end-startend-s-new-in-february-2023)
+            - [ensure-wrapped-in `(start/end s)`](#ensure-wrapped-in-startend-s)
         - [Case](#case)
             - [Functions to change case: camel-case, snake-case,...](#functions-to-change-case-camel-case-snake-case)
             - [downcase, upcase, capitalize `(s)` fixing a built-in suprise.](#downcase-upcase-capitalize-s-fixing-a-built-in-suprise)
@@ -567,7 +567,7 @@ See also `uiop:string-prefix-p prefix s`, which returns `t` if
 and `uiop:string-enclosed-p prefix s suffix`, which returns `t` if `s`
 begins with `prefix` and ends with `suffix`.
 
-#### ensure-starts-with, ensure-ends-with `(start/end s)` NEW in June, 2022
+#### ensure-start, ensure-end `(start/end s)` NEW in February, 2023
 
 Ensure that `s` starts with `start` (or ends with `end`).
 
@@ -576,18 +576,20 @@ Return a new string with its prefix added, if necessary.
 Example:
 
 ~~~lisp
-(str:ensure-starts-with "/" "abc/") => "/abc/"
+(str:ensure-start "/" "abc/") => "/abc/"
+;; and
+(str:ensure-start "/" "/abc/") => "/abc/" (does nothing)
 ~~~
 
-#### ensure-enclosed-by `(start/end s)`
+#### ensure-wrapped-in `(start/end s)`
 
 Ensure that `s` both starts and ends with `start/end`.
 
 Return a new string with the necessary added bits, if required.
 
-It simply calls `str:ensure-ends-with` followed by `str:ensure-starts-with`.
+It simply calls `str:ensure-end` followed by `str:ensure-start`.
 
-See also `uiop:string-enclosed-p prefix s suffix`.
+See also `str:wrapped-in-p` and `uiop:string-enclosed-p prefix s suffix`.
 
 
 ### Case
@@ -823,7 +825,7 @@ Note that there is also http://quickdocs.org/string-case/.
 ## Changelog
 
 * June, 2022:
-  * added `str:ensure-starts-with`, `str:ensure-ends-with`, `str:ensure-enclosed-by`
+  * added `str:ensure-start`, `str:ensure-end`, `str:ensure-wrapped-in`
   * small breaking change: fixed `prefix?` when used with a smaller prefix: "f" was not recognized as a prefix of "foobar" and "foobuz", only "foo" was. Now it is fixed. Same for `suffix?`.
 * Feb, 2022: added `fit`: fit the string to the given length: either shorten it, either padd padding.
 * 0.20, May, 2021: added `ascii-p`.
