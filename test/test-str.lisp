@@ -314,6 +314,17 @@
   (is (ensure-enclosed-by nil nil) nil "nils")
   (is (ensure-enclosed-by "/" "abc///") "/abc///" "lots of slashes, but that's ok"))
 
+(subtest "enclosed-by-p"
+  (is (enclosed-by-p "/" "/foo/") "/foo/" "default case")
+  (is (enclosed-by-p "/" "/foo") nil "false case")
+  (is (enclosed-by-p "" "/foo/") "/foo/" "blank start/end")
+  (is (enclosed-by-p nil "/foo/") "/foo/" "blank start/end")
+  (is (enclosed-by-p nil nil) nil "nils")
+  (is (enclosed-by-p nil "") "" "nil and blank")
+  (is (enclosed-by-p "" nil) nil "blank and nil")
+  (is (enclosed-by-p #\/ "/foo") nil "with a char")
+  (is (enclosed-by-p "<3" "<3lisp<3") "<3lisp<3" "with a longer prefix."))
+
 (subtest "pad left, right, center"
   (is (pad 10 "foo") "foo       "
       "pad adds spaces on the right by default.")

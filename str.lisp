@@ -81,6 +81,7 @@
    :ensure-starts-with
    :ensure-ends-with
    :ensure-enclosed-by
+   :enclosed-by-p
 
    :pad
    :pad-left
@@ -546,6 +547,28 @@ Return a new string.
 
   See also: `str:enclosed-by-p'."
   (str:ensure-starts-with start/end (str:ensure-ends-with start/end s)))
+
+(defun enclosed-by-p (start/end s)
+  "Does S starts and ends with `START/END'?
+If true, return S. Otherwise, return nil.
+
+Example:
+
+    (str:enclosed-by-p \"/\" \"/foo/\"  ;; => \"/foo/\"
+    (str:enclosed-by-p \"/\" \"/foo\"  ;; => nil
+
+See also: UIOP:STRING-ENCLOSED-P (prefix s suffix).
+"
+  (cond
+    ((null start/end)
+     s)
+    ((null s)
+     s)
+    (t
+     ;; (starts-with-p nil "foo") returns NIL.
+     (when (and (str:starts-with-p start/end s)
+                (str:ends-with-p start/end s))
+       s))))
 
 (defun pad (len s &key (pad-side *pad-side*) (pad-char *pad-char*))
   "Fill `s' with characters until it is of the given length. By default, add spaces on the right.
