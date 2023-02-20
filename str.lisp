@@ -3,132 +3,131 @@
 (defpackage str
   (:use :cl)
   (:import-from :cl-change-case
-                :no-case
-                :camel-case
-                :dot-case
-                :header-case
-                :param-case
-                :pascal-case
-                :path-case
-                :sentence-case
-                :snake-case
-                :swap-case
-                :title-case
-                :constant-case)
+                #:no-case
+                #:camel-case
+                #:dot-case
+                #:header-case
+                #:param-case
+                #:pascal-case
+                #:path-case
+                #:sentence-case
+                #:snake-case
+                #:swap-case
+                #:title-case
+                #:constant-case)
   (:export
    ;; cl-change-case functions:
    ;; (we don't re-export all of them. Otherwise, use UIOP:define-package's :reexport)
    ;; (for example, we define downcasep instead of re-exporting string-lower-case-p)
-   :no-case
-   :camel-case
-   :dot-case
-   :header-case
-   :param-case
-   :pascal-case
-   :path-case
-   :sentence-case
-   :snake-case
-   :swap-case
-   :title-case
-   :constant-case
+  #:no-case
+  #:camel-case
+  #:dot-case
+  #:header-case
+  #:param-case
+  #:pascal-case
+  #:path-case
+  #:sentence-case
+  #:snake-case
+  #:swap-case
+  #:title-case
+  #:constant-case
 
    ;; ours:
-   :remove-punctuation
-   :contains?
-   :containsp
-   :s-member
-   :trim-left
-   :trim-right
-   :trim
-   :collapse-whitespaces
-   :join
-   :insert
-   :split
-   :rsplit
-   :split-omit-nulls
-   :substring
-   :shorten
-   :prune ;; "deprecated" in favor of shorten
-   :repeat
-   :replace-first
-   :replace-all
-   :replace-using
-   :concat
-   :empty?
-   :emptyp
-   :non-empty-string-p
-   :non-blank-string-p
-   :blank?
-   :blankp
-   :blank-str-p
-   :blank-str?
-   :words
-   :unwords
-   :lines
-   :starts-with?
-   :starts-with-p
-   :ends-with?
-   :ends-with-p
-   :common-prefix
-   :prefix
-   :suffix
-   :prefix?
-   :prefixp
-   :suffix?
-   :suffixp
-   :add-prefix
-   :add-suffix
-   :ensure-start
-   :ensure-end
-   :ensure-wrapped-in
-   :enclosed-by-p
+  #:remove-punctuation
+  #:containsp
+  #:s-member
+  #:trim-left
+  #:trim-right
+  #:trim
+  #:collapse-whitespaces
+  #:join
+  #:insert
+  #:split
+  #:rsplit
+  #:split-omit-nulls
+  #:substring
+  #:shorten
+  #:repeat
+  #:replace-first
+  #:replace-all
+  #:replace-using
+  #:concat
+  #:emptyp
+  #:non-empty-string-p
+  #:non-blank-string-p
+  #:blankp
+  #:blank-str-p
+  #:words
+  #:unwords
+  #:lines
+  #:starts-with-p
+  #:ends-with-p
+  #:prefix
+  #:suffix
+  #:prefixp
+  #:suffixp
+  #:add-prefix
+  #:add-suffix
+  #:pad
+  #:pad-left
+  #:pad-right
+  #:pad-center
+  #:fit
+  #:unlines
+  #:from-file
+  #:to-file
+  #:string-case
+  #:s-first
+  #:s-last
+  #:s-rest
+  #:s-nth
+  #:s-assoc-value
+  #:count-substring
 
-   :pad
-   :pad-left
-   :pad-right
-   :pad-center
-   :fit
-   :unlines
-   :from-file
-   :to-file
-   :string-case
-   :s-first
-   :s-last
-   :s-rest
-   :s-nth
-   :s-assoc-value
-   :count-substring
+  #:downcase
+  #:upcase
+  #:capitalize
+  #:downcasep
+  #:upcasep
+  #:has-alphanum-p
+  #:has-alpha-p
+  #:has-letters-p
+  #:alphanump
+  #:alphap
+  #:ascii-char-p
+  #:ascii-p
+  #:lettersp
+  #:lettersnump
+  #:digitp
+  #:numericp ;; An alias for digitp
 
-   :downcase
-   :upcase
-   :capitalize
-   :downcasep
-   :downcase?
-   :upcasep
-   :upcase?
-   :has-alphanum-p
-   :has-alpha-p
-   :has-letters-p
-   :alphanump
-   :alphanum?
-   :alphap
-   :ascii-char-p
-   :ascii-p
-   :lettersp
-   :letters?
-   :lettersnump
-   :alpha?
-   :digitp
-   :digit?
+  ;; "deprecated" alias for predicates
+  #:empty?
+  #:blank?
+  #:starts-with?
+  #:ends-with?
+  #:contains?
+  #:prefix?
+  #:suffix?
+  #:alphanum?
+  #:alpha?
+  #:letters?
+  #:digit?
+  #:numeric?
+  #:downcase?
+  #:upcase?
+  #:prune ;; "deprecated" alias for shorten
+  #:common-prefix ;; "deprecated" alias for prefix
 
-   :*ignore-case*
-   :*omit-nulls*
-   :*ellipsis*
-   :*pad-char*
-   :*pad-side*
-   :version
-   :+version+
-   :?))
+  #:*ignore-case*
+  #:*omit-nulls*
+  #:*ellipsis*
+  #:*pad-char*
+  #:*pad-side*
+  #:*whitespaces*
+  #:version
+  #:+version+
+  #:?))
 
 (in-package :str)
 
@@ -140,31 +139,44 @@
 (defparameter *pad-side* :right
   "The side of the string to add padding characters to. Can be one of :right, :left and :center.")
 
-(defvar *whitespaces* '(#\Space #\Newline #\Backspace #\Tab
-                        #\Linefeed #\Page #\Return #\Rubout))
+(defvar *whitespaces* '(#\Backspace #\Tab #\Linefeed #\Newline #\Vt #\Page
+                        #\Return #\Space #\Rubout #\Next-Line #\No-break_space)
+  "On some implementations, linefeed and newline represent the same character (code).")
 
 (defvar +version+ (asdf:component-version (asdf:find-system "str")))
 
 (defun version ()
   (print +version+))
 
-(defun trim-left (s)
-  "Remove whitespaces at the beginning of s."
-  (when s
-    (string-left-trim *whitespaces* s)))
+(defun trim-left (s &key (char-bag *whitespaces*))
+  "Removes all characters in `char-bag` (default: whitespaces) at the beginning of `s`.
+   If supplied, char-bag has to be a sequence (e.g. string or list of characters).
 
-(defun trim-right (s)
-  "Remove whitespaces at the end of s."
+   Examples: (trim-left \"  foo \") => \"foo \"
+             (trim-right \"+-*foo-bar*-+\" :char-bag \"+-*\") => \"foo-bar*-+\"
+             (trim-left \"afood\" :char-bag (list #\a #\d) ;; => \"food\""
   (when s
-    (string-right-trim *whitespaces* s)))
+    (string-left-trim char-bag s)))
 
-(defun trim (s)
-  "Remove whitespaces at the beginning and end of s.
-@begin[lang=lisp](code)
-(trim \"  foo \") ;; => \"foo\"
-@end(code)"
+(defun trim-right (s &key (char-bag *whitespaces*))
+  "Removes all characters in `char-bag` (default: whitespaces) at the end of `s`.
+   If supplied, char-bag has to be a sequence (e.g. string or list of characters).
+
+   Examples: (trim-right \"  foo \") => \"  foo\"
+             (trim-right \"+-*foo-bar*-+\" :char-bag \"+-*\") => \"+-*foo-bar\"
+             (trim-right \"afood\" :char-bag (list #\a #\d) ;; => \"afoo\""
   (when s
-    (string-trim *whitespaces* s)))
+    (string-right-trim char-bag s)))
+
+(defun trim (s &key (char-bag *whitespaces*))
+  "Removes all characters in `char-bag` (default: whitespaces) at the beginning and end of `s`.
+   If supplied, char-bag has to be a sequence (e.g. string or list of characters).
+
+   Examples: (trim \"  foo \") => \"foo\"
+             (trim \"+-*foo-bar*-+\" :char-bag \"+-*\") => \"foo-bar\"
+             (trim \"afood\" :char-bag (str:concat \"a\" \"d\")) => \"foo\""
+  (when s
+    (string-trim char-bag s)))
 
 (defun collapse-whitespaces (s)
   "Ensure there is only one space character between words.
@@ -225,7 +237,7 @@
   (let* ((limit (or limit (1+ (length s))))
          (res (ppcre:split `(:sequence ,(string separator)) s :limit limit :start start :end end)))
     (if omit-nulls
-        (remove-if (lambda (it) (empty? it)) res)
+        (remove-if (lambda (it) (emptyp it)) res)
         res)))
 
 (defun rsplit (sep s &key (omit-nulls *omit-nulls*) limit)
@@ -273,10 +285,6 @@ It uses `subseq' with differences:
 (defparameter *ellipsis* "..."
   "Ellipsis to add to the end of a truncated string (see `shorten').")
 
-(defun prune (len s &key (ellipsis *ellipsis*))
-  "Old name for `shorten'."
-  (shorten len s :ellipsis ellipsis))
-
 (defun shorten (len s &key (ellipsis *ellipsis*))
   "If s is longer than `len', truncate it to this length and add the `*ellipsis*' at the end (\"...\" by default). Cut it down to `len' minus the length of the ellipsis."
   (when (and len
@@ -300,11 +308,12 @@ It uses `subseq' with differences:
 
 (defun lines (s &key (omit-nulls *omit-nulls*))
   "Split the string by newline characters and return a list of lines. A terminal newline character does NOT result in an extra empty string."
-  (when (and s (> (length s) 0))
-    (let ((end (if (eql #\Newline (elt s (1- (length s))))
-                   (1- (length s))
-                   nil)))
-     (split #\NewLine s :omit-nulls omit-nulls :end end))))
+  (let ((s-length (length s)))
+    (when (and s (> s-length 0))
+      (let ((end (if (eql #\Newline (elt s (1- s-length)))
+                     (1- s-length)
+                     nil)))
+        (split #\NewLine s :omit-nulls omit-nulls :end end)))))
 
 (defun unlines (strings)
   "Join the list of strings with a newline character."
@@ -320,14 +329,14 @@ It uses `subseq' with differences:
 (defun replace-first (old new s)
   "Replace the first occurence of `old` by `new` in `s`. Arguments are not regexs."
   (let* ((ppcre:*allow-quoting* t)
-         (old (concatenate 'string  "\\Q" old))) ;; treat metacharacters as normal.
+         (old (concatenate 'string "\\Q" old))) ;; treat metacharacters as normal.
     ;; We need the (list new): see !52
     (ppcre:regex-replace old s (list new))))
 
 (defun replace-all (old new s)
   "Replace all occurences of `old` by `new` in `s`. Arguments are not regexs."
   (let* ((ppcre:*allow-quoting* t)
-         (old (concatenate 'string  "\\Q" old))) ;; treat metacharacters as normal.
+         (old (concatenate 'string "\\Q" old))) ;; treat metacharacters as normal.
     (ppcre:regex-replace-all old s (list new))))
 
 ;; About the (list new) above:
@@ -358,58 +367,48 @@ It uses `subseq' with differences:
     (setf s (str:replace-all (nth i plist) (nth (incf i) plist) s)))
   s)
 
-(defun empty? (s)
-  "Is s nil or the empty string ?"
-  (or (null s) (string-equal "" s)))
-
 (defun emptyp (s)
   "Is s nil or the empty string ?"
-  (empty? s))
+  (or (null s) (string-equal "" s)))
 
 (defun non-empty-string-p (s)
   "Return t if `s' is a string and is non-empty.
 
-  Like `(not (empty? s))', with a `stringp' check. Useful in context."
+  Like `(not (emptyp s))', with a `stringp' check. Useful in context."
   (and (stringp s)
        (not (emptyp s))))
 
-(defun blank? (s)
-  "Is s nil or only contains whitespaces ?"
-  (or (null s) (string-equal "" (trim s))))
-
 (defun blankp (s)
   "Is s nil or only contains whitespaces ?"
-  (blank? s))
+  (or (null s) (string-equal "" (trim s))))
 
 (defun non-blank-string-p (s)
   "Return t if `s' is a string and is non blank (it doesn't exclusively contain whitespace characters).
 
-  Like `(not (blank? s))', with a `stringp' check. Useful in context."
+  Like `(not (blankp s))', with a `stringp' check. Useful in context."
   (and (stringp s)
        (not (blankp s))))
 
-(defun starts-with? (start s &key (ignore-case *ignore-case*))
+(defun starts-with-p (start s &key (ignore-case *ignore-case*))
   "Return t if S starts with the substring `START', nil otherwise.
 
   START can be a string or a character."
-  (when (>= (length s) (length (string start)))
-    (let ((fn (if ignore-case #'string-equal #'string=)))
-      (funcall fn s start :start1 0 :end1 (length (string start))))))
+  (let ((start-length (length (string start))))
+    (when (>= (length s) start-length)
+      (let ((fn (if ignore-case #'string-equal #'string=)))
+        (funcall fn s start :start1 0 :end1 start-length)))))
 
-;; An alias:
-(setf (fdefinition 'starts-with-p) #'starts-with?)
-
-(defun ends-with? (end s &key (ignore-case *ignore-case*))
-  "Return t if S ends with the substring `END', nil otherwise.
+(defun ends-with-p (end s &key (ignore-case *ignore-case*))
+  "Return t if s ends with the substring 'end', nil otherwise.
 
   END can be a character or a string."
-  (when (>= (length s) (length (string end)))
-    (let ((fn (if ignore-case #'string-equal #'string=)))
-      (funcall fn s end :start1 (- (length s) (length (string end)))))))
+  (let ((s-length (length s))
+        (end-length (length (string end))))
+    (when (>= s-length end-length)
+      (let ((fn (if ignore-case #'string-equal #'string=)))
+        (funcall fn s end :start1 (- s-length end-length))))))
 
-(setf (fdefinition 'ends-with-p) #'ends-with?)
-
-(defun contains? (substring s &key (ignore-case *ignore-case*))
+(defun containsp (substring s &key (ignore-case *ignore-case*))
   "Return `t` if `s` contains `substring`, nil otherwise. Ignore the case with `:ignore-case t`.
 A simple call to the built-in `search` (which returns the position of the substring)."
   (let ((a (if ignore-case
@@ -419,13 +418,11 @@ A simple call to the built-in `search` (which returns the position of the substr
                (string-downcase s)
                s)))
     ;; weird case: (search "" nil) => 0
-    (if (and (blank? substring)
-             (null s))
-        nil
-        (if (search a b)
-            t))))
-
-(setf (fdefinition 'containsp) #'contains?)
+    (cond ((and (blankp substring)
+                (null s))
+           nil)
+          ((search a b)
+           t))))
 
 (defun prefix-1 (item1 item2)
   (subseq item1 0 (or (mismatch item1 item2) (length item1))))
@@ -445,10 +442,6 @@ A simple call to the built-in `search` (which returns the position of the substr
   (when items
     (reduce #'prefix-1 items)))
 
-(defun common-prefix (items)
-  (warn "common-prefix is deprecated, use prefix instead.")
-  (prefix items))
-
 (defun suffix-1 (item1 item2)
   (subseq item1 (or (mismatch item1 item2 :from-end t) 0)))
 
@@ -467,24 +460,20 @@ A simple call to the built-in `search` (which returns the position of the substr
   (when items
     (reduce #'suffix-1 items)))
 
-(defun prefix? (items prefix)
+(defun prefixp (items prefix)
   "Return PREFIX if all ITEMS start with it."
   (when (every (lambda (s)
                  (str:starts-with-p prefix s))
                items)
     prefix))
 
-(setf (fdefinition 'prefixp) #'prefix?)
-
-(defun suffix? (items suffix)
+(defun suffixp (items suffix)
   "Return `suffix' if all items end with it.
   Otherwise, return nil"
   (when (every (lambda (s)
                (str:ends-with-p suffix s))
              items)
     suffix))
-
-(setf (fdefinition 'suffixp) #'suffix?)
 
 (defun add-prefix (items s)
   "Prepend s to the front of each items."
@@ -579,37 +568,33 @@ Filling with spaces can be done with format:
 
 `pad-side': to pad `:right' (the default), `:left' or `:center'.
 `pad-char': padding character (or string of one character). Defaults to a space."
-  (if (< len (length s))
-      s
-      (flet ((%pad-left (len s &key (pad-char *pad-char*))
-               (concatenate 'string
-                            (make-string (- len (length s)) :initial-element pad-char)
-                            s))
-             (%pad-right (len s &key (pad-char *pad-char*))
-               (concatenate 'string
-                            s
-                            (make-string (- len (length s)) :initial-element pad-char)))
-             (%pad-center (len s &key (pad-char *pad-char*))
-               (multiple-value-bind (q r)
-                   (floor (- len (length s)) 2)
+  (let ((s-length (length s)))
+    (if (< len s-length)
+        s
+        (flet ((%pad-left ()
                  (concatenate 'string
-                              (make-string q :initial-element pad-char)
+                              (make-string (- len s-length) :initial-element pad-char)
+                              s))
+               (%pad-right ()
+                 (concatenate 'string
                               s
-                              (make-string (+ q r) :initial-element pad-char)))))
-
-        (unless (characterp pad-char)
-          (if (>= (length pad-char) 2)
-              (error "pad-char must be a character or a string of one character.")
-              (setf pad-char (coerce pad-char 'character))))
-        (case pad-side
-          (:right
-           (%pad-right len s :pad-char pad-char))
-          (:left
-           (%pad-left len s :pad-char pad-char))
-          (:center
-           (%pad-center len s :pad-char pad-char))
-          (t
-           (error "str:pad: unknown padding side with ~a" pad-side))))))
+                              (make-string (- len s-length) :initial-element pad-char)))
+               (%pad-center ()
+                 (multiple-value-bind (q r)
+                     (floor (- len s-length) 2)
+                   (concatenate 'string
+                                (make-string q :initial-element pad-char)
+                                s
+                                (make-string (+ q r) :initial-element pad-char)))))
+          (unless (characterp pad-char)
+            (if (>= (length pad-char) 2)
+                (error "pad-char must be a character or a string of one character.")
+                (setf pad-char (coerce pad-char 'character))))
+          (case pad-side
+            (:right (%pad-right))
+            (:left (%pad-left))
+            (:center (%pad-center))
+            (t (error "str:pad: unknown padding side with ~a" pad-side)))))))
 
 (defun pad-left (len s &key (pad-char *pad-char*))
   (pad len s :pad-side :left :pad-char pad-char))
@@ -628,13 +613,15 @@ Filling with spaces can be done with format:
                 (numberp len))
            nil
            "str:fit error: the given LEN must be a number.")
-  (cond
-    ((= (length s) len)
-     s)
-    ((> (length s) len)
-     (shorten len s :ellipsis ellipsis))
-    ((< (length s) len)
-     (pad len s :pad-side pad-side :pad-char pad-char))))
+  (let ((s-length (length s)))
+    (cond
+      ((= s-length len)
+       s)
+      ((> s-length len)
+       (shorten len s :ellipsis ellipsis))
+      ((< s-length len)
+       (pad len s :pad-side pad-side :pad-char pad-char)))))
+
 (defun from-file (pathname &rest keys)
   "Read the file and return its content as a string.
 
@@ -682,27 +669,30 @@ Returns the string written to file."
 
 (defun s-first (s)
   "Return the first substring of `s'."
-  (if (null s)
-      nil
-      (if (empty? s)
-          ""
-          (subseq s 0 1))))
+  (cond ((null s)
+         nil)
+        ((emptyp s)
+         "")
+        (t
+         (subseq s 0 1))))
 
 (defun s-last (s)
   "Return the last substring of `s'."
-  (if (null s)
-      nil
-      (if (empty? s)
-          ""
-          (substring (1- (length s)) t s))))
+  (cond ((null s)
+         nil)
+        ((emptyp s)
+         "")
+        (t
+         (substring (1- (length s)) t s))))
 
 (defun s-rest (s)
   "Return the rest substring of `s'."
-  (if (null s)
-      nil
-      (if (empty? s)
-          ""
-          (subseq s 1))))
+  (cond ((null s)
+         nil)
+        ((emptyp s)
+         "")
+        (t
+         (subseq s 1))))
 
 (defun s-nth (n s)
   "Return the nth substring of `s'.
@@ -711,13 +701,13 @@ Returns the string written to file."
    (string (elt \"test\" 1))
    ;; => \"e\""
   (cond ((null s) nil)
-        ((or (empty? s) (minusp n)) "")
+        ((or (emptyp s) (minusp n)) "")
         ((= n 0) (s-first s))
         (t (s-nth (1- n) (s-rest s)))))
 
 (defun s-assoc-value (alist key)
   "Return the value of a cons cell in `alist' with key `key', tested
-with `string='.
+with `string-equal' (case-insensitive).
   The second return value is the cons cell."
   (let ((cons (assoc key alist :test #'string-equal)))
     (values (cdr cons) cons)))
@@ -748,7 +738,7 @@ with `string='.
   ;; => 1"
   (unless (or (null s)
               (null substring)
-              (empty? substring))
+              (emptyp substring))
     (loop :with substring-length := (length substring)
        :for position := (search substring s :start2 start :end2 end)
        :then (search substring s :start2 (+ position substring-length) :end2 end)
@@ -764,21 +754,21 @@ with `string='.
   "Return the lowercase version of `s'.
   Calls the built-in `string-downcase', but returns nil if `s' is
   nil (instead of the string \"nil\")."
-  (unless (null s)
+  (when s
     (string-downcase s)))
 
 (defun upcase (s)
   "Return the uppercase version of `s'.
   Call the built-in `string-upcase', but return nil if `s' is
   nil (instead of the string \"NIL\")."
-  (unless (null s)
+  (when s
     (string-upcase s)))
 
 (defun capitalize (s)
   "Return the capitalized version of `s'.
   Calls the built-in `string-capitalize', but returns nil if `s' is
   nil (instead of the string \"Nil\")."
-  (unless (null s)
+  (when s
     (string-capitalize s)))
 
 ;;; Case predicates.
@@ -787,9 +777,6 @@ with `string='.
   "Return t if `s' contains at least one character and all characters are alphanumeric.
   See also `lettersnump' which also works on unicode letters."
   (ppcre:scan "^[a-zA-Z0-9]+$" s))
-
-(defun alphanum? (s)
-  (alphanump s))
 
 (defun alphap (s)
   "Return t if `s' contains at least one character and all characters are alpha (in [a-zA-Z]).
@@ -800,9 +787,6 @@ with `string='.
   ;; (ppcre:scan-to-strings "^\\p{L}+$" s)
   )
 
-(defun alpha? (s)
-  (alphap s))
-
 (defun lettersp (s)
   "Return t if `s' contains only letters (including unicode letters).
 
@@ -810,9 +794,6 @@ with `string='.
    (lettersp \"éß\") ;; => t"
   (when (ppcre:scan "^\\p{L}+$" s)
     t))
-
-(defun letters? (s)
-  (lettersp s))
 
 (defun lettersnump (s)
   "Return t if `s' contains only letters (including unicode letters) and digits."
@@ -827,16 +808,8 @@ with `string='.
              (digit-char-p char))
            s)))
 
-(defun digit? (s)
-  (digitp s))
-
-
-(defun numericp (s)
-  "alias for `digitp'."
-  (digitp s))
-
-(defun numeric? (s)
-  (numericp s))
+;; An alias for digitp
+(setf (fdefinition 'numericp) #'digitp)
 
 (defun has-alphanum-p (s)
   "Return t if `s' has at least one alphanumeric character."
@@ -882,8 +855,8 @@ with `string='.
 
 (defun downcasep (s)
   "Return t if all alphabetical characters of `s' are lowercase, and `s' contains at least one letter."
-  (if (characterp s)
-      (return-from downcasep (lower-case-p s)))
+  (when (characterp s)
+    (return-from downcasep (lower-case-p s)))
 
   (assert (or (null s)
               (stringp s)))
@@ -894,14 +867,10 @@ with `string='.
                    t))
              s)))
 
-(defun downcase? (s)
-  "alias for `downcasep'."
-  (downcasep s))
-
 (defun upcasep (s)
   "Return t if all alphabetical characters of `s' are uppercase."
-  (if (characterp s)
-      (return-from upcasep (upper-case-p s)))
+  (when (characterp s)
+    (return-from upcasep (upper-case-p s)))
 
   (assert (or (null s)
               (stringp s)))
@@ -911,10 +880,6 @@ with `string='.
                    (upper-case-p char)
                    t))
              s)))
-
-(defun upcase? (s)
-  "alias for `upcasep'."
-  (upcasep s))
 
 (defun remove-punctuation (s &key (replacement " "))
   "Remove the punctuation characters from `s', replace them with `replacement' (defaults to a space) and strip continuous whitespace."
@@ -933,3 +898,21 @@ with `string='.
     (if (null s)
         ""
         (replace-non-word s))))
+
+;; "deprecated" function alias
+(setf (fdefinition 'prune)        #'shorten
+      (fdefinition 'common-prefix) #'prefix
+      (fdefinition 'empty?)       #'emptyp
+      (fdefinition 'blank?)       #'blankp
+      (fdefinition 'starts-with?) #'starts-with-p
+      (fdefinition 'ends-with?)   #'ends-with-p
+      (fdefinition 'contains?)    #'containsp
+      (fdefinition 'prefix?)      #'prefixp
+      (fdefinition 'suffix?)      #'suffixp
+      (fdefinition 'alphanum?)    #'alphanump
+      (fdefinition 'alpha?)       #'alphap
+      (fdefinition 'letters?)     #'lettersp
+      (fdefinition 'digit?)       #'digitp
+      (fdefinition 'numeric?)     #'digitp
+      (fdefinition 'downcase?)    #'downcasep
+      (fdefinition 'upcase?)      #'upcasep)

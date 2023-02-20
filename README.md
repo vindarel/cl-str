@@ -9,7 +9,7 @@ Why ?
 
 * modernity, simplicity and discoverability:
 
-  - `(str:trim s)` instead of `  (string-trim '(#\Space #\Newline #\Backspace #\Tab #\Linefeed #\Page #\Return #\Rubout) s))`,
+  - `(str:trim s)` instead of `(string-trim '(#\Backspace #\Tab #\Linefeed #\Newline #\Vt #\Page #\Return #\Space #\Rubout #\Next-Line #\No-break_space) s))`,
 or `str:concat strings` instead of an unusual `format` construct; one discoverable library instead of many;
 
 * consistence and composability, where `s` is always the last argument, which makes it
@@ -58,13 +58,13 @@ The only dependency is `cl-ppcre`.
             - [from-file `(filename)`](#from-file-filename)
             - [to-file `(filename s)`](#to-file-filename-s)
         - [Predicates](#predicates)
-            - [empty?, emptyp `(s)`](#empty-emptyp-s)
-            - [blank?, blankp `(s)`](#blank-blankp-s)
-            - [starts-with?, starts-with-p `(start s &key ignore-case)`](#starts-with-starts-with-p-start-s-key-ignore-case)
-            - [ends-with?, ends-with-p `(end s &key ignore-case)`](#ends-with-ends-with-p-end-s-key-ignore-case)
-            - [contains?, containsp `(substring s &key (ignore-case nil))`](#contains-containsp-substring-s-key-ignore-case-nil)
+            - [emptyp `(s)`](#empty-emptyp-s)
+            - [blankp `(s)`](#blank-blankp-s)
+            - [starts-with-p `(start s &key ignore-case)`](#starts-with-starts-with-p-start-s-key-ignore-case)
+            - [ends-with-p `(end s &key ignore-case)`](#ends-with-ends-with-p-end-s-key-ignore-case)
+            - [containsp `(substring s &key (ignore-case nil))`](#contains-containsp-substring-s-key-ignore-case-nil)
             - [s-member `(list s &key (ignore-case *ignore-case*) (test #'string=))`](#s-member-list-s-key-ignore-case-ignore-case-test-string)
-            - [prefix?, prefixp and suffix?, suffixp `(items s)`](#prefix-prefixp-and-suffix-suffixp-items-s)
+            - [prefixp and suffixp `(items s)`](#prefix-prefixp-and-suffix-suffixp-items-s)
             - [ensure-start, ensure-end `(start/end s)` NEW in February, 2023](#ensure-start-ensure-end-startend-s-new-in-february-2023)
             - [ensure-wrapped-in `(start/end s)`](#ensure-wrapped-in-startend-s)
         - [Case](#case)
@@ -126,24 +126,29 @@ Consequently we can also manage them with global parameters:
 
 ~~~lisp
 (let ((str:*ignore-case* t))
-  (str:ends-with? "BAR" "foobar"))
+  (str:ends-with-p "BAR" "foobar"))
 ~~~
 
 is equivalent to
 
 ~~~lisp
-(str:ends-with? "BAR" "foobar" :ignore-case t)
+(str:ends-with-p "BAR" "foobar" :ignore-case t)
 ~~~
 
 ## Functions
 
 ### Tweak whitespace
 
-#### trim `(s)`
-Remove whitespaces at the beginning and end of `s`.
+#### trim `(s &key (char-bag *whitespaces*))`
+
+Removes all characters in `char-bag` (default: whitespaces) at the beginning and end of `s`.
+If supplied, `char-bag` has to be a sequence (e.g. string or list of characters).
 
 ```lisp
-(trim "  rst  ") ;; => "rst"
+(str:trim "  rst  ") ;; => "rst"
+(str:trim "+-*foo-bar*-+" :char-bag "+-*") => "foo-bar"
+(str:trim "afood" :char-bag (concat "a" "d")) => "foo""
+(str:trim "cdoooh" :char-bag (str:concat "c" "d" "h")) => "ooo"
 ```
 
 Also `trim-left` and `trim-right`.
@@ -157,7 +162,7 @@ where whitespaces are `'(#\Space #\Newline #\Backspace #\Tab #\Linefeed #\Page #
 Ensure there is only one space character between words. Remove newlines.
 
 ~~~lisp
-(collapse-whitespaces "foo  bar
+(str:collapse-whitespaces "foo  bar
 
 
   baz")
@@ -497,19 +502,19 @@ Returns the string written to file.
 
 ### Predicates
 
-#### empty?, emptyp `(s)`
+#### emptyp `(s)`
 
 True if `s` is nil or the empty string:
 
 ```lisp
-  (empty? nil) ;; => T
-  (empty? "")  ;; => T
-  (empty? " ") ;; => NIL
+  (emptyp nil) ;; => T
+  (emptyp "")  ;; => T
+  (emptyp " ") ;; => NIL
 ```
 
 See also `str:non-empty-string-p`, which adds a `stringp` check.
 
-#### blank?, blankp `(s)`
+#### blankp `(s)`
 
 True if `s` is empty or only contains whitespaces.
 
@@ -519,25 +524,27 @@ True if `s` is empty or only contains whitespaces.
 
 See also `str:non-blank-string-p`.
 
-#### starts-with?, starts-with-p `(start s &key ignore-case)`
+#### starts-with-p `(start s &key ignore-case)`
 
 True if `s` starts with the substring `start`, nil otherwise. Ignore
 case by default.
 
-    (starts-with? "foo" "foobar") ;; => T
-    (starts-with? "FOO" "foobar") ;; => NIL
-    (starts-with? "FOO" "foobar" :ignore-case t) ;; => T
+    (starts-with-p "foo" "foobar") ;; => T
+    (starts-with-p "FOO" "foobar") ;; => NIL
+    (starts-with-p "FOO" "foobar" :ignore-case t) ;; => T
 
 Calls `string=` or `string-equal` depending on the case, with their
 `:start` and `:end` delimiters.
 
-#### ends-with?, ends-with-p `(end s &key ignore-case)`
+#### ends-with-p `(end s &key ignore-case)`
 
 True if `s` ends with the substring `end`. Ignore case by default.
 
-    (ends-with? "bar" "foobar") ;; => T
+    (ends-with-p "bar" "foobar") ;; => T
 
-#### contains?, containsp `(substring s &key (ignore-case nil))`
+`end` can be a string or a character.
+
+#### containsp `(substring s &key (ignore-case nil))`
 
 Return true if `s` contains `substring`, nil otherwise. Ignore the
 case with `:ignore-case t` (don't ignore by default).
@@ -557,7 +564,7 @@ If `:ignore-case` or `*ignore-case*` are not nil, ignore case (using
 Unlike CL's `member`, `s-member` returns T or NIL, instead of the tail of LIST whose first element satisfies the test.
 
 
-#### prefix?, prefixp and suffix?, suffixp `(items s)`
+#### prefixp and suffixp `(items s)`
 
 Return `s` if all `items` start (or end) with it.
 
@@ -824,9 +831,12 @@ Note that there is also http://quickdocs.org/string-case/.
 
 ## Changelog
 
-* June, 2022:
+* February, 2023:
   * added `str:ensure-start`, `str:ensure-end`, `str:ensure-wrapped-in`
   * small breaking change: fixed `prefix?` when used with a smaller prefix: "f" was not recognized as a prefix of "foobar" and "foobuz", only "foo" was. Now it is fixed. Same for `suffix?`.
+* January, 2023: added the `:char-barg` parameter to `trim`, `trim-left`, `trim-right`.
+  - minor: `ends-with-p` now works with a character.
+* June, 2022: small breaking change: fixed `prefix?` when used with a smaller prefix: "f" was not recognized as a prefix of "foobar" and "foobuz", only "foo" was. Now it is fixed. Same for `suffix?`.
 * Feb, 2022: added `fit`: fit the string to the given length: either shorten it, either padd padding.
 * 0.20, May, 2021: added `ascii-p`.
 * 0.19.1, May, 2021: speed up `join` (by a factor of 4).
