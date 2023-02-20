@@ -68,6 +68,9 @@
   #:suffixp
   #:add-prefix
   #:add-suffix
+  #:ensure-end
+  #:ensure-wrapped-in
+  #:wrapped-in-p
   #:pad
   #:pad-left
   #:pad-right
@@ -84,6 +87,7 @@
   #:s-assoc-value
   #:count-substring
 
+  ;; case-related functions:
   #:downcase
   #:upcase
   #:capitalize
