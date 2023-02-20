@@ -477,7 +477,7 @@ A simple call to the built-in `search` (which returns the position of the substr
 
 (defun suffix? (items suffix)
   "Return `suffix' if all items end with it.
-  Otherwise, retur nil"
+  Otherwise, return nil"
   (when (every (lambda (s)
                (str:ends-with-p suffix s))
              items)
@@ -497,33 +497,54 @@ A simple call to the built-in `search` (which returns the position of the substr
   "Ensure that `s' starts with `start'.
   Return a new string with its prefix added, if necessary.
 
-  Example: (str:ensure-starts-with \"/\" \"abc/\") => \"/abc/\"
+Example:
 
-  See also `str:ensure-ends-with' and `str:ensure-enclosed-by'."
-  (when start
-    (let ((start-s (string start)))
-      (if (not (str:starts-with-p start-s s))
-          (str:concat start-s s)
-          s))))
+  (str:ensure-starts-with \"/\" \"abc/\") ;; => \"/abc/\"
+  (str:ensure-starts-with \"/\" \"/abc/\") ;; => \"/abc/\" (does nothing)
+
+See also `str:ensure-ends-with' and `str:ensure-enclosed-by'."
+  (cond
+    ((null start)
+     s)
+    ((null s)
+     s)
+    (t
+     (let ((start-s (string start)))
+       (if (not (str:starts-with-p start-s s))
+           (str:concat start-s s)
+           s)))))
 
 (defun ensure-ends-with (end s)
   "Ensure that `s' ends with `end'.
-  Return a new string with its suffix added, if necessary.
+Return a new string with its suffix added, if necessary.
 
-  Example: (str:ensure-ends-with \"/\" \"/abc\") => \"/abc/\"
+Example:
 
-  See also `str:ensure-starts-with' and `str:ensure-enclosed-by'."
-  (when end
-    (let ((end-s (string end)))
-      (if (not (str:ends-with-p end-s s))
-          (str:concat s end-s)
-          s))))
+  (str:ensure-ends-with \"/\" \"/abc\") ;; => \"/abc/\"
+  (str:ensure-ends-with \"/\" \"/abc/\") ;; => \"/abc/\" (does nothing)
+
+See also `str:ensure-starts-with' and `str:ensure-enclosed-by'."
+  (cond
+    ((null end)
+     s)
+    ((null s)
+     s)
+    (t
+     (let ((end-s (string end)))
+       (if (not (str:ends-with-p end-s s))
+           (str:concat s end-s)
+           s)))))
 
 (defun ensure-enclosed-by (start/end s)
   "Ensure that S starts and ends with `START/END'.
-  Return a new string.
+Return a new string.
 
-  See also `UIOP:STRING-ENCLOSED-P PREFIX S SUFFIX`."
+  Example:
+
+    (str:ensure-enclosed-by \"/\" \"abc\") ;; => \"/abc/\"
+    (str:ensure-enclosed-by \"/\" \"/abc/\") ;; => \"/abc/\" (does nothing)
+
+  See also: `str:enclosed-by-p'."
   (str:ensure-starts-with start/end (str:ensure-ends-with start/end s)))
 
 (defun pad (len s &key (pad-side *pad-side*) (pad-char *pad-char*))
