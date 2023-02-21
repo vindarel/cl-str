@@ -68,6 +68,7 @@
   #:suffixp
   #:add-prefix
   #:add-suffix
+  #:ensure-start
   #:ensure-end
   #:ensure-wrapped-in
   #:wrapped-in-p
