@@ -68,6 +68,13 @@
   #:suffixp
   #:add-prefix
   #:add-suffix
+
+  #:ensure
+  #:ensure-prefix
+  #:ensure-suffix
+  #:ensure-wrapped-in
+  #:wrapped-in-p
+
   #:pad
   #:pad-left
   #:pad-right
@@ -84,6 +91,7 @@
   #:s-assoc-value
   #:count-substring
 
+  ;; case-related functions:
   #:downcase
   #:upcase
   #:capitalize
@@ -471,7 +479,7 @@ A simple call to the built-in `search` (which returns the position of the substr
 
 (defun suffixp (items suffix)
   "Return `suffix' if all items end with it.
-  Otherwise, retur nil"
+  Otherwise, return nil"
   (when (every (lambda (s)
                (str:ends-with-p suffix s))
              items)
@@ -484,6 +492,117 @@ A simple call to the built-in `search` (which returns the position of the substr
 (defun add-suffix (items s)
   "Append s to the end of eahc items."
   (mapcar #'(lambda (item) (concat item s)) items))
+
+(defun ensure-prefix (start s)
+  "Ensure that `s' starts with `start'.
+  Return a new string with its prefix added, if necessary.
+
+Example:
+
+  (str:ensure-prefix \"/\" \"abc/\") ;; => \"/abc/\"
+  (str:ensure-prefix \"/\" \"/abc/\") ;; => \"/abc/\" (does nothing)
+
+See also `str:ensure-suffix' and `str:ensure-wrapped-in'."
+  (cond
+    ((null start)
+     s)
+    ((null s)
+     s)
+    (t
+     (let ((start-s (string start)))
+       (if (not (str:starts-with-p start-s s))
+           (str:concat start-s s)
+           s)))))
+
+(defun ensure-suffix (end s)
+  "Ensure that `s' ends with `end'.
+Return a new string with its suffix added, if necessary.
+
+Example:
+
+  (str:ensure-suffix \"/\" \"/abc\") ;; => \"/abc/\"
+  (str:ensure-suffix \"/\" \"/abc/\") ;; => \"/abc/\" (does nothing)
+
+See also `str:ensure-prefix' and `str:ensure-wrapped-in'."
+  (cond
+    ((null end)
+     s)
+    ((null s)
+     s)
+    (t
+     (let ((end-s (string end)))
+       (if (not (str:ends-with-p end-s s))
+           (str:concat s end-s)
+           s)))))
+
+(defun ensure-wrapped-in (start/end s)
+  "Ensure that S starts and ends with `START/END'.
+Return a new string.
+
+  Example:
+
+    (str:ensure-wrapped-in \"/\" \"abc\") ;; => \"/abc/\"
+    (str:ensure-wrapped-in \"/\" \"/abc/\") ;; => \"/abc/\" (does nothing)
+
+  See also: `str:enclosed-by-p'."
+  (str:ensure-prefix start/end (str:ensure-suffix start/end s)))
+
+(defun ensure (s &key wrapped-in prefix suffix)
+  "The ensure functions return a string that has the specified prefix or suffix, appended if necessary.
+
+This function looks for the following parameters, in order:
+
+- :wrapped-in : if non nil and non empty, call STR:ENSURE-WRAPPED-IN.
+- :prefix and :suffix : if both are supplied and non-nil, call STR:ENSURE-SUFFIX followed by STR:ENSURE-PREFIX.
+- :prefix : call STR:ENSURE-PREFIX
+- :suffix : call STR:ENSURE-SUFFIX.
+
+warn: if both :wrapped-in and :prefix (and/or :suffix) are supplied together, :wrapped-in takes precedence and :prefix (and/or :suffix) is ignored.
+
+Example:
+
+    (str:ensure \"abc\" :wrapped-in \"/\")  ;; => \"/abc/\"
+    (str:ensure \"/abc\" :prefix \"/\")  ;; => \"/abc\"  (no change, still one \"/\")
+    (str:ensure \"/abc\" :suffix \"/\")  ;; => \"/abc/\"  (added a \"/\" suffix)
+
+    These fonctions accept strings and characters:
+
+    (str:ensure \"/abc\" :prefix #\\/)
+"
+  (cond
+    ((and wrapped-in
+          (str:non-empty-string-p wrapped-in))
+     (ensure-wrapped-in wrapped-in s))
+    ((and prefix suffix)
+     (ensure-prefix prefix (ensure-suffix suffix s)))
+    (prefix
+     (ensure-prefix prefix s))
+    (suffix
+     (ensure-suffix suffix s))
+    (t
+     s)))
+
+(defun wrapped-in-p (start/end s)
+  "Does S start and end with `START/END'?
+If true, return S. Otherwise, return nil.
+
+Example:
+
+    (str:wrapped-in-p \"/\" \"/foo/\"  ;; => \"/foo/\"
+    (str:wrapped-in-p \"/\" \"/foo\"  ;; => nil
+
+See also: UIOP:STRING-ENCLOSED-P (prefix s suffix).
+"
+  (cond
+    ((null start/end)
+     s)
+    ((null s)
+     s)
+    (t
+     ;; (starts-with-p nil "foo") returns NIL.
+     (when (and (str:starts-with-p start/end s)
+                (str:ends-with-p start/end s))
+       s))))
 
 (defun pad (len s &key (pad-side *pad-side*) (pad-char *pad-char*))
   "Fill `s' with characters until it is of the given length. By default, add spaces on the right.

@@ -28,11 +28,14 @@ The only dependency is `cl-ppcre`.
     - [Global parameters](#global-parameters)
     - [Functions](#functions)
         - [Tweak whitespace](#tweak-whitespace)
-            - [trim `(s)`](#trim-s)
+            - [trim `(s &key (char-bag *whitespaces*))`](#trim-s-key-char-bag-whitespaces)
             - [collapse-whitespaces `(s)`](#collapse-whitespaces-s)
         - [To longer strings](#to-longer-strings)
             - [join `(separator list-of-strings)`](#join-separator-list-of-strings)
             - [concat `(&rest strings)`](#concat-rest-strings)
+            - [ensure `(s &key wrapped-in prefix suffix)` NEW in March, 2023](#ensure-s-key-wrapped-in-prefix-suffix-new-in-march-2023)
+            - [ensure-prefix, ensure-suffix `(start/end s)` NEW in March, 2023](#ensure-prefix-ensure-suffix-startend-s-new-in-march-2023)
+            - [ensure-wrapped-in `(start/end s)`](#ensure-wrapped-in-startend-s)
             - [insert `(string/char index s)`](#insert-stringchar-index-s)
             - [repeat `(count s)`](#repeat-count-s)
             - [add-prefix, add-suffix `(items s)`](#add-prefix-add-suffix-items-s)
@@ -58,16 +61,17 @@ The only dependency is `cl-ppcre`.
             - [from-file `(filename)`](#from-file-filename)
             - [to-file `(filename s)`](#to-file-filename-s)
         - [Predicates](#predicates)
-            - [emptyp `(s)`](#empty-emptyp-s)
-            - [blankp `(s)`](#blank-blankp-s)
-            - [starts-with-p `(start s &key ignore-case)`](#starts-with-starts-with-p-start-s-key-ignore-case)
-            - [ends-with-p `(end s &key ignore-case)`](#ends-with-ends-with-p-end-s-key-ignore-case)
-            - [containsp `(substring s &key (ignore-case nil))`](#contains-containsp-substring-s-key-ignore-case-nil)
+            - [emptyp `(s)`](#emptyp-s)
+            - [blankp `(s)`](#blankp-s)
+            - [starts-with-p `(start s &key ignore-case)`](#starts-with-p-start-s-key-ignore-case)
+            - [ends-with-p `(end s &key ignore-case)`](#ends-with-p-end-s-key-ignore-case)
+            - [containsp `(substring s &key (ignore-case nil))`](#containsp-substring-s-key-ignore-case-nil)
             - [s-member `(list s &key (ignore-case *ignore-case*) (test #'string=))`](#s-member-list-s-key-ignore-case-ignore-case-test-string)
-            - [prefixp and suffixp `(items s)`](#prefix-prefixp-and-suffix-suffixp-items-s)
+            - [prefixp and suffixp `(items s)`](#prefixp-and-suffixp-items-s)
+            - [wrapped-in-p (`start/end` `s`) NEW in March, 2023](#wrapped-in-p-startend-s-new-in-march-2023)
         - [Case](#case)
-            - [Functions to change case: camel-case, snake-case,... (new in 0.15, 2019/11)](#functions-to-change-case-camel-case-snake-case-new-in-015-201911)
-            - [downcase, upcase, capitalize `(s)` fixing a built-in suprise. (new in 0.11)](#downcase-upcase-capitalize-s-fixing-a-built-in-suprise-new-in-011)
+            - [Functions to change case: camel-case, snake-case,...](#functions-to-change-case-camel-case-snake-case)
+            - [downcase, upcase, capitalize `(s)` fixing a built-in suprise.](#downcase-upcase-capitalize-s-fixing-a-built-in-suprise)
             - [downcasep, upcasep `(s)`](#downcasep-upcasep-s)
             - [alphap, lettersp `(s)`](#alphap-lettersp-s)
             - [alphanump, lettersnump `(s)`](#alphanump-lettersnump-s)
@@ -192,6 +196,62 @@ Simple call of the built-in [concatenate](https://lispcookbook.github.io/cl-cook
 
 We actually also have `uiop:strcat`.
 
+#### ensure `(s &key wrapped-in prefix suffix)` NEW in March, 2023
+
+The "ensure-" functions return a string that has the specified prefix or suffix, appended if necessary.
+
+This `str:ensure` function looks for the following key parameters, in order:
+
+- `:wrapped-in`: if non nil, call `str:ensure-wrapped-in`. This checks that `s` both starts and ends with the supplied string or character.
+- `:prefix` and `:suffix`: if both are supplied and non-nil, call `str:ensure-suffix` followed by `str:ensure-prefix`.
+- `:prefix`: call `str:ensure-prefix`
+- `:suffix`: call `str:ensure-suffix`.
+
+Example:
+
+~~~lisp
+(str:ensure "abc" :wrapped-in "/")  ;; => "/abc/"
+(str:ensure "/abc" :prefix "/")  ;; => "/abc"  => no change, still one "/"
+(str:ensure "/abc" :suffix "/")  ;; => "/abc/" => added a "/" suffix.
+~~~
+
+These functions accept strings and characters:
+
+~~~lisp
+(str:ensure "/abc" :prefix #\/)
+~~~
+
+warn: if both `:wrapped-in` and `:prefix` (and/or `:suffix`) are supplied together, `:wrapped-in` takes precedence and `:prefix` (and/or `:suffix`) is ignored.
+
+
+#### ensure-prefix, ensure-suffix `(start/end s)` NEW in March, 2023
+
+Ensure that `s` starts with `start/end` (or ends with `start/end`, respectively).
+
+Return a new string with its prefix (or suffix) added, if necessary.
+
+Example:
+
+~~~lisp
+(str:ensure-prefix "/" "abc/") => "/abc/" (a prefix was added)
+;; and
+(str:ensure-prefix "/" "/abc/") => "/abc/" (does nothing)
+~~~
+
+#### ensure-wrapped-in `(start/end s)`
+
+Ensure that `s` both starts and ends with `start/end`.
+
+Return a new string with the necessary added bits, if required.
+
+It simply calls `str:ensure-suffix` followed by `str:ensure-prefix`.
+
+See also `str:wrapped-in-p` and `uiop:string-enclosed-p prefix s suffix`.
+
+~~~lisp
+(str:ensure-wrapped-in "/" "abc") ;; => "/abc/"  (added both a prefix and a suffix)
+(str:ensure-wrapped-in "/" "/abc/") ;; => "/abc/" (does nothing)
+~~~
 
 #### insert `(string/char index s)`
 
@@ -572,9 +632,25 @@ See also `uiop:string-prefix-p prefix s`, which returns `t` if
 and `uiop:string-enclosed-p prefix s suffix`, which returns `t` if `s`
 begins with `prefix` and ends with `suffix`.
 
+#### wrapped-in-p (`start/end` `s`) NEW in March, 2023
+
+Does `s` start and end with `start/end'?
+
+If true, return `s`. Otherwise, return nil.
+
+Example:
+
+~~~lisp
+(str:wrapped-in-p "/" "/foo/"  ;; => "/foo/"
+(str:wrapped-in-p "/" "/foo"  ;; => nil
+~~~
+
+See also: `UIOP:STRING-ENCLOSED-P (prefix s suffix)`.
+
+
 ### Case
 
-#### Functions to change case: camel-case, snake-case,... (new in 0.15, 2019/11)
+#### Functions to change case: camel-case, snake-case,...
 
 We use
 [cl-change-case](https://github.com/rudolfochrist/cl-change-case/) (go
@@ -600,7 +676,7 @@ The available functions are:
 More documentation and examples are there.
 
 
-#### downcase, upcase, capitalize `(s)` fixing a built-in suprise. (new in 0.11)
+#### downcase, upcase, capitalize `(s)` fixing a built-in suprise.
 
 The functions `str:downcase`, `str:upcase` and `str:capitalize` return
 a new string. They call the built-in `string-downcase`,
@@ -804,9 +880,11 @@ Note that there is also http://quickdocs.org/string-case/.
 
 ## Changelog
 
+* March, 2023:
+  * added `str:ensure`, `str:ensure-prefix`, `str:ensure-suffix`, `str:ensure-wrapped-in` and `str:wrapped-in-p`.
 * January, 2023: added the `:char-barg` parameter to `trim`, `trim-left`, `trim-right`.
   - minor: `ends-with-p` now works with a character.
-* June, 2022: small breaking change: fixed `prefix?` when used with a smaller prefix: "f" was not recognized as a prefix of "foobar" and "foobuz", only "foo" was. Now it is fixed. Same for `suffix?`.
+* June, 2022: small breaking change: fixed `prefixp` when used with a smaller prefix: "f" was not recognized as a prefix of "foobar" and "foobuz", only "foo" was. Now it is fixed. Same for `suffixp`.
 * Feb, 2022: added `fit`: fit the string to the given length: either shorten it, either padd padding.
 * 0.20, May, 2021: added `ascii-p`.
 * 0.19.1, May, 2021: speed up `join` (by a factor of 4).
