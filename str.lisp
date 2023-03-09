@@ -68,10 +68,13 @@
   #:suffixp
   #:add-prefix
   #:add-suffix
-  #:ensure-start
-  #:ensure-end
+
+  #:ensure
+  #:ensure-prefix
+  #:ensure-suffix
   #:ensure-wrapped-in
   #:wrapped-in-p
+
   #:pad
   #:pad-left
   #:pad-right
@@ -488,16 +491,16 @@ A simple call to the built-in `search` (which returns the position of the substr
   "Append s to the end of eahc items."
   (mapcar #'(lambda (item) (concat item s)) items))
 
-(defun ensure-start (start s)
+(defun ensure-prefix (start s)
   "Ensure that `s' starts with `start'.
   Return a new string with its prefix added, if necessary.
 
 Example:
 
-  (str:ensure-start \"/\" \"abc/\") ;; => \"/abc/\"
-  (str:ensure-start \"/\" \"/abc/\") ;; => \"/abc/\" (does nothing)
+  (str:ensure-prefix \"/\" \"abc/\") ;; => \"/abc/\"
+  (str:ensure-prefix \"/\" \"/abc/\") ;; => \"/abc/\" (does nothing)
 
-See also `str:ensure-end' and `str:ensure-wrapped-in'."
+See also `str:ensure-suffix' and `str:ensure-wrapped-in'."
   (cond
     ((null start)
      s)
@@ -509,16 +512,16 @@ See also `str:ensure-end' and `str:ensure-wrapped-in'."
            (str:concat start-s s)
            s)))))
 
-(defun ensure-end (end s)
+(defun ensure-suffix (end s)
   "Ensure that `s' ends with `end'.
 Return a new string with its suffix added, if necessary.
 
 Example:
 
-  (str:ensure-end \"/\" \"/abc\") ;; => \"/abc/\"
-  (str:ensure-end \"/\" \"/abc/\") ;; => \"/abc/\" (does nothing)
+  (str:ensure-suffix \"/\" \"/abc\") ;; => \"/abc/\"
+  (str:ensure-suffix \"/\" \"/abc/\") ;; => \"/abc/\" (does nothing)
 
-See also `str:ensure-start' and `str:ensure-wrapped-in'."
+See also `str:ensure-prefix' and `str:ensure-wrapped-in'."
   (cond
     ((null end)
      s)
@@ -540,7 +543,7 @@ Return a new string.
     (str:ensure-wrapped-in \"/\" \"/abc/\") ;; => \"/abc/\" (does nothing)
 
   See also: `str:enclosed-by-p'."
-  (str:ensure-start start/end (str:ensure-end start/end s)))
+  (str:ensure-prefix start/end (str:ensure-suffix start/end s)))
 
 (defun ensure (s &key wrapped-in prefix suffix)
   "The ensure functions return a string that has the specified prefix or suffix, appened if necessary.
@@ -579,8 +582,8 @@ If true, return S. Otherwise, return nil.
 
 Example:
 
-    (str:enclosed-by-p \"/\" \"/foo/\"  ;; => \"/foo/\"
-    (str:enclosed-by-p \"/\" \"/foo\"  ;; => nil
+    (str:wrapped-in-p \"/\" \"/foo/\"  ;; => \"/foo/\"
+    (str:wrapped-in-p \"/\" \"/foo\"  ;; => nil
 
 See also: UIOP:STRING-ENCLOSED-P (prefix s suffix).
 "
