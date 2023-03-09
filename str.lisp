@@ -546,7 +546,7 @@ Return a new string.
   (str:ensure-prefix start/end (str:ensure-suffix start/end s)))
 
 (defun ensure (s &key wrapped-in prefix suffix)
-  "The ensure functions return a string that has the specified prefix or suffix, appened if necessary.
+  "The ensure functions return a string that has the specified prefix or suffix, appended if necessary.
 
 This function looks for the following parameters, in order:
 - :wrapped-in : if non nil, call STR:ENSURE-WRAPPED-IN.

@@ -574,18 +574,44 @@ See also `uiop:string-prefix-p prefix s`, which returns `t` if
 and `uiop:string-enclosed-p prefix s suffix`, which returns `t` if `s`
 begins with `prefix` and ends with `suffix`.
 
-#### ensure-start, ensure-end `(start/end s)` NEW in February, 2023
+#### ensure `(s &key wrapped-in prefix suffix)` NEW in March, 2023
 
-Ensure that `s` starts with `start` (or ends with `end`).
+The "ensure-" functions return a string that has the specified prefix or suffix, appended if necessary.
 
-Return a new string with its prefix added, if necessary.
+This `str:ensure` function looks for the following key parameters, in order:
+
+- `:wrapped-in`: if non nil, call `str:ensure-wrapped-in`. This checks that `s` both starts and ends with the supplied string or character.
+- `:prefix` and `:suffix`: if both are supplied and non-nil, call `str:ensure-suffix` followed by `str:ensure-prefix`.
+- `:prefix`: call `str:ensure-prefix`
+- `:suffix`: call `str:ensure-suffix`.
 
 Example:
 
 ~~~lisp
-(str:ensure-start "/" "abc/") => "/abc/"
+(str:ensure "abc" :wrapped-in "/")  ;; => "/abc/"
+(str:ensure "/abc" :prefix "/")  ;; => "/abc"  => no change, still one "/"
+(str:ensure "/abc" :suffix "/")  ;; => "/abc/" => added a "/" suffix.
+~~~
+
+These fonctions accept strings and characters:
+
+~~~lisp
+(str:ensure "/abc" :prefix #\/)
+~~~
+
+
+### ensure-prefix, ensure-suffix `(start/end s)` NEW in March, 2023
+
+Ensure that `s` starts with `start/end` (or ends with `start/end`, respectively).
+
+Return a new string with its prefix (or suffix) added, if and only if necessary.
+
+Example:
+
+~~~lisp
+(str:ensure-prefix "/" "abc/") => "/abc/" (a prefix was added)
 ;; and
-(str:ensure-start "/" "/abc/") => "/abc/" (does nothing)
+(str:ensure-prefix "/" "/abc/") => "/abc/" (does nothing)
 ~~~
 
 #### ensure-wrapped-in `(start/end s)`
@@ -594,9 +620,14 @@ Ensure that `s` both starts and ends with `start/end`.
 
 Return a new string with the necessary added bits, if required.
 
-It simply calls `str:ensure-end` followed by `str:ensure-start`.
+It simply calls `str:ensure-suffix` followed by `str:ensure-prefix`.
 
 See also `str:wrapped-in-p` and `uiop:string-enclosed-p prefix s suffix`.
+
+~~~lisp
+(str:ensure-wrapped-in "/" "abc") ;; => "/abc/"  (added both a prefix and a suffix)
+(str:ensure-wrapped-in "/" "/abc/") ;; => "/abc/" (does nothing)
+~~~
 
 
 ### Case
@@ -831,8 +862,8 @@ Note that there is also http://quickdocs.org/string-case/.
 
 ## Changelog
 
-* February, 2023:
-  * added `str:ensure-start`, `str:ensure-end`, `str:ensure-wrapped-in`
+* March, 2023:
+  * added `str:ensure`, `str:ensure-prefix`, `str:ensure-suffix` and `str:ensure-wrapped-in`
   * small breaking change: fixed `prefix?` when used with a smaller prefix: "f" was not recognized as a prefix of "foobar" and "foobuz", only "foo" was. Now it is fixed. Same for `suffix?`.
 * January, 2023: added the `:char-barg` parameter to `trim`, `trim-left`, `trim-right`.
   - minor: `ends-with-p` now works with a character.
