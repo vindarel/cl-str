@@ -542,6 +542,37 @@ Return a new string.
   See also: `str:enclosed-by-p'."
   (str:ensure-start start/end (str:ensure-end start/end s)))
 
+(defun ensure (s &key wrapped-in prefix suffix)
+  "The ensure functions return a string that has the specified prefix or suffix, appened if necessary.
+
+This function looks for the following parameters, in order:
+- :wrapped-in : if non nil, call STR:ENSURE-WRAPPED-IN.
+- :prefix and :suffix : if both are supplied and non-nil, call STR:ENSURE-SUFFIX followed by STR:ENSURE-PREFIX.
+- :prefix : call STR:ENSURE-PREFIX
+- :suffix : call STR:ENSURE-SUFFIX.
+
+Example:
+
+    (str:ensure \"abc\" :wrapped-in \"/\")  ;; => \"/abc/\"
+    (str:ensure \"/abc\" :prefix \"/\")  ;; => \"/abc\"  (no change, still one \"/\")
+    (str:ensure \"/abc\" :suffix \"/\")  ;; => \"/abc/\"  (added a \"/\" suffix)
+
+    These fonctions accept strings and characters:
+
+    (str:ensure \"/abc\" :prefix #\\/)
+"
+  (cond
+    (wrapped-in
+     (ensure-wrapped-in wrapped-in s))
+    ((and prefix suffix)
+     (ensure-prefix prefix (ensure-suffix suffix s)))
+    (prefix
+     (ensure-prefix prefix s))
+    (suffix
+     (ensure-suffix suffix s))
+    (t
+     s)))
+
 (defun wrapped-in-p (start/end s)
   "Does S start and end with `START/END'?
 If true, return S. Otherwise, return nil.
