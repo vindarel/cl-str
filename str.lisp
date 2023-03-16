@@ -2,37 +2,7 @@
 
 (defpackage str
   (:use :cl)
-  (:import-from :cl-change-case
-                #:no-case
-                #:camel-case
-                #:dot-case
-                #:header-case
-                #:param-case
-                #:pascal-case
-                #:path-case
-                #:sentence-case
-                #:snake-case
-                #:swap-case
-                #:title-case
-                #:constant-case)
   (:export
-   ;; cl-change-case functions:
-   ;; (we don't re-export all of them. Otherwise, use UIOP:define-package's :reexport)
-   ;; (for example, we define downcasep instead of re-exporting string-lower-case-p)
-  #:no-case
-  #:camel-case
-  #:dot-case
-  #:header-case
-  #:param-case
-  #:pascal-case
-  #:path-case
-  #:sentence-case
-  #:snake-case
-  #:swap-case
-  #:title-case
-  #:constant-case
-
-   ;; ours:
   #:remove-punctuation
   #:containsp
   #:s-member
@@ -95,6 +65,20 @@
   #:downcase
   #:upcase
   #:capitalize
+  #:no-case
+  #:camel-case
+  #:dot-case
+  #:header-case
+  #:param-case
+  #:pascal-case
+  #:path-case
+  #:sentence-case
+  #:snake-case
+  #:swap-case
+  #:title-case
+  #:constant-case
+
+  ;; predicate functions
   #:downcasep
   #:upcasep
   #:has-alphanum-p
@@ -793,7 +777,7 @@ with `string-equal' (case-insensitive).
 
 ;;; Case
 
-;; Small wrappers around built-ins, but they fix surprises.
+;; Small wrappers around built-ins that return nil when the argument is nil.
 
 (defun downcase (s)
   "Return the lowercase version of `s'.
@@ -815,6 +799,93 @@ with `string-equal' (case-insensitive).
   nil (instead of the string \"Nil\")."
   (when s
     (string-capitalize s)))
+
+;; Wrappers around cl-change-case functions that coerce the argument into a string
+;; and return nil when the argument is nil.
+
+(defun no-case (s &key (replacement " "))
+  "Return the no-cased version of `s'.
+  Calls `cl-change-case:no-case' after coercing `s' into a string,
+  but returns nil if `s' is nil."
+  (when s
+    (cl-change-case:no-case (string s) :replacement replacement)))
+
+(defun camel-case (s &key merge-numbers)
+  "Return the camel-cased version of `s'.
+  Calls `cl-change-case:camel-case' after coercing `s' into a string,
+  but returns nil if `s' is nil."
+  (when s
+    (cl-change-case:camel-case (string s) :merge-numbers merge-numbers)))
+
+(defun dot-case (s)
+  "Return the dot-cased version of `s'.
+  Calls `cl-change-case:dot-case' after coercing `s' into a string,
+  but returns nil if `s' is nil."
+  (when s
+    (cl-change-case:dot-case (string s))))
+
+(defun header-case (s)
+  "Return the header-cased version of `s'.
+  Calls `cl-change-case:header-case' after coercing `s' into a string,
+  but returns nil if `s' is nil."
+  (when s
+    (cl-change-case:header-case (string s))))
+
+(defun param-case (s)
+  "Return the param-cased version of `s'.
+  Calls `cl-change-case:param-case' after coercing `s' into a string,
+  but returns nil if `s' is nil."
+  (when s
+    (cl-change-case:param-case (string s))))
+
+(defun pascal-case (s)
+  "Return the pascal-cased version of `s'.
+  Calls `cl-change-case:pascal-case' after coercing `s' into a string,
+  but returns nil if `s' is nil."
+  (when s
+    (cl-change-case:pascal-case (string s))))
+
+(defun path-case (s)
+  "Return the path-cased version of `s'.
+  Calls `cl-change-case:path-case' after coercing `s' into a string,
+  but returns nil if `s' is nil."
+  (when s
+    (cl-change-case:path-case (string s))))
+
+(defun sentence-case (s)
+  "Return the sentence-cased version of `s'.
+  Calls `cl-change-case:sentence-case' after coercing `s' into a string,
+  but returns nil if `s' is nil."
+  (when s
+    (cl-change-case:sentence-case (string s))))
+
+(defun snake-case (s)
+  "Return the snake-cased version of `s'.
+  Calls `cl-change-case:snake-case' after coercing `s' into a string,
+  but returns nil if `s' is nil."
+  (when s
+    (cl-change-case:snake-case (string s))))
+
+(defun swap-case (s)
+  "Return the swap-cased version of `s'.
+  Calls `cl-change-case:swap-case' after coercing `s' into a string,
+  but returns nil if `s' is nil."
+  (when s
+    (cl-change-case:swap-case (string s))))
+
+(defun title-case (s)
+  "Return the title-cased version of `s'.
+  Calls `cl-change-case:title-case' after coercing `s' into a string,
+  but returns nil if `s' is nil."
+  (when s
+    (cl-change-case:title-case (string s))))
+
+(defun constant-case (s)
+  "Return the constant-cased version of `s'.
+  Calls `cl-change-case:constant-case' after coercing `s' into a string,
+  but returns nil if `s' is nil."
+  (when s
+    (cl-change-case:constant-case (string s))))
 
 ;;; Case predicates.
 
