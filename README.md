@@ -655,6 +655,8 @@ See also: `UIOP:STRING-ENCLOSED-P (prefix s suffix)`.
 We use
 [cl-change-case](https://github.com/rudolfochrist/cl-change-case/) (go
 thank him and star the repo!).
+We adapt these functions to also accept symbols and characters (like the inbuilt casing functions).
+Also the functions return `nil` when argument is `nil`.
 
 The available functions are:
 
