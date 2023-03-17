@@ -450,7 +450,67 @@
   (is (upcase "foo") "FOO")
   (is (capitalize nil) nil
       "capitalize nil returns nil, not a string.")
-  (is (capitalize "foo") "Foo"))
+  (is (capitalize "foo") "Foo")
+  (is (no-case nil) nil
+      "No-case returns nil, not a string.")
+  (is (no-case "Foo") "foo")
+  (is (no-case :foo) "foo"
+      "Works also on symbols.")
+  (is (camel-case nil) nil
+      "Camel-case returns nil, not a string.")
+  (is (camel-case "Foo Foo") "fooFoo")
+  (is (camel-case :foo.foo) "fooFoo"
+      "Works also on symbols.")
+  (is (dot-case nil) nil
+      "Dot-case returns nil, not a string.")
+  (is (dot-case "Foo Foo") "foo.foo")
+  (is (dot-case :foo-foo) "foo.foo"
+      "Works also on symbols.")
+  (is (header-case nil) nil
+      "Header-case returns nil, not a string.")
+  (is (header-case "Foo Foo") "Foo-Foo")
+  (is (header-case :foo-foo) "Foo-Foo"
+      "Works also on symbols.")
+  (is (param-case nil) nil
+      "Param-case returns nil, not a string.")
+  (is (param-case "Foo Foo") "foo-foo")
+  (is (param-case :foo.foo) "foo-foo"
+      "Works also on symbols.")
+  (is (pascal-case nil) nil
+      "pascal-case returns nil, not a string.")
+  (is (pascal-case "Foo Foo") "FooFoo")
+  (is (pascal-case :foo.foo) "FooFoo"
+      "Works also on symbols.")
+  (is (path-case nil) nil
+      "Path-case returns nil, not a string.")
+  (is (path-case "Foo Foo") "foo/foo")
+  (is (path-case :foo.foo) "foo/foo"
+      "Works also on symbols.")
+  (is (sentence-case nil) nil
+      "sentence-case returns nil, not a string.")
+  (is (sentence-case "Foo Foo") "Foo foo")
+  (is (sentence-case :foo.foo) "Foo foo"
+      "Works also on symbols.")
+  (is (snake-case nil) nil
+      "snake-case returns nil, not a string.")
+  (is (snake-case "Foo Foo") "foo_foo")
+  (is (snake-case :foo.foo) "foo_foo"
+      "Works also on symbols.")
+  (is (swap-case nil) nil
+      "swap-case returns nil, not a string.")
+  (is (swap-case "Foo Foo") "fOO fOO")
+  (is (swap-case :FOO.FOO) "foo.foo"
+      "Works also on symbols.")
+  (is (title-case nil) nil
+      "swap-case returns nil, not a string.")
+  (is (title-case "FoO foo") "Fo O Foo")
+  (is (title-case :foo.foo) "Foo Foo"
+      "Works also on symbols.")
+  (is (constant-case nil) nil
+      "constant-case returns nil, not a string.")
+  (is (constant-case "Foo Foo") "FOO_FOO")
+  (is (constant-case :foo.foo) "FOO_FOO"
+      "Works also on symbols."))
 
 (subtest "case predicates"
   (is (downcasep nil) nil "downcasep nil")
