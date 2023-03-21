@@ -2,37 +2,7 @@
 
 (defpackage str
   (:use :cl)
-  (:import-from :cl-change-case
-                #:no-case
-                #:camel-case
-                #:dot-case
-                #:header-case
-                #:param-case
-                #:pascal-case
-                #:path-case
-                #:sentence-case
-                #:snake-case
-                #:swap-case
-                #:title-case
-                #:constant-case)
   (:export
-   ;; cl-change-case functions:
-   ;; (we don't re-export all of them. Otherwise, use UIOP:define-package's :reexport)
-   ;; (for example, we define downcasep instead of re-exporting string-lower-case-p)
-  #:no-case
-  #:camel-case
-  #:dot-case
-  #:header-case
-  #:param-case
-  #:pascal-case
-  #:path-case
-  #:sentence-case
-  #:snake-case
-  #:swap-case
-  #:title-case
-  #:constant-case
-
-   ;; ours:
   #:remove-punctuation
   #:containsp
   #:s-member
@@ -95,6 +65,20 @@
   #:downcase
   #:upcase
   #:capitalize
+  #:no-case
+  #:camel-case
+  #:dot-case
+  #:header-case
+  #:param-case
+  #:pascal-case
+  #:path-case
+  #:sentence-case
+  #:snake-case
+  #:swap-case
+  #:title-case
+  #:constant-case
+
+  ;; predicate functions
   #:downcasep
   #:upcasep
   #:has-alphanum-p
@@ -793,28 +777,182 @@ with `string-equal' (case-insensitive).
 
 ;;; Case
 
-;; Small wrappers around built-ins, but they fix surprises.
+;; Small wrappers around built-ins that return nil when the argument is nil.
 
 (defun downcase (s)
   "Return the lowercase version of `s'.
   Calls the built-in `string-downcase', but returns nil if `s' is
-  nil (instead of the string \"nil\")."
+  nil (instead of the string \"nil\").
+
+  Examples:
+  (downcase \"Foo fooF\") => \"foo foof\"
+  (downcase :foo{foo.f) => \"foo{foo.f\"
+  (downcase #\F) => \"f\"
+  (downcase nil) => nil"
   (when s
     (string-downcase s)))
 
 (defun upcase (s)
   "Return the uppercase version of `s'.
   Call the built-in `string-upcase', but return nil if `s' is
-  nil (instead of the string \"NIL\")."
+  nil (instead of the string \"NIL\").
+
+  Examples:
+  (upcase \"Foo fooF\") => \"FOO FOOF\"
+  (upcase :foo{foo.f) => \"FOO{FOO.F\"
+  (upcase #\f) => \"F\"
+  (upcase nil) => nil"
   (when s
     (string-upcase s)))
 
 (defun capitalize (s)
   "Return the capitalized version of `s'.
   Calls the built-in `string-capitalize', but returns nil if `s' is
-  nil (instead of the string \"Nil\")."
+  nil (instead of the string \"Nil\").
+
+  Examples:
+  (capitalize \"Foo fooF\") => \"Foo fooF\"
+  (capitalize :foo{foo.f) => \"Foo{Foo.F\"
+  (capitalize #\f) => \"F\"
+  (capitalize nil)  => nil"
   (when s
     (string-capitalize s)))
+
+;; Wrappers around cl-change-case functions that coerce the argument into a string
+;; and return nil when the argument is nil.
+
+(defun no-case (s &key (replacement " "))
+  "Transform `s' to lower case space delimited. Use REPLACEMENT as delimiter.
+
+  Examples:
+  (no-case \"Foo fooF\" :replacement \",\") => \"foo,foo,f\"
+  (no-case 'foo{foo.f) => \"foo foo f\"
+  (no-case #\F) => \"f\"
+  (no-case nil) => nil"
+  (when s
+    (cl-change-case:no-case (string s) :replacement replacement)))
+
+(defun camel-case (s &key merge-numbers)
+  "Transform `s' to camelCase.
+Dot-separated numbers like 1.2.3 will be replaced by underscores 1_2_3
+unless MERGE-NUMBERS is non-nil.
+
+  Examples:
+  (camel-case \"Foo fooF\") => \"fooFooF\"
+  (camel-case (quote foo{foo.f)) => \"fooFooF\"
+  (camel-case #\F) => \"f\"
+  (camel-case nil) => nil"
+  (when s
+    (cl-change-case:camel-case (string s) :merge-numbers merge-numbers)))
+
+(defun dot-case (s)
+  "Transform `s' to dot.case.
+
+  Examples:
+  (dot-case \"Foo fooF\") => \"foo.foo.f\"
+  (dot-case :foo{foo-f) => \"foo.foo.f\"
+  (dot-case #\F) => \"f\"
+  (dot-case nil) => nil"
+  (when s
+    (cl-change-case:dot-case (string s))))
+
+(defun header-case (s)
+  "Transform `s' to Header-Case.
+
+  Examples:
+  (header-case \"Foo fooF\") => \"Foo-Foo-F\"
+  (header-case 'foo{foo.f) => \"Foo-Foo-F\"
+  (header-case #\f) => \"F\"
+  (header-case nil) => nil"
+  (when s
+    (cl-change-case:header-case (string s))))
+
+(defun param-case (s)
+  "Transform `s' to param-case.
+
+  Examples:
+  (param-case \"Foo fooF\") => \"foo-foo-f\"
+  (param-case (quote foo{foo.f)) => \"foo-foo-f\"
+  (param-case #\F) => \"f\"
+  (param-case nil) => nil"
+  (when s
+    (cl-change-case:param-case (string s))))
+
+(defun pascal-case (s)
+  "Transform `s' to Pascal Case
+
+  Examples:
+  (pascal-case \"Foo fooF\") => \"FooFooF\"
+  (pascal-case :foo{foo.f) => \"FooFooF\"
+  (pascal-case #\f) => \"F\"
+  (pascal-case nil) => nil"
+  (when s
+    (cl-change-case:pascal-case (string s))))
+
+(defun path-case (s)
+  "Transform `s' to path/case
+
+  Examples:
+  (path-case \"Foo fooF\") => \"foo/foo/f\"
+  (path-case :foo{foo.f) => \"foo/foo/f\"
+  (path-case #\F) => \"f\"
+  (path-case nil) => nil"
+  (when s
+    (cl-change-case:path-case (string s))))
+
+(defun sentence-case (s)
+  "Transform `s' to Sentence case
+
+  Examples:
+  (sentence-case \"Foo.fooF\") => \"Foo foo f\"
+  (sentence-case (quote foo{foo.f)) => \"Foo foo f\"
+  (sentence-case #\f) => \"F\"
+  (sentence-case nil) => nil"
+  (when s
+    (cl-change-case:sentence-case (string s))))
+
+(defun snake-case (s)
+  "Transform `s' to snake_case
+
+  Examples:
+  (snake-case \"Foo fooF\") => \"foo_foo_f\"
+  (snake-case 'foo{foo.f) => \"foo_foo_f\"
+  (snake-case #\f) => \"f\"
+  (snake-case nil) => nil"
+  (when s
+    (cl-change-case:snake-case (string s))))
+
+(defun swap-case (s)
+  "Reverse case for each character in `s'.
+
+  Examples:
+  (swap-case \"Foo fooF\") => \"fOO FOOf\"
+  (swap-case :FOO{FOO.F) => \"foo{foo.f\"
+  (swap-case #\f) => \"F\"
+  (swap-case nil) => nil"
+  (when s
+    (cl-change-case:swap-case (string s))))
+
+(defun title-case (s)
+  "Transform `s' to Title Case
+
+  Examples:
+  (title-case \"Foo fooF\") => \"Foo Foo F\"
+  (title-case :foo{foo.f) => \"Foo Foo F\"
+  (title-case #\f) => \"F\"
+  (title-case nil) => nil"
+  (when s
+    (cl-change-case:title-case (string s))))
+
+(defun constant-case (s)
+  "Transform `s' to CONSTANT_CASE.
+
+  (constant-case \"Foo fooF\") => \"FOO_FOO_F\"
+  (constant-case :foo{foo.f) => \"FOO_FOO_F\"
+  (constant-case #\f) => \"F\"
+  (constant-case nil) => nil"
+  (when s
+    (cl-change-case:constant-case (string s))))
 
 ;;; Case predicates.
 
