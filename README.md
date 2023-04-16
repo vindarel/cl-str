@@ -91,6 +91,10 @@ The only dependency is `cl-ppcre`.
         - [string-case](#string-case)
     - [Changelog](#changelog)
     - [Dev and test](#dev-and-test)
+        - [Main test suite](#main-test-suite)
+        - [Specific test suite](#specific-test-suite)
+        - [Specific test](#specific-test)
+        - [Test when defined](#test-when-defined)
     - [See also](#see-also)
 
 <!-- markdown-toc end -->
@@ -942,11 +946,53 @@ Now:
 
 ## Dev and test
 
-Test with [prove](https://github.com/fukamachi/prove).
+Regression testing is implemented with [fiveam](https://github.com/lispci/fiveam).
 
-  (ql:quickload :str.test)
-  (load "test/test-str.lisp")
+### Main test suite
 
+Either use
+```lisp
+  (asdf:test-system :str)
+```
+
+or load the test package `str.test` and then
+```lisp
+  (fiveam:run! 'test-str:str)
+```
+
+### Specific test suite
+
+```lisp
+  (fiveam:run! 'test-str:replace-functions)
+```
+
+Test suite names:
+- replace-functions
+- lengthen-functions
+- ensure-functions
+- pad-functions
+- substring-functions
+- list-functions
+- from-list-to-string
+- from-list-to-list
+- from-string-to-list
+- predicates, case-functions
+- miscellaneous
+
+### Specific test
+
+```lisp
+  (fiveam:run! 'test-str::downcase) ;; (test symbols are unexported)
+```
+
+### Test when defined
+
+First you need to
+```lisp
+(setf fiveam:*run-test-when-defined* t)
+```
+then the test is run after each definition / compilation.
+This can be done with C-c C-c on emacs.
 
 ## See also
 
