@@ -1,576 +1,691 @@
 (in-package :cl-user)
 (defpackage test-str
-  (:use :cl
-        :prove
-        :str))
+  (:use #:cl
+        #:str)
+  (:import-from #:fiveam
+                #:def-suite
+                #:in-suite
+                #:test
+                #:is
+                #:def-fixture
+                #:with-fixture)
+  (:export #:str
+           #:replace-functions
+           #:lengthen-functions
+           #:ensure-functions
+           #:pad-functions
+           #:substring-functions
+           #:list-functions
+           #:from-list-to-string
+           #:from-list-to-list
+           #:from-string-to-list
+           #:predicates
+           #:case-functions
+           #:miscellaneous))
 
 (in-package :test-str)
 
-(setf prove:*enable-colors* t)
-(plan nil)
+(def-suite str
+  :description "Top level test suite")
 
-(subtest "Trim"
-  (is "rst " (trim-left "   rst "))
-  (is " rst" (trim-right " rst   "))
-  (is "rst" (trim "  rst  "))
-  (is nil (trim-left nil))
-  (is nil (trim-right nil))
-  (is nil (trim nil))
-  (is "rst " (trim-left "abrst " :char-bag "ab"))
-  (is " rst" (trim-right " rstbc" :char-bag (list #\b #\c)))
-  (is "rst" (trim "drste" :char-bag "de")))
+(def-fixture ignore-case ()
+  (let ((*ignore-case* t))
+    (&body)))
 
-(subtest "Collapse whitespaces"
-  (is "foo bar baz" (collapse-whitespaces "foo  bar
+(def-fixture omit-nulls ()
+  (let ((*omit-nulls* t))
+    (&body)))
 
+(def-suite replace-functions
+  :in str
+  :description "Functions that replace specific elements from strings.")
+(in-suite replace-functions)
 
-  baz")
-      "collapse whitespaces"))
+(test replace-first
+  (is (string= "fooaa" (replace-first "aa" "oo" "faaaa"))))
 
+(test replace-all
+  (is (string= "foo" (replace-all "a" "o" "faa")))
+  (is (string= "foo" (replace-all "^a" "o" "fo^a")))
+  (is (string= "foo" (replace-all "^aa+" "o" "fo^aa+")))
+  (is (string= "foo'\\'bar" (replace-all "+" "'\\'" "foo+bar"))
+      "Edge case with a double backslash and a single quote."))
 
-(subtest "Concat"
-  (is "foo" (concat "f" "o" "o"))
-  (is "" (concat)))
+(test replace-using
+  (is (string= "foo" (replace-using (list "a" "o") "faa")))
+  (is (string= "fooAA" (replace-using (list "a" "o") "faaAA")))
+  (is (string= "faa" (replace-using (list "a") "faa")))
+  (is (string= "fooAA" (replace-using (list "a" "o" "A") "faaAA")))
+  (is (string= "faa" (replace-using nil "faa"))))
 
-(subtest "Replace"
-  (is "foo" (replace-all "a" "o" "faa"))
-  (is "foo" (replace-all "^a" "o" "fo^a"))
-  (is "foo" (replace-all "^aa+" "o" "fo^aa+"))
-  (is "foo'\\'bar" (replace-all "+" "'\\'" "foo+bar")
-      "Edge case with a double backslash and a single quote.")
-  (is "fooaa" (replace-first "aa" "oo" "faaaa")))
+(def-suite lengthen-functions
+  :in str
+  :description "Functions that add elements to strings.")
+(in-suite lengthen-functions)
 
-(subtest "Replace using"
-  (is "foo" (replace-using (list "a" "o") "faa"))
-  (is "fooAA" (replace-using (list "a" "o") "faaAA"))
-  (is "faa" (replace-using (list "a") "faa"))
-  (is "fooAA" (replace-using (list "a" "o" "A") "faaAA"))
-  (is "faa" (replace-using nil "faa")))
+(test concat
+  (is (string= "foo" (concat "f" "o" "o")))
+  (is (string= "" (concat))))
 
-(subtest "Join"
-  (is "foo bar baz" (join " " '("foo" "bar" "baz")))
-  (is "foo+++bar+++baz" (join "+++" '("foo" "bar" "baz")))
-  (is "foo~bar" (join "~" '("foo" "bar")))
-  (is "foo~~~bar" (join "~" '("foo~" "~bar")))
-  (is "foo,bar" (join #\, '("foo" "bar")))
-  (is "" (join nil nil)))
+(test insert
+  (is (string= "hello" (insert "o" 4 "hell")))
+  (is (string= "hello" (insert "h" 0 "ello")))
+  (is (string= "hell" (insert "l" 200 "hell")) "large index")
+  (is (string= "hell" (insert "l" -2 "hell")) "negative index")
+  (is (string= "hell" (insert nil 2 "hell")) "insert nil: do nothing")
+  (is (string= "hell" (insert "l" nil "hell")) "index nil: do nothing")
+  (is (string= nil (insert "l" 2 nil)) "s nil: nil")
+  (is (string= "hello" (insert #\o 4 "hell")) "with a char"))
 
-(subtest "Insert"
-  (is "hello" (insert "o" 4 "hell"))
-  (is "hello" (insert "h" 0 "ello"))
-  (is "hell" (insert "l" 200 "hell") "large index")
-  (is "hell" (insert "l" -2 "hell") "negative index")
-  (is "hell" (insert nil 2 "hell") "insert nil: do nothing")
-  (is "hell" (insert "l" nil "hell") "index nil: do nothing")
-  (is nil (insert "l" 2 nil) "s nil: nil")
-  (is "hello" (insert #\o 4 "hell") "with a char"))
+(def-suite ensure-functions
+  :in lengthen-functions
+  :description "Functions that ensure elements before and/or after a string.")
+(in-suite ensure-functions)
 
-(subtest "Split"
-  (is '("foo" "bar") (split " " "foo bar"))
-  (is '("foo" "bar") (split "+" "foo+bar") "separator is a regexp")
-  (is '("foo" "" "bar") (split "+" "foo++bar"))
-  (is '("foo" "bar+car+dar") (split "+" "foo+bar+car+dar" :limit 2))
-  (is '("foo" "bar") (split "+" "foo+bar"))
-  (is '("foo" "bar") (split "x" "fooxbar") "split with string x")
-  (is '("foo" "bar") (split #\x "fooxbar") "split with character")
-  (is '("fooxbarx") (split "xx" "fooxbarx") "split with xx, end in x")
-  (is '("foo" "barx") (split "xx" "fooxxbarx") "split with xx")
-  (is '("fooxbar" "x") (split "xx" "fooxbarxxx") "split with xx, end in xxx")
-  (is '("foo" "bar") (split "(*)" "foo(*)bar"))
-  (is '("foo" "bar" "") (split "NO" "fooNObarNO") "separator at the end (cl-ppcre doesn't return an empty string), but we do.")
-  (is '("foo" "bar" "") (split "NO" "fooNObarNO" :limit 10) "but cl-ppcre does return trailing empty strings if limit is provided")
-  (is '("foo" "bar") (split "+" "foo+++bar++++" :omit-nulls t) "omit-nulls argument")
-  (is '("foo" "   ") (split "+" "foo+++   ++++" :omit-nulls t) "omit-nulls and blanks")
-  (is '("foo" "bar") (let ((*omit-nulls* t)) (split "+" "foo+++bar++++")) "omit-nulls argument")
-  (is '("foo" "   ") (let ((*omit-nulls* t)) (split "+" "foo+++   ++++")) "omit-nulls and blanks")
-  (is '("foo" "bar") (split #\, "foo,bar"))
-  (is '("foo" "ABbar") (split "ABAB" "fooABABABbar")))
+(test ensure
+  (is (string= "-foo+" (ensure "foo" :prefix "-" :suffix "+"))
+      "ensure with prefix and suffix")
+  (is (string= "foo" (ensure "foo")) "ensure with no params")
+  (is (string= "foo" (ensure "foo" :prefix nil :suffix nil :wrapped-in nil))
+      "ensure with params to nil")
+  (is (string= "/foo/" (ensure "foo" :wrapped-in "" :prefix "/" :suffix "/"))
+      "ensure with wrapped-in blank and prefix and suffix."))
 
-(subtest "rsplit"
-  (is '("foo" "bar") (rsplit " " "foo bar"))
-  (is '("foo" "bar") (rsplit #\, "foo,bar"))
-  (is '("com.foo" "Bar") (rsplit "." "com.foo.Bar" :limit 2))
-  (is '("/var/log" "mail.log") (rsplit "/" "/var/log/mail.log" :limit 2))
-  (is '("/var" "log" "mail.log") (rsplit "/" "/var/log/mail.log" :limit 3))
-  (is '("" "var" "log" "mail.log") (rsplit "/" "/var/log/mail.log" :limit 4))
-  (is '("foo" "bar") (rsplit "LONG" "fooLONGbar"))
-  (is '("foo" "bar" "") (rsplit "LONG" "fooLONGbarLONG" :limit 3))
-  (is '("fooAB" "bar") (rsplit "ABAB" "fooABABABbar")))
+(test ensure-prefix
+  (is (string= "/abc" (ensure-prefix "/" "/abc")) "default case: existing prefix.")
+  (is (string= "/abc" (ensure-prefix "/" "abc")) "default case: add prefix.")
+  (is (string= "/" (ensure-prefix "/" "")) "blank string: add prefix")
+  (is (string= "/" (ensure-prefix #\/ "")) "with a char")
+  (is (string= "" (ensure-prefix "" "")) "blank strings")
+  (is (string= "" (ensure-prefix nil "")) "prefix is nil, we want s")
+  (is (string= nil (ensure-prefix nil nil)) "prefix and s are nil")
+  (is (string= nil (ensure-prefix "/" nil)) "s is nil")
+  (is (string= "///abc" (ensure-prefix "/" "///abc")) "lots of slashes, but that's ok"))
 
-(subtest "substring"
-  (is "abcd" (substring 0 4 "abcd") "normal case")
-  (is "ab" (substring 0 2 "abcd") "normal case substing")
-  (is "bc" (substring 1 3 "abcd") "normal case substing middle")
-  (is "" (substring 4 4 "abcd") "normal case")
-  (is "" (substring 0 0 "abcd") "normal case")
-  (is "d" (substring 3 4 "abcd") "normal case")
-  (is "abcd" (substring 0 t "abcd") "end is t")
-  (is "abcd" (substring 0 nil "abcd") "end is nil")
-  (is "abcd" (substring 0 100 "abcd") "end is too large")
-  (is "abc" (substring 0 -1 "abcd") "end is negative")
-  (is "b" (substring 1 -2 "abcd") "end is negative")
-  (is "" (substring 2 1 "abcd") "start is bigger than end")
-  (is "" (substring 0 -100 "abcd") "end is too low")
-  (is "" (substring 100 1 "abcd") "start is too big")
-  (is "abcd" (substring -100 4 "abcd") "start is too low")
-  (is "abcd" (substring -100 100 "abcd") "start and end are too low and big")
-  (is "" (substring 100 -100 "abcd") "start and end are too big and low"))
+(test ensure-suffix
+  (is (string= "/abc/" (ensure-suffix "/" "/abc/")) "default case")
+  (is (string= "abc/" (ensure-suffix "/" "abc")) "default case 2")
+  (is (string= "/" (ensure-suffix "/" "")) "default case void string")
+  (is (string= "/" (ensure-suffix #\/ "")) "with a char")
+  (is (string= "" (ensure-suffix "" "")) "void strings")
+  (is (string= "foo" (ensure-suffix nil "foo")) "prefix is nil, we want s")
+  (is (string= "abc///" (ensure-suffix "/" "abc///")) "lots of slashes, but that's ok"))
 
-(subtest "Repeat"
-  (is "" (repeat 10 ""))
-  (is "foofoofoo" (repeat 3 "foo")))
-
-(subtest "Empty-p"
-  (ok (empty? nil))
-  (ok (emptyp ""))
-  (is nil (empty? " ")))
-
-(subtest "non-empty string"
-  (is nil (non-empty-string-p 8))
-  (is nil (non-empty-string-p nil))
-  (is nil (non-empty-string-p #\x))
-  (is nil (non-empty-string-p ""))
-  (ok (non-empty-string-p "  "))
-  (ok (non-empty-string-p "foo"))
-  (ok (non-empty-string-p "8")))
-
-(subtest "non-blank string"
-  (is nil (non-blank-string-p 8))
-  (is nil (non-blank-string-p ""))
-  (is nil (non-blank-string-p "  "))
-  (is nil (non-blank-string-p "
-
-  "))
-  (ok (non-blank-string-p "foo"))
-  (ok (non-blank-string-p "8")))
-
-(subtest "Blank string"
-  (ok (blankp "  "))
-  (ok (blank? "  "))
-  (is nil (blank? "   rst ")))
-
-(subtest "Shorten"
-  (is "hello..." (shorten 8 "hello foobar")
-      "default case.")
-  (is "foo" (shorten 10 "foo")
-      "long, no change")
-  (is "..." (shorten 1 "foo")
-      "short, only ellipsis")
-  (is "-" (shorten 1 "foo" :ellipsis "-")
-      "custom ellipsis")
-  (is "-"
-      (let ((str:*ellipsis* "-"))
-        (shorten 1 "foo"))
-      "custom ellipsis with let")
-  (is "hello-" (shorten 6 "hello foobar" :ellipsis "-")
-      "shorter ellipsis")
-  (is "foo" (shorten nil "foo")
-      "length is nil")
-  (is "..." (shorten -1 "foo")
-      "length is negative")
-  (is nil (shorten 10 nil)
-      "s is nil"))
-
-(subtest "Words"
-  (is nil (words nil))
-  (is nil (words ""))
-  (is '("foo") (words "foo"))
-  (is '("foo" "bar") (words "foo bar"))
-  (is '("foo" "bar") (words "  foo   bar   "))
-  (is '("foo" "bar  ") (words " foo bar  " :limit 2))
-  (is '("foo" "bar baz ") (words " foo bar baz " :limit 2))
-  (is '("foo" "bar" "baz" "?") (words "  foo bar  baz ?"))
-  (is '("foo" "bar" "baz" "?") (words "  foo
- bar  baz ?")))
-
-(subtest "Unwords"
-  (is "" (unwords nil))
-  (is "" (unwords '()))
-  (is "" (unwords '("")))
-  (is "foo" (unwords '("foo")))
-  (is "foo bar baz" (unwords '("foo bar baz"))))
-
-
-(subtest "Lines"
-  (is nil (lines nil))
-  (is nil (lines ""))
-  (is '("") (lines "
-"))
-  (is '("1" "2" " 3") (lines "1
-2
- 3"))
-  (is '("1" "2" " 3") (lines "1
-2
- 3
-"))
-  (is '("1" "2" "" "3") (str:lines "1
-2
-
-3"))
-  (is '("1" "2" "3") (str:lines "1
-2
-
-
-3" :omit-nulls t)))
-
-(subtest "Unlines"
-  (is "" (unlines nil))
-  (is "" (unlines '("")))
-  (is "
-" (unlines '("" "")))
-  (is "1
-2
-" (unlines '("1" "2" ""))))
-
-(subtest "starts-with-p"
-  (ok (starts-with? "foo" "foobar") "default case")
-  (ok (starts-with? "" "foo") "with blank start")
-  (ok (not (starts-with? "rs" "")) "with blank s")
-  (ok (not (starts-with? nil "")) "prefix is nil")
-  ;; (is (starts-with? "" nil) t) "s is nil: what do we want?")  ;; XXX: fix?
-  (ok (not (starts-with? "foobar" "foo")) "with shorter s")
-  (ok (starts-with? "" "") "with everything blank")
-  (ok (not (starts-with? "FOO" "foobar")) "don't ignore case")
-  (ok (starts-with-p "f" "foo") "starts-with-p alias")
-  (ok (starts-with? "FOO" "foobar" :ignore-case t) "ignore case")
-  (ok (let ((*ignore-case* t)) (starts-with? "FOO" "foobar")) "ignore case"))
-
-(subtest "ends-with-p"
-  (ok (ends-with? "bar" "foobar") "default case")
-  (ok (ends-with-p "bar" "foobar") "ends-with-p alias")
-  (ok (not (ends-with? "BAR" "foobar")) "don't ignore case")
-  (ok (ends-with? "BAR" "foobar" :ignore-case t) "ignore case")
-  (ok (let ((*ignore-case* t)) (ends-with? "BAR" "foobar")) "ignore case"))
-
-(subtest "prefix"
-  (is (prefix '("foobar" "footeam")) "foo" "default case")
-  (is (prefix '("foobar" "barfoo")) "" "no common prefix")
-  (is (prefix '("foobar" "")) "" "with empty string")
-  (is (prefix '("foobar" nil)) "" "with a nil")
-  (is (prefix '()) nil "with void list"))
-
-(subtest "prefix?"
-  (is (prefix? '("foobar" "footeam") "foo") "foo" "default case")
-  (is (prefix? '("foobar" "footeam") "f") "f" "smaller prefix")
-  (is (prefix?'("foobar" "barfoo") "x") nil "not a common prefix")
-  (is (prefix?'("foobar" "barfoo") "") "" "prefix is a void string")
-  (is (prefix? '("foobar" "") "") "" "with empty string")
-  (is (prefix? '("foobar" nil) "") "" "with a nil")
-  (is (prefix? '() nil) nil "with void list"))
-
-(subtest "suffix"
-  (is (suffix '("foobar" "teambar")) "bar" "default case")
-  (is (suffix '("foobar" "barfoo")) "" "no common suffix")
-  (is (suffix '("foobar" "")) "" "with empty string")
-  (is (suffix '("foobar" nil)) "" "with a nil")
-  (is (suffix '()) nil "with void list"))
-
-(subtest "suffix?"
-  (is (suffix? '("foobar" "teambar") "bar") "bar" "default case")
-  (is (suffix? '("foobar" "teambar") "r") "r" "smaller suffix")
-  (is (suffix?'("foobar" "barfoo") "x") nil "not a common suffix")
-  (is (suffix?'("foobar" "barfoo") "") "" "suffix is a a void string")
-  (is (suffix? '("foobar" "") "") "" "with empty string")
-  (is (suffix? '("foobar" nil) "") nil "with a nil")
-  (is (suffix? '() nil) nil "with void list"))
-
-(subtest "add-prefix"
-  (is (add-prefix '("bar" "team") "foo") '("foobar" "footeam") "default case")
-  (is (add-prefix '("bar" nil) "foo") '("foobar" "foo") "with a nil")
-  (is (add-prefix '() "foo") '() "with void list"))
-
-(subtest "add-suffix"
-  (is (add-suffix '("foo" "team") "bar") '("foobar" "teambar") "default case")
-  (is (add-suffix '("foo" nil) "bar") '("foobar" "bar") "with a nil")
-  (is (add-suffix '() "foo") '() "with void list"))
-
-(subtest "ensure-prefix"
-  (is (ensure-prefix "/" "/abc") "/abc" "default case: existing prefix.")
-  (is (ensure-prefix "/" "abc") "/abc" "default case: add prefix.")
-  (is (ensure-prefix "/" "") "/" "blank string: add prefix")
-  (is (ensure-prefix #\/ "") "/" "with a char")
-  (is (ensure-prefix "" "") "" "blank strings")
-  (is (ensure-prefix nil "") "" "prefix is nil, we want s")
-  (is (ensure-prefix nil nil) nil "prefix and s are nil")
-  (is (ensure-prefix "/" nil) nil "s is nil")
-  (is (ensure-prefix "/" "///abc") "///abc" "lots of slashes, but that's ok"))
-
-(subtest "ensure-suffix"
-  (is (ensure-suffix "/" "/abc/") "/abc/" "default case")
-  (is (ensure-suffix "/" "abc") "abc/" "default case 2")
-  (is (ensure-suffix "/" "") "/" "default case void string")
-  (is (ensure-suffix #\/ "") "/" "with a char")
-  (is (ensure-suffix "" "") "" "void strings")
-  (is (ensure-suffix nil "foo") "foo" "prefix is nil, we want s")
-  (is (ensure-suffix "/" "abc///") "abc///" "lots of slashes, but that's ok"))
-
-(subtest "ensure-wrapped-in"
-  (is (ensure-wrapped-in "/" "/abc/") "/abc/" "default case")
-  (is (ensure-wrapped-in "/" "abc") "/abc/" "default case 2")
-  (is (ensure-wrapped-in "/" "") "/" "default case void string")
-  (is (ensure-wrapped-in #\/ "") "/" "with a char")
-  (is (ensure-wrapped-in "" "") "" "blank strings")
-  (is (ensure-wrapped-in nil "") "" "prefix is nil, we want s")
+(test ensure-wrapped-in
+  (is (string= "/abc/" (ensure-wrapped-in "/" "/abc/")) "default case")
+  (is (string= "/abc/" (ensure-wrapped-in "/" "abc")) "default case 2")
+  (is (string= "/" (ensure-wrapped-in "/" "")) "default case void string")
+  (is (string= "/" (ensure-wrapped-in #\/ "")) "with a char")
+  (is (string= "" (ensure-wrapped-in "" "")) "blank strings")
+  (is (string= "" (ensure-wrapped-in nil "")) "prefix is nil, we want s")
   ;; The following line is different that the original behaviour of starts-with-p:
-  (is (ensure-wrapped-in "" nil) nil "blank prefix, s is nil")
+  (is (string= nil (ensure-wrapped-in "" nil)) "blank prefix, s is nil")
   ;; (starts-with-p "" nil) ;; => T but below, we expect NIL.
-  (is (ensure-wrapped-in nil nil) nil "nils")
-  (is (ensure-wrapped-in "/" "abc///") "/abc///" "lots of slashes, but that's ok"))
+  (is (string= nil (ensure-wrapped-in nil nil)) "nils")
+  (is (string= "/abc///" (ensure-wrapped-in "/" "abc///"))
+      "lots of slashes, but that's ok"))
 
-(subtest "wrapped-in-p"
-  (is (wrapped-in-p "/" "/foo/") "/foo/" "default case")
-  (is (wrapped-in-p "/" "/foo") nil "false case")
-  (is (wrapped-in-p "" "/foo/") "/foo/" "blank start/end")
-  (is (wrapped-in-p nil "/foo/") "/foo/" "blank start/end")
-  (is (wrapped-in-p nil nil) nil "nils")
-  (is (wrapped-in-p nil "") "" "nil and blank")
-  (is (wrapped-in-p "" nil) nil "blank and nil")
-  (is (wrapped-in-p #\/ "/foo") nil "with a char")
-  (is (wrapped-in-p "<3" "<3lisp<3") "<3lisp<3" "with a longer prefix."))
+(def-suite pad-functions
+  :in lengthen-functions
+   :description "Add padding elements before and/or after a string.")
+(in-suite pad-functions)
 
-(subtest "ensure"
-  (is (ensure "foo" :prefix "-" :suffix "+") "-foo+" "ensure with prefix and suffix")
-  (is (ensure "foo") "foo" "ensure with no params")
-  (is (ensure "foo" :prefix nil :suffix nil :wrapped-in nil) "foo" "ensure with params to nil")
-  (is (ensure "foo" :wrapped-in "" :prefix "/" :suffix "/") "/foo/" "ensure with wrapped-in blank and prefix and suffix."))
-
-(subtest "pad left, right, center"
-  (is (pad 10 "foo") "foo       "
+(test pad
+  (is (string= "foo       " (pad 10 "foo"))
       "pad adds spaces on the right by default.")
-  (is (pad-right 10 "foo") (pad 10 "foo")
-      "pad-right is equivalent to pad")
-  (is (pad 10 "foo" :pad-side :left) "       foo"
+  (is (string= "       foo" (pad 10 "foo" :pad-side :left))
       "pad with pad-site :left")
-  (is (pad-left 10 "foo") (pad 10 "foo" :pad-side :left)
-      "pad-left")
-  (is (pad 10 "foo" :pad-side :center) "   foo    "
+  (is (string= "   foo    " (pad 10 "foo" :pad-side :center))
       "pad with pad-side :center")
-  (is (pad-center 10 "foo") (pad 10 "foo" :pad-side :center)
-      "pad-center")
-  (is (pad 10 "foo" :pad-char #\+) "foo+++++++"
+  (is (string= "foo+++++++" (pad 10 "foo" :pad-char #\+))
       "pad with a custom padding character.")
-  (is (pad -1 "foo") "foo"
+  (is (string= "foo" (pad -1 "foo"))
       "pad with a short length returns the string."))
 
-(subtest "fit"
-  (is (fit 5 "hello") "hello"
+(test pad-right
+  (is (string= (pad 10 "foo") (pad-right 10 "foo"))
+      "pad-right is equivalent to pad"))
+
+(test pad-left
+  (is (string= (pad 10 "foo" :pad-side :left) (pad-left 10 "foo"))
+      "pad-left"))
+
+(test pad-center
+  (is (string= (pad 10 "foo" :pad-side :center) (pad-center 10 "foo"))
+      "pad-center"))
+
+(def-suite substring-functions
+  :in str
+  :description "Functions that remove elements from a string.")
+(in-suite substring-functions)
+
+(test trim
+  (is (string= "rst" (trim "  rst  ")))
+  (is (string= nil (trim nil)))
+  (is (string= "rst" (trim "drste" :char-bag "de"))))
+
+(test trim-right
+  (is (string= " rst" (trim-right " rst   ")))
+  (is (string= nil (trim-right nil)))
+  (is (string= " rst" (trim-right " rstbc" :char-bag (list #\b #\c)))))
+
+(test trim-left
+  (is (string= "rst " (trim-left "   rst ")))
+  (is (string= nil (trim-left nil)))
+  (is (string= "rst " (trim-left "abrst " :char-bag "ab"))))
+
+(test collapse-whitespaces
+  (is (string= "foo bar baz" (collapse-whitespaces "foo  bar
+
+
+  baz"))))
+
+(test substring
+  (is (string= "abcd" (substring 0 4 "abcd")) "normal case")
+  (is (string= "ab" (substring 0 2 "abcd")) "normal case substing")
+  (is (string= "bc" (substring 1 3 "abcd")) "normal case substing middle")
+  (is (string= "" (substring 4 4 "abcd")) "normal case")
+  (is (string= "" (substring 0 0 "abcd")) "normal case")
+  (is (string= "d" (substring 3 4 "abcd")) "normal case")
+  (is (string= "abcd" (substring 0 t "abcd")) "end is t")
+  (is (string= "abcd" (substring 0 nil "abcd")) "end is nil")
+  (is (string= "abcd" (substring 0 100 "abcd")) "end is too large")
+  (is (string= "abc" (substring 0 -1 "abcd")) "end is negative")
+  (is (string= "b" (substring 1 -2 "abcd")) "end is negative")
+  (is (string= "" (substring 2 1 "abcd")) "start is bigger than end")
+  (is (string= "" (substring 0 -100 "abcd")) "end is too low")
+  (is (string= "" (substring 100 1 "abcd")) "start is too big")
+  (is (string= "abcd" (substring -100 4 "abcd")) "start is too low")
+  (is (string= "abcd" (substring -100 100 "abcd")) "start and end are too low and big")
+  (is (string= "" (substring 100 -100 "abcd")) "start and end are too big and low"))
+
+(test shorten
+  (is (string= "hello..." (shorten 8 "hello foobar"))
+      "default case.")
+  (is (string= "foo" (shorten 10 "foo"))
+      "long, no change")
+  (is (string= "..." (shorten 1 "foo"))
+      "short, only ellipsis")
+  (is (string= "-" (shorten 1 "foo" :ellipsis "-"))
+      "custom ellipsis")
+  (is (string= "-"
+               (let ((str:*ellipsis* "-"))
+                 (shorten 1 "foo")))
+      "custom ellipsis with let")
+  (is (string= "hello-" (shorten 6 "hello foobar" :ellipsis "-"))
+      "shorter ellipsis")
+  (is (string= "foo" (shorten nil "foo"))
+      "length is nil")
+  (is (string= "..." (shorten -1 "foo"))
+      "length is negative")
+  (is (string= nil (shorten 10 nil))
+      "s is nil"))
+
+(test s-first
+  (is (string= nil (s-first nil)))
+  (is (string= "f" (s-first "foobar")))
+  (is (string= "" (s-first ""))))
+
+(test s-last
+  (is (string= nil (s-last nil)))
+  (is (string= "b" (s-last "b")))
+  (is (string= "r" (s-last "bar")))
+  (is (string= "" (s-last ""))))
+
+(test s-rest
+  (is (string= nil (s-rest nil)))
+  (is (string= "oobar" (s-rest "foobar")))
+  (is (string= "" (s-rest ""))))
+
+(test s-nth
+  (is (string= nil (s-nth 1 nil)))
+  (is (string= "b" (s-nth 3 "foobar")))
+  (is (string= "" (s-nth -1 "foobar")))
+  (is (string= "" (s-nth 6 "foobar")))
+  (is (string= "" (s-nth 3 ""))))
+
+(def-suite list-functions
+  :in str
+  :description "Functions that work with lists.")
+(in-suite list-functions)
+
+(def-suite from-list-to-string
+  :in list-functions
+  :description "Test for functions with lists as input.")
+(in-suite from-list-to-string)
+
+(test join
+  (is (string= "foo bar baz" (join " " '("foo" "bar" "baz"))))
+  (is (string= "foo+++bar+++baz" (join "+++" '("foo" "bar" "baz"))))
+  (is (string= "foo~bar" (join "~" '("foo" "bar"))))
+  (is (string= "foo~~~bar" (join "~" '("foo~" "~bar"))))
+  (is (string= "foo,bar" (join #\, '("foo" "bar"))))
+  (is (string= "" (join nil nil))))
+
+(test unwords
+  (is (string= "" (unwords nil)))
+  (is (string= "" (unwords '())))
+  (is (string= "" (unwords '(""))))
+  (is (string= "foo" (unwords '("foo"))))
+  (is (string= "foo bar baz" (unwords '("foo bar baz")))))
+
+(test unlines
+  (is (string= "" (unlines nil)))
+  (is (string= "" (unlines '(""))))
+  (is (string= "
+" (unlines '("" ""))))
+  (is (string= "1
+2
+" (unlines '("1" "2" "")))))
+
+(test prefix
+  (is (string= "foo" (prefix '("foobar" "footeam"))) "default case")
+  (is (string= "" (prefix '("foobar" "barfoo"))) "no common prefix")
+  (is (string= "" (prefix '("foobar" ""))) "with empty string")
+  (is (string= "" (prefix '("foobar" nil))) "with a nil")
+  (is (string= nil (prefix '())) "with void list"))
+
+(test suffix
+  (is (string= "bar" (suffix '("foobar" "teambar")))  "default case")
+  (is (string= "" (suffix '("foobar" "barfoo"))) "no common suffix")
+  (is (string= "" (suffix '("foobar" ""))) "with empty string")
+  (is (string= "" (suffix '("foobar" nil))) "with a nil")
+  (is (string= nil (suffix '())) "with void list"))
+
+(def-suite from-list-to-list
+  :in list-functions
+  :description "Test for functions with lists as input.")
+(in-suite from-list-to-list)
+
+(test add-prefix
+  (is (equalp '("foobar" "footeam") (add-prefix '("bar" "team") "foo")) "default case")
+  (is (equalp '("foobar" "foo") (add-prefix '("bar" nil) "foo")) "with a nil")
+  (is (equalp '() (add-prefix '() "foo")) "with void list"))
+
+(test add-suffix
+  (is (equalp '("foobar" "teambar") (add-suffix '("foo" "team") "bar")) "default case")
+  (is (equalp '("foobar" "bar") (add-suffix '("foo" nil) "bar")) "with a nil")
+  (is (equalp '() (add-suffix '() "foo")) "with void list"))
+
+(def-suite from-string-to-list
+  :in list-functions
+  :description "Functions that output lists.")
+(in-suite from-string-to-list)
+
+(test words
+  (is (string= nil (words nil)))
+  (is (string= nil (words "")))
+  (is (equalp '("foo") (words "foo")))
+  (is (equalp '("foo" "bar") (words "foo bar")))
+  (is (equalp '("foo" "bar") (words "  foo   bar   ")))
+  (is (equalp '("foo" "bar  ") (words " foo bar  " :limit 2)))
+  (is (equalp '("foo" "bar baz ") (words " foo bar baz " :limit 2)))
+  (is (equalp '("foo" "bar" "baz" "?") (words "  foo bar  baz ?")))
+  (is (equalp '("foo" "bar" "baz" "?") (words "  foo
+ bar  baz ?"))))
+
+(test split
+  (is (equalp '("foo" "bar") (split " " "foo bar")))
+  (is (equalp '("foo" "bar") (split "+" "foo+bar")) "separator is a regexp")
+  (is (equalp '("foo" "" "bar") (split "+" "foo++bar")))
+  (is (equalp '("foo" "bar+car+dar") (split "+" "foo+bar+car+dar" :limit 2)))
+  (is (equalp '("foo" "bar") (split "+" "foo+bar")))
+  (is (equalp '("foo" "bar") (split "x" "fooxbar")) "split with string x")
+  (is (equalp '("foo" "bar") (split #\x "fooxbar")) "split with character")
+  (is (equalp '("fooxbarx") (split "xx" "fooxbarx")) "split with xx, end in x")
+  (is (equalp '("foo" "barx") (split "xx" "fooxxbarx")) "split with xx")
+  (is (equalp '("fooxbar" "x") (split "xx" "fooxbarxxx")) "split with xx, end in xxx")
+  (is (equalp '("foo" "bar") (split "(*)" "foo(*)bar")))
+  (is (equalp '("foo" "bar" "") (split "NO" "fooNObarNO"))
+      "separator at the end (cl-ppcre doesn't return an empty string), but we do.")
+  (is (equalp '("foo" "bar" "") (split "NO" "fooNObarNO" :limit 10))
+      "but cl-ppcre does return trailing empty strings if limit is provided")
+  (is (equalp '("foo" "bar") (split "+" "foo+++bar++++" :omit-nulls t))
+      "omit-nulls argument")
+  (is (equalp '("foo" "   ") (split "+" "foo+++   ++++" :omit-nulls t))
+      "omit-nulls and blanks")
+  (with-fixture omit-nulls ()
+    (is (equalp '("foo" "bar") (split "+" "foo+++bar++++"))
+        "omit-nulls argument")
+    (is (equalp '("foo" "   ") (split "+" "foo+++   ++++"))
+        "omit-nulls and blanks"))
+  (is (equalp '("foo" "bar") (split "," "foo,bar")))
+  (is (equalp '("foo" "ABbar") (split "ABAB" "fooABABABbar"))))
+
+(test rsplit
+  (is (equalp '("foo" "bar") (rsplit " " "foo bar")))
+  (is (equalp '("foo" "bar") (rsplit #\, "foo,bar")))
+  (is (equalp '("com.foo" "Bar") (rsplit "." "com.foo.Bar" :limit 2)))
+  (is (equalp '("/var/log" "mail.log") (rsplit "/" "/var/log/mail.log" :limit 2)))
+  (is (equalp '("/var" "log" "mail.log") (rsplit "/" "/var/log/mail.log" :limit 3)))
+  (is (equalp '("" "var" "log" "mail.log") (rsplit "/" "/var/log/mail.log" :limit 4)))
+  (is (equalp '("foo" "bar") (rsplit "LONG" "fooLONGbar")))
+  (is (equalp '("foo" "bar" "") (rsplit "LONG" "fooLONGbarLONG" :limit 3)))
+  (is (equalp '("fooAB" "bar") (rsplit "ABAB" "fooABABABbar"))))
+
+(test lines
+  (is (string= nil (lines nil)))
+  (is (string= nil (lines "")))
+  (is (equalp '("") (lines "
+")))
+  (is (equalp '("1" "2" " 3") (lines "1
+2
+ 3")))
+  (is (equalp '("1" "2" " 3") (lines "1
+2
+ 3
+")))
+  (is (equalp '("1" "2" "" "3") (lines "1
+2
+
+3")))
+  (is (equalp '("1" "2" "3") (lines "1
+2
+
+
+3" :omit-nulls t))))
+
+(def-suite predicates
+  :in str)
+(in-suite predicates)
+
+(test emptyp
+  (is (emptyp nil))
+  (is (emptyp ""))
+  (is (not (emptyp " "))))
+
+(test non-empty-string-p
+  (is (not (non-empty-string-p 8)))
+  (is (not (non-empty-string-p nil)))
+  (is (not (non-empty-string-p #\x)))
+  (is (not (non-empty-string-p "")))
+  (is (non-empty-string-p "  "))
+  (is (non-empty-string-p "foo"))
+  (is (non-empty-string-p "8")))
+
+(test non-blank-string-p
+  (is (not (non-blank-string-p 8)))
+  (is (not (non-blank-string-p "")))
+  (is (not (non-blank-string-p "  ")))
+  (is (not (non-blank-string-p "
+
+  ")))
+  (is (non-blank-string-p "foo"))
+  (is (non-blank-string-p "8")))
+
+(test blankp
+  (is (blankp "  "))
+  (is (blankp "  "))
+  (is (not (blankp "   rst "))))
+
+(test containsp
+  (is (containsp "foo" "blafoobar") "default")
+  (is (not (containsp "foo" "")) "with no string")
+  (is (not (containsp "" nil)) "a blank substring in a nil str")
+  (is (not (containsp "foo" nil)) "with string nil")
+  (is (not (containsp "Foo" "blafoobar")) "with case")
+  (is (containsp "Foo" "blafoobar" :ignore-case t) "ignore case")
+  (is (containsp "Foo" "blafoobar" :ignore-case t) "containsp alias")
+  (with-fixture ignore-case ()
+    (is (containsp "Foo" "blafoobar") "ignore case")))
+
+(test s-member
+  (is (s-member '("bar" "foo") "foo")
+      "downcase")
+  (is (s-member '("bar" "FOO") "FOO")
+      "upcase")
+  (is (not (s-member '("bar" "foo") "FOO"))
+      "significant case by default")
+  (is (s-member '("bar" "foo") "FOO" :ignore-case t)
+      "with ignore-case")
+  (with-fixture ignore-case ()
+    (is (s-member '("bar" "foo") "FOO")
+        "with *ignore-case*")
+    (is (s-member '("bar" "foo") "FOO" :test #'string-equal)
+        "with :test")))
+
+(test lettersp
+  (is (lettersp "éß") "letters with accents and ß")
+  (is (not (lettersp " e é,")) "no letters"))
+
+(test has-letters-p 
+  (is (has-letters-p " e é ß") "has-letters-p default")
+  (is (not (has-letters-p " +,-")) "has-letters-p default nil")
+  (is (lettersnump "abcéß123") "lettersnump default"))
+
+(test ascii-p
+  (is (ascii-p #\a) "with a character")
+  (is (ascii-p "abc") "with a string")
+  (is (not (ascii-p "abcéèö")) "bad string")
+  (is (not (ascii-p #\é)) "bad character")
+  (is (not (ascii-p nil)) "with nil"))
+
+(test starts-with-p
+  (is (starts-with-p "foo" "foobar") "default case")
+  (is (starts-with-p "" "foo") "with blank start")
+  (is (not (starts-with-p "rs" "")) "with blank s")
+  (is (not (starts-with-p nil "")) "prefix is nil")
+  ;; (is (string= (starts-with? "" nil) t) "s is nil: what do we want?")  ;; XXX: fix?
+  (is (not (starts-with-p "foobar" "foo")) "with shorter s")
+  (is (starts-with-p "" "") "with everything blank")
+  (is (not (starts-with-p "FOO" "foobar")) "don't ignore case")
+  (is (starts-with-p "f" "foo") "starts-with-p alias")
+  (is (starts-with-p "FOO" "foobar" :ignore-case t) "ignore case")
+  (with-fixture ignore-case ()
+    (is (starts-with-p "FOO" "foobar") "ignore case")))
+
+(test ends-with-p
+  (is (ends-with-p "bar" "foobar") "default case")
+  (is (ends-with-p "bar" "foobar") "ends-with-p alias")
+  (is (not (ends-with-p "BAR" "foobar")) "don't ignore case")
+  (is (ends-with-p "BAR" "foobar" :ignore-case t) "ignore case")
+  (with-fixture ignore-case ()
+    (is (ends-with-p "BAR" "foobar") "ignore case")))
+
+(test prefixp
+  (is (string= "foo" (prefixp '("foobar" "footeam") "foo")) "default case")
+  (is (string= "f" (prefixp '("foobar" "footeam") "f")) "smaller prefix")
+  (is (string= nil (prefixp '("foobar" "barfoo") "x")) "not a common prefix")
+  (is (string= "" (prefixp '("foobar" "barfoo") "")) "prefix is a void string")
+  (is (string= "" (prefixp '("foobar" "") "")) "with empty string")
+  (is (string= "" (prefixp '("foobar" nil) "")) "with a nil")
+  (is (string= nil (prefixp '() nil)) "with void list"))
+
+(test suffixp
+  (is (string= "bar" (suffixp '("foobar" "teambar") "bar")) "default case")
+  (is (string= "r" (suffixp '("foobar" "teambar") "r")) "smaller suffix")
+  (is (string= nil (suffixp'("foobar" "barfoo") "x")) "not a common suffix")
+  (is (string= "" (suffixp'("foobar" "barfoo") "")) "suffix is a a void string")
+  (is (string= "" (suffixp '("foobar" "") "")) "with empty string")
+  (is (string= nil (suffixp '("foobar" nil) "")) "with a nil")
+  (is (string= nil (suffixp '() nil)) "with void list"))
+
+(test wrapped-in-p
+  (is (string= "/foo/" (wrapped-in-p "/" "/foo/")) "default case")
+  (is (string= nil (wrapped-in-p "/" "/foo")) "false case")
+  (is (string= "/foo/" (wrapped-in-p "" "/foo/")) "blank start/end")
+  (is (string= "/foo/" (wrapped-in-p nil "/foo/")) "blank start/end")
+  (is (string= nil (wrapped-in-p nil nil)) "nils")
+  (is (string= "" (wrapped-in-p nil "")) "nil and blank")
+  (is (string= nil (wrapped-in-p "" nil)) "blank and nil")
+  (is (string= nil (wrapped-in-p #\/ "/foo")) "with a char")
+  (is (string= "<3lisp<3" (wrapped-in-p "<3" "<3lisp<3")) "with a longer prefix."))
+
+(test downcasep
+  (is (not (downcasep nil)) "downcasep nil")
+  (is (not (downcasep "")) "downcasep empty string")
+  (is (not (downcasep " ")) "downcasep blank string")
+  (is (downcasep " e ") "downcasep ok with spaces")
+  (is (downcasep "rst") "downcasep default")
+  (is (not (downcasep " A ")) "downcasep false default")
+  (is (not (downcasep " aiue tsuie+- Aa ")) "downcasep false default")
+  (is (not (downcasep " +,. ")) "downcasep only punctuation")
+  (is (not (downcasep "123")) "downcasep only digits")
+  (is (downcasep " a+,. ") "downcasep with punctuation (python api)")
+  (is (downcasep " +,é. ") "downcasep with accent"))
+
+(test upcasep
+  (is (not (upcasep nil)) "upcasep nil")
+  (is (not (upcasep "")) "upcasep empty")
+  (is (not (upcasep "   ")) "upcasep blank")
+  (is (not (upcasep "rst")) "upcasep lowercase letters")
+  (is (not (upcasep "??+,")) "upcasep only punctuation")
+  (is (not (upcasep "123")) "upcasep only digits")
+  (is (upcasep " ++YES-- ") "upcasep default")
+  (is (upcasep " ++YÉÈS-- ") "upcasep with accent")
+  (is (not (upcasep " ++NO ñ-- ")) "upcasep with lower non-alpha ñ")
+  (is (upcasep " ++YES Ñ-- ") "upcasep with non-alpha Ñ")
+  (is (upcasep " ++Ñ-- ") "upcasep with only non-alpha"))
+
+(test alphanump
+  (is (alphanump "rst124ldv") "alphanump default")
+  (is (not (alphanump " rst123ldv ")) "alphanump no space")
+  (is (not (alphanump "rst,123+ldv")) "alphanump no punctuation")
+  (is (not (alphanump ",+")) "alphanump no punctuation")
+  (is (not (alphanump "abcéß")) "alphanump no accents"))
+
+(test alphap
+  (is (alphap "abcDEf") "alphap default")
+  (is (not (alphap "abc,de")) "alphap no punctuation")
+  (is (not (alphap "abcdeé")) "alphap no accents")
+  (is (not (alphap "abc de")) "alphap no space")
+  (is (not (alphap " ")) "alphap blank"))
+
+(test digitp
+  (is (not (digitp "abc")) "digitp letters")
+  (is (digitp "123") "digitp default")
+  (is (not (digitp "123,456")) "digitp no punctuation")
+  (is (not (digitp "123 456")) "digitp no space"))
+
+(test has-alpha-p
+  (is (has-alpha-p "-+,A-") "has-alpha-p default")
+  (is (not (has-alpha-p "-é-")) "has-alpha-p no accents"))
+
+(test has-alphanum-p
+  (is (has-alphanum-p "-+, 1 ") "has-alphanum-p with digit"))
+
+(def-suite case-functions
+  :in str
+  :description "Functions that change the case.")
+(in-suite case-functions)
+
+(test downcase
+  (is (string= nil (downcase nil)) "downcase nil returns nil, not a string.")
+  (is (string= "foo" (downcase "Foo")))
+  (is (string= "foo" (downcase :foo)) "Built-in functions also work on symbols."))
+
+(test upcase
+  (is (string= nil (upcase nil)) "upcase nil returns nil, not a string.")
+  (is (string= "FOO" (upcase "foo"))))
+
+(test capitalize
+  (is (string= nil (capitalize nil)) "capitalize nil returns nil, not a string.")
+  (is (string= "Foo" (capitalize "foo"))))
+
+(test no-case
+  (is (string= nil (no-case nil)) "No-case returns nil, not a string.")
+  (is (string= "foo" (no-case "Foo")))
+  (is (string= "foo" (no-case :foo)) "Works also on symbols."))
+
+(test camel-case
+  (is (string= nil (camel-case nil)) "Camel-case returns nil, not a string.")
+  (is (string= "fooFoo" (camel-case "Foo Foo")))
+  (is (string= "fooFoo" (camel-case :foo.foo)) "Works also on symbols."))
+
+(test dot-case
+  (is (string= nil (dot-case nil)) "Dot-case returns nil, not a string.")
+  (is (string= "foo.foo" (dot-case "Foo Foo")))
+  (is (string= "foo.foo" (dot-case :foo-foo)) "Works also on symbols."))
+
+(test header-case
+  (is (string= nil (header-case nil)) "Header-case returns nil, not a string.")
+  (is (string= "Foo-Foo" (header-case "Foo Foo")))
+  (is (string= "Foo-Foo" (header-case :foo-foo)) "Works also on symbols."))
+
+(test param-case
+  (is (string= nil (param-case nil)) "Param-case returns nil, not a string.")
+  (is (string= "foo-foo" (param-case "Foo Foo")))
+  (is (string= "foo-foo" (param-case :foo.foo)) "Works also on symbols."))
+
+(test pascal-case
+  (is (string= nil (pascal-case nil)) "pascal-case returns nil, not a string.")
+  (is (string= "FooFoo" (pascal-case "Foo Foo")))
+  (is (string= "FooFoo" (pascal-case :foo.foo)) "Works also on symbols."))
+
+(test path-case
+  (is (string= nil (path-case nil)) "Path-case returns nil, not a string.")
+  (is (string= "foo/foo" (path-case "Foo Foo")))
+  (is (string= "foo/foo" (path-case :foo.foo)) "Works also on symbols."))
+
+(test sentence-case
+  (is (string= nil (sentence-case nil)) "sentence-case returns nil, not a string.")
+  (is (string= "Foo foo" (sentence-case "Foo Foo")))
+  (is (string= "Foo foo" (sentence-case :foo.foo)) "Works also on symbols."))
+
+(test snake-case
+  (is (string= nil (snake-case nil)) "snake-case returns nil, not a string.")
+  (is (string= "foo_foo" (snake-case "Foo Foo")))
+  (is (string= "foo_foo" (snake-case :foo.foo)) "Works also on symbols."))
+
+(test swap-case
+  (is (string= nil (swap-case nil)) "swap-case returns nil, not a string.")
+  (is (string= "fOO fOO" (swap-case "Foo Foo")))
+  (is (string= "foo.foo" (swap-case :FOO.FOO)) "Works also on symbols."))
+
+(test title-case
+  (is (string= nil (title-case nil)) "swap-case returns nil, not a string.")
+  (is (string= "Fo O Foo" (title-case "FoO foo")))
+  (is (string= "Foo Foo" (title-case :foo.foo)) "Works also on symbols."))
+
+(test constant-case
+  (is (string= nil (constant-case nil)) "constant-case returns nil, not a string.")
+  (is (string= "FOO_FOO" (constant-case "Foo Foo")))
+  (is (string= "FOO_FOO" (constant-case :foo.foo)) "Works also on symbols."))
+
+(def-suite miscellaneous
+  :in str)
+(in-suite miscellaneous)
+
+(test repeat
+  (is (string= "" (repeat 10 "")))
+  (is (string= "foofoofoo" (repeat 3 "foo"))))
+
+(test fit
+  (is (string= "hello" (fit 5 "hello"))
       "fit - base case, do nothing")
-  (is (fit 10 "hello" :pad-char "+") "hello+++++"
+  (is (string= "hello+++++" (fit 10 "hello" :pad-char "+"))
       "fit -> pad")
-  (is (fit 3 "hello" :ellipsis "…") "he…"
+  (is (string= "he…" (fit 3 "hello" :ellipsis "…"))
       "fit -> shorten"))
 
-(subtest "contains?"
-  (ok (contains? "foo" "blafoobar") "default")
-  (ok (not (contains? "foo" "")) "with no string")
-  (ok (not (contains? "" nil)) "a blank substring in a nil str")
-  (ok (not (contains? "foo" nil)) "with string nil")
-  (ok (not (contains? "Foo" "blafoobar")) "with case")
-  (ok (contains? "Foo" "blafoobar" :ignore-case t) "ignore case")
-  (ok (containsp "Foo" "blafoobar" :ignore-case t) "containsp alias")
-  (ok (let ((*ignore-case* t)) (contains? "Foo" "blafoobar")) "ignore case"))
+(test s-assoc-value
+  (let ((alist '(("test" . 1) ("another test" . 2))))
+    (is (equalp (values 1 (first alist)) (s-assoc-value alist "test")))
+    (is (equalp (values 2 (second alist)) (s-assoc-value alist "another test")))
+    (is (equalp (values nil nil) (s-assoc-value alist "a third test")))))
 
-(subtest "string-case"
-  (ok (string-case "hello"
+(test count-substring
+  (is (not (count-substring nil nil)))
+  (is (not (count-substring "" "abc")))
+  (is (= 1 (count-substring "aba" "ababab")))
+  (is (= 2 (count-substring "aba" "abababa")))
+  (is (= 3 (count-substring "ab" "abxabxab")))
+  (is (= 0 (count-substring "cd" "abxabxab")))
+  (is (= 1 (count-substring "abcd" "abcd")))
+  (is (= 0 (count-substring "abcde" "abcd")))
+  (is (= 1 (count-substring "ab" "abxabxab" :start 3 :end 7))))
+
+(test string-case
+  (is (string-case "hello"
         ("hello" (format nil "yes"))
         (otherwise nil))
       "string-case base case")
-  (ok (not (string-case "no"
-             ("hello" t)
-             (otherwise nil)))
+  (is (string= nil (string-case "no"
+                     ("hello" t)
+                     (otherwise nil)))
       "otherwise form")
-  (is :otherwise (string-case :no-str
-                   ("hello" t)
-                   (otherwise :otherwise))
+  (is (string= :otherwise (string-case :no-str
+                            ("hello" t)
+                            (otherwise :otherwise)))
       "matching with a symbol: otherwise"))
 
-(subtest "s-first"
-  (is (s-first nil) nil)
-  (is (s-first "foobar") "f")
-  (is (s-first "") ""))
-
-(subtest "s-last"
-  (is (s-last nil) nil)
-  (is (s-last "b") "b")
-  (is (s-last "bar") "r")
-  (is (s-last "") ""))
-
-(subtest "s-rest"
-  (is (s-rest nil) nil)
-  (is (s-rest "foobar") "oobar")
-  (is (s-rest "") ""))
-
-(subtest "s-nth"
-  (is (s-nth 1 nil) nil)
-  (is (s-nth 3 "foobar") "b")
-  (is (s-nth -1 "foobar") "")
-  (is (s-nth 6 "foobar") "")
-  (is (s-nth 3 "") ""))
-
-(subtest "s-assoc-value"
-  (let ((alist '(("test" . 1) ("another test" . 2))))
-    (is (s-assoc-value alist "test") (values 1 (first alist)))
-    (is (s-assoc-value alist "another test") (values 2 (second alist)))
-    (is (s-assoc-value alist "a third test") (values nil nil))))
-
-(subtest "s-member"
-  (is t (s-member '("bar" "foo") "foo")
-      "downcase")
-  (is t (s-member '("bar" "FOO") "FOO")
-      "upcase")
-  (is nil (s-member '("bar" "foo") "FOO")
-      "significant case by default")
-  (is t (s-member '("bar" "foo") "FOO" :ignore-case t)
-      "with ignore-case")
-  (is t (let ((*ignore-case* t))
-          (s-member '("bar" "foo") "FOO"))
-      "with *ignore-case*")
-  (is t (s-member '("bar" "foo") "FOO" :test #'string-equal)
-      "with :test"))
-
-(subtest "count-substring"
-  (is (count-substring nil nil) nil)
-  (is (count-substring "" "abc") nil)
-  (is (count-substring "aba" "ababab") 1)
-  (is (count-substring "aba" "abababa") 2)
-  (is (count-substring "ab" "abxabxab") 3)
-  (is (count-substring "cd" "abxabxab") 0)
-  (is (count-substring "abcd" "abcd") 1)
-  (is (count-substring "abcde" "abcd") 0)
-  (is (count-substring "ab" "abxabxab" :start 3 :end 7) 1))
-
-(subtest "case"
-  (is (downcase nil) nil
-      "downcase nil returns nil, not a string.")
-  (is (downcase "Foo") "foo")
-  (is (downcase :foo) "foo"
-      "Built-in functions also work on symbols.")
-  (is (upcase nil) nil
-      "upcase nil returns nil, not a string.")
-  (is (upcase "foo") "FOO")
-  (is (capitalize nil) nil
-      "capitalize nil returns nil, not a string.")
-  (is (capitalize "foo") "Foo")
-  (is (no-case nil) nil
-      "No-case returns nil, not a string.")
-  (is (no-case "Foo") "foo")
-  (is (no-case :foo) "foo"
-      "Works also on symbols.")
-  (is (camel-case nil) nil
-      "Camel-case returns nil, not a string.")
-  (is (camel-case "Foo Foo") "fooFoo")
-  (is (camel-case :foo.foo) "fooFoo"
-      "Works also on symbols.")
-  (is (dot-case nil) nil
-      "Dot-case returns nil, not a string.")
-  (is (dot-case "Foo Foo") "foo.foo")
-  (is (dot-case :foo-foo) "foo.foo"
-      "Works also on symbols.")
-  (is (header-case nil) nil
-      "Header-case returns nil, not a string.")
-  (is (header-case "Foo Foo") "Foo-Foo")
-  (is (header-case :foo-foo) "Foo-Foo"
-      "Works also on symbols.")
-  (is (param-case nil) nil
-      "Param-case returns nil, not a string.")
-  (is (param-case "Foo Foo") "foo-foo")
-  (is (param-case :foo.foo) "foo-foo"
-      "Works also on symbols.")
-  (is (pascal-case nil) nil
-      "pascal-case returns nil, not a string.")
-  (is (pascal-case "Foo Foo") "FooFoo")
-  (is (pascal-case :foo.foo) "FooFoo"
-      "Works also on symbols.")
-  (is (path-case nil) nil
-      "Path-case returns nil, not a string.")
-  (is (path-case "Foo Foo") "foo/foo")
-  (is (path-case :foo.foo) "foo/foo"
-      "Works also on symbols.")
-  (is (sentence-case nil) nil
-      "sentence-case returns nil, not a string.")
-  (is (sentence-case "Foo Foo") "Foo foo")
-  (is (sentence-case :foo.foo) "Foo foo"
-      "Works also on symbols.")
-  (is (snake-case nil) nil
-      "snake-case returns nil, not a string.")
-  (is (snake-case "Foo Foo") "foo_foo")
-  (is (snake-case :foo.foo) "foo_foo"
-      "Works also on symbols.")
-  (is (swap-case nil) nil
-      "swap-case returns nil, not a string.")
-  (is (swap-case "Foo Foo") "fOO fOO")
-  (is (swap-case :FOO.FOO) "foo.foo"
-      "Works also on symbols.")
-  (is (title-case nil) nil
-      "swap-case returns nil, not a string.")
-  (is (title-case "FoO foo") "Fo O Foo")
-  (is (title-case :foo.foo) "Foo Foo"
-      "Works also on symbols.")
-  (is (constant-case nil) nil
-      "constant-case returns nil, not a string.")
-  (is (constant-case "Foo Foo") "FOO_FOO")
-  (is (constant-case :foo.foo) "FOO_FOO"
-      "Works also on symbols."))
-
-(subtest "case predicates"
-  (is (downcasep nil) nil "downcasep nil")
-  (is (downcasep "") nil "downcasep empty string")
-  (is (downcasep " ") nil "downcasep blank string")
-  (is (downcasep " e ") t "downcasep ok with spaces")
-  (is (downcasep "rst") t "downcasep default")
-  (is (downcasep " A ") nil "downcasep false default")
-  (is (downcasep " aiue tsuie+- Aa ") nil "downcasep false default")
-  (is (downcasep " +,. ") nil "downcasep only punctuation")
-  (is (downcasep "123") nil "downcasep only digits")
-  (is (downcasep " a+,. ") t "downcasep with punctuation (python api)")
-  (is (downcasep " +,é. ") t "downcasep with accent")
-
-  (is (upcasep nil) nil "upcasep nil")
-  (is (upcasep "") nil "upcasep empty")
-  (is (upcasep "   ") nil "upcasep blank")
-  (is (upcasep "rst") nil "upcasep lowercase letters")
-  (is (upcasep "??+,") nil "upcasep only punctuation")
-  (is (upcasep "123") nil "upcasep only digits")
-  (is (upcasep " ++YES-- ") t "upcasep default")
-  (is (upcasep " ++YÉÈS-- ") t "upcasep with accent")
-  (is (upcasep " ++NO ñ-- ") nil "upcasep with lower non-alpha ñ")
-  (is (upcasep " ++YES Ñ-- ") t "upcasep with non-alpha Ñ")
-  (is (upcasep " ++Ñ-- ") t "upcasep with only non-alpha")
-
-  (ok (alphanump "rst124ldv") "alphanump default")
-  (is (alphanump " rst123ldv ") nil "alphanump no space")
-  (is (alphanump "rst,123+ldv") nil "alphanump no punctuation")
-  (is (alphanump ",+") nil "alphanump no punctuation")
-  (is (alphanump "abcéß") nil "alphanump no accents")
-
-  (ok (alphap "abcDEf") "alphap default")
-  (is (alphap "abc,de") nil "alphap no punctuation")
-  (is (alphap "abcdeé") nil "alphap no accents")
-  (is (alphap "abc de") nil "alphap no space")
-  (is (alphap " ") nil "alphap blank")
-
-  (is (digitp "abc") nil "digitp letters")
-  (is (digitp "123") t "digitp default")
-  (is (digitp "123,456") nil "digitp no punctuation")
-  (is (digitp "123 456") nil "digitp no space")
-
-  (is (has-alpha-p "-+,A-") t "has-alpha-p default")
-  (is (has-alpha-p "-é-") nil "has-alpha-p no accents")
-  (is (has-alphanum-p "-+, 1 ") t "has-alphanum-p with digit"))
-
-(subtest "letters"
-  (is (lettersp "éß") t "letters with accents and ß")
-  (is (lettersp " e é,") nil "no letters")
-  (is (has-letters-p " e é ß") t "has-letters-p default")
-  (is (has-letters-p " +,-") nil "has-letters-p default nil")
-  (is (lettersnump "abcéß123") t "lettersnump default"))
-
-(subtest "ascii-p"
-  (ok (ascii-p #\a) "with a character")
-  (ok (ascii-p "abc") "with a string")
-  (is (ascii-p "abcéèö") nil "bad string")
-  (is (ascii-p #\é) nil "bad character")
-  (is (ascii-p nil) nil "with nil"))
-
-;; prove end
-(finalize)
