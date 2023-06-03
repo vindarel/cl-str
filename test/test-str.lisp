@@ -42,12 +42,14 @@
 (in-suite replace-functions)
 
 (test replace-first
-  (is (string= "fooaa" (replace-first "aa" "oo" "faaaa"))))
+  (is (string= "fooaa" (replace-first "aa" "oo" "faaaa")))
+  (is (string= "foo" (replace-first #\a #\o "fao"))))
 
 (test replace-all
   (is (string= "foo" (replace-all "a" "o" "faa")))
   (is (string= "foo" (replace-all "^a" "o" "fo^a")))
   (is (string= "foo" (replace-all "^aa+" "o" "fo^aa+")))
+  (is (string= "foo" (replace-all #\a #\o "faa")))
   (is (string= "foo'\\'bar" (replace-all "+" "'\\'" "foo+bar"))
       "Edge case with a double backslash and a single quote."))
 
