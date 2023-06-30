@@ -673,7 +673,9 @@
   (is (= 0 (count-substring "cd" "abxabxab")))
   (is (= 1 (count-substring "abcd" "abcd")))
   (is (= 0 (count-substring "abcde" "abcd")))
-  (is (= 1 (count-substring "ab" "abxabxab" :start 3 :end 7))))
+  (is (= 1 (count-substring "ab" "abxabxab" :start 3 :end 7)))
+  (is (= 1 (count-substring "a" "abA")))
+  (is (= 2 (count-substring "a" "abA" :ignore-case t))))
 
 (test string-case
   (is (string-case "hello"
