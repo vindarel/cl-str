@@ -755,9 +755,11 @@ with `string-equal' (case-insensitive).
                 :test (if ignore-case #'string-equal test))
     t))
 
-(defun count-substring (substring s &key (start 0) (end nil))
+(defun count-substring (substring s &key (start 0) (end nil)
+                                      (ignore-case *ignore-case*))
   "Return the non-overlapping occurrences of `substring' in `s'.
   You could also count only the ocurrencies between `start' and `end'.
+  When `ignore-case` is T, ignore case when counting matches.
 
   Examples:
   (count-substring \"abc\" \"abcxabcxabc\")
@@ -768,12 +770,12 @@ with `string-equal' (case-insensitive).
   (unless (or (null s)
               (null substring)
               (emptyp substring))
-    (loop :with substring-length := (length substring)
-       :for position := (search substring s :start2 start :end2 end)
-       :then (search substring s :start2 (+ position substring-length) :end2 end)
+    (loop :with test := (if ignore-case #'string-equal #'string=)
+       :with substring-length := (length substring)
+       :for position := (search substring s :test test :start2 start :end2 end)
+       :then (search substring s :test test :start2 (+ position substring-length) :end2 end)
        :while (not (null position))
        :summing 1)))
-
 
 ;;; Case
 
