@@ -691,10 +691,10 @@ Returns the string written to file."
   (let ((test (gensym)))
     `(let ((,test ,str))
        (cond
-         ,@(loop :for (s  f) :in forms
-              :if (stringp s) :collect `((string= ,test ,s) ,f)
-              :else :if (string= s 'otherwise) :collect `(t ,f)
-              :else :collect `((eql ,test ,s) ,f))))))
+         ,@(loop :for (s . f) :in forms
+              :if (stringp s) :collect `((string= ,test ,s) ,@f)
+              :else :if (string= s 'otherwise) :collect `(t ,@f)
+              :else :collect `((eql ,test ,s) ,@f))))))
 
 (defun s-first (s)
   "Return the first substring of `s'."
