@@ -7,6 +7,7 @@
                 #:in-suite
                 #:test
                 #:is
+                #:signals
                 #:def-fixture
                 #:with-fixture)
   (:export #:str
@@ -54,8 +55,11 @@
 (test replace-using
   (is (string= "foo" (replace-using (list "a" "o") "faa")))
   (is (string= "fooAA" (replace-using (list "a" "o") "faaAA")))
-  (is (string= "faa" (replace-using (list "a") "faa")))
-  (is (string= "fooAA" (replace-using (list "a" "o" "A") "faaAA")))
+  (is (string= "fooBB" (replace-using (list "a" "o" "A" "B") "faaAA")))
+  (signals error (replace-using (list "a") "faa"))
+  (signals error (replace-using (list "a" "o" "A") "faaAA"))
+  (signals error (replace-using (list 1 "C") "faaAA"))
+  (signals error (replace-using (list "f" 'test) "faaAA"))
   (is (string= "faa" (replace-using nil "faa"))))
 
 (def-suite lengthen-functions

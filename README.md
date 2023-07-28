@@ -81,7 +81,7 @@ The only dependency is `cl-ppcre`.
         - [Others](#others)
             - [replace-first `(old new s)`](#replace-first-old-new-s)
             - [replace-all `(old new s)`](#replace-all-old-new-s)
-            - [replace-using `(plist s)`](#replace-using-plist-s)
+            - [replace-using `(replacement-list s)`](#replace-using-replacement-list-s)
             - [remove-punctuation (s &key replacement)](#remove-punctuation-s-key-replacement)
             - [prefix `(list-of-strings)` (renamed in 0.9)](#prefix-list-of-strings-renamed-in-09)
             - [suffix `(list-of-strings)`](#suffix-list-of-strings)
@@ -770,11 +770,11 @@ If the replacement is only one character, you can use `substitute`:
     ;; "foo+bar+baz"
 
 
-#### replace-using `(plist s)`
+#### replace-using `(replacement-list s)`
 
-Replace all associations given by pairs in a plist and return a new string.
+Replace all associations given by pairs in a replacement-list and return a new string.
 
-The plist is a list alternating a string to replace (case sensitive) and its replacement.
+The replacement-list is a list alternating a string to replace (case sensitive) and its replacement.
 
 Example:
 

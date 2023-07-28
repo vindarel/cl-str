@@ -343,10 +343,10 @@ It uses `subseq' with differences:
   ;; foo\'bar
   )
 
-(defun replace-using (plist s)
-  "Replace all associations given by pairs in a plist and return a new string.
+(defun replace-using (replacement-list s)
+  "Replace all associations given by pairs in a list and return a new string.
 
-  The plist is a list alternating a string to replace (case sensitive) and its replacement.
+  The replacement-list alternates a string to replace (case sensitive) and its replacement.
 
   Example:
   (replace-using (list \"{{phone}}\" \"987\")
@@ -355,10 +355,11 @@ It uses `subseq' with differences:
   \"call 987\"
 
   It calls `replace-all' as many times as there are replacements to do."
-  (check-type plist list)
-  (dotimes (i (- (length plist)
-                 1))
-    (setf s (str:replace-all (nth i plist) (nth (incf i) plist) s)))
+  (loop for remaining-list on replacement-list by #'cddr do
+    (let ((key (first remaining-list))
+          (value (second remaining-list)))
+      (declare (string key value))
+      (setf s (replace-all key value s))))
   s)
 
 (defun emptyp (s)
