@@ -19,8 +19,11 @@
   #:shorten
   #:repeat
   #:replace-first
+  #:substitute-first
   #:replace-all
+  #:substitute-all
   #:replace-using
+  #:substitute-using
   #:concat
   #:emptyp
   #:non-empty-string-p
@@ -294,7 +297,7 @@ It uses `subseq' with differences:
 (defun words (s &key (limit 0))
   "Return list of words, which were delimited by white space. If the optional limit is 0 (the default), trailing empty strings are removed from the result list (see cl-ppcre)."
   (when s
-      (ppcre:split "\\s+" (trim-left s) :limit limit)))
+    (ppcre:split "\\s+" (trim-left s) :limit limit)))
 
 (defun unwords (strings)
   "Join the list of strings with a whitespace."
@@ -320,15 +323,41 @@ It uses `subseq' with differences:
       (setf result (cons s result)))
     (apply #'concat result)))
 
+;;;the names here are misleading
+;;;replace in the clhs is destructive... these are not.
+(defun replace-first-character (old-char new-char string)
+  (substitute new-char old-char string :test #'char= :count 1))
+
+(define-compiler-macro replace-first (&whole form &rest args)
+  (declare (ignore form))
+  (destructuring-bind (old new string)
+      args 
+    (if (and (characterp old)
+             (characterp new))
+        `(replace-first-character ,old ,new ,string)
+        `(replace-first ,old ,new ,string))))
+        
 (defun replace-first (old new s)
-  "Replace the first occurence of `old` by `new` in `s`. Arguments are not regexs."
+  "Replace the first occurrence of `old` by `new` in `s`. Arguments are not regexs."
   (let* ((ppcre:*allow-quoting* t)
          (old (concatenate 'string "\\Q" old))) ;; treat metacharacters as normal.
     ;; We need the (list new): see !52
     (ppcre:regex-replace old s (list new))))
 
+(defun replace-all-character (old-char new-char string)
+  (substitute new-char old-char string :test #'char=))
+
+(define-compiler-macro replace-all (&whole form &rest args)
+  (declare (ignore form))
+  (destructuring-bind (old new string)
+      args 
+    (if (and (characterp old)
+             (characterp new))
+        `(replace-all-character ,old ,new ,string)
+        `(replace-all ,old ,new ,string))))
+
 (defun replace-all (old new s)
-  "Replace all occurences of `old` by `new` in `s`. Arguments are not regexs."
+  "Replace all occurrences of `old` by `new` in `s`. Arguments are not regexs."
   (let* ((ppcre:*allow-quoting* t)
          (old (concatenate 'string "\\Q" old))) ;; treat metacharacters as normal.
     (ppcre:regex-replace-all old s (list new))))
@@ -361,6 +390,11 @@ It uses `subseq' with differences:
       (declare (string key value))
       (setf s (replace-all key value s))))
   s)
+
+(setf (fdefinition 'substitute-all) #'replace-all
+      (fdefinition 'substitute-first) #'replace-first
+      (fdefinition 'substitute-using) #'replace-using)
+
 
 (defun emptyp (s)
   "Is s nil or the empty string ?"
