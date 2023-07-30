@@ -79,9 +79,9 @@ The only dependency is `cl-ppcre`.
             - [digitp `(s)`](#digitp-s)
             - [has-alpha-p, has-letters-p, has-alphanum-p `(s)`](#has-alpha-p-has-letters-p-has-alphanum-p-s)
         - [Others](#others)
-            - [replace-first `(old new s)`](#replace-first-old-new-s)
-            - [replace-all `(old new s)`](#replace-all-old-new-s)
-            - [replace-using `(replacement-list s)`](#replace-using-replacement-list-s)
+            - [replace-first `(old new s &key regex)`](#replace-first-old-new-s-key-regex)
+            - [replace-all `(old new s &key regex)`](#replace-all-old-new-s-key-regex)
+            - [replace-using `(replacement-list s &key regex)`](#replace-using-replacement-list-s-key-regex)
             - [remove-punctuation (s &key replacement)](#remove-punctuation-s-key-replacement)
             - [prefix `(list-of-strings)` (renamed in 0.9)](#prefix-list-of-strings-renamed-in-09)
             - [suffix `(list-of-strings)`](#suffix-list-of-strings)
@@ -739,30 +739,37 @@ Return t if `s` has at least one alpha, letter, alphanum character (as with `alp
 
 ### Others
 
-#### replace-first `(old new s)`
+#### replace-first `(old new s &key regex)`
 
-Replace the first occurence of `old` by `new` in `s`. Arguments are not regexs.
+Replace the first occurence of `old` by `new` in `s`.
 
+By default, metacharacters are treated as normal characters.
+If `regex` is not `nil`, then `old` is treated as regular expression.
 
 ```lisp
 (replace-first "a" "o" "faa") ;; => "foa"
+(replace-first "fo+" "frob" "foofoo bar" :regex t) ;; => "frobfoo bar"
 ```
 
 Uses
 [cl-ppcre:regex-replace](http://weitz.de/cl-ppcre/#regex-replace)
-but quotes the user input to not treat it as a regex.
+but quotes the user input to not treat it as a regex (if regex is nil).
 
-#### replace-all `(old new s)`
+#### replace-all `(old new s &key regex)`
 
-Replace all occurences of `old` by `new` in `s`. Arguments are not regexs.
+Replace all occurences of `old` by `new` in `s`.
+
+By default, metacharacters are treated as normal characters.
+If `regex` is not `nil`, `old` is treated as regular expression.
 
 ```lisp
 (replace-all "a" "o" "faa") ;; => "foo"
+(replace-all "fo+" "frob" "foofoo bar" :regex t) ;; => "frobfrob bar"
 ```
 
 Uses
 [cl-ppcre:regex-replace-all](http://weitz.de/cl-ppcre/#regex-replace-all)
-but quotes the user input to not treat it as a regex.
+but quotes the user input to not treat it as a regex (if regex is nil).
 
 If the replacement is only one character, you can use `substitute`:
 
@@ -770,18 +777,26 @@ If the replacement is only one character, you can use `substitute`:
     ;; "foo+bar+baz"
 
 
-#### replace-using `(replacement-list s)`
+#### replace-using `(replacement-list s &key regex)`
 
 Replace all associations given by pairs in a replacement-list and return a new string.
 
-The replacement-list is a list alternating a string to replace (case sensitive) and its replacement.
+The `replacement-list` alternates a string to replace (case sensitive) and its replacement.
+By default, metacharacters in the string to replace are treated as normal characters.
+If `regex` is not `nil`, strings to replace are treated as regular expression.
 
 Example:
 
 ```lisp
 (replace-using (list "%phone%" "987")
                "call %phone%")
-;; "call 987"
+;; => "call 987"
+
+(replace-using (list "fo+" "frob"
+                       "ba+" "Bob")
+                 "foo bar"
+                 :regex t)
+;; => "frob Bobr"
 ```
 
 #### remove-punctuation (s &key replacement)
