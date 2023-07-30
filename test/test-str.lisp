@@ -43,14 +43,18 @@
 (in-suite replace-functions)
 
 (test replace-first
-  (is (string= "fooaa" (replace-first "aa" "oo" "faaaa"))))
+  (is (string= "fooaa" (replace-first "aa" "oo" "faaaa")))
+  (is (string= "frobfoo bar" (replace-first "fo+" "frob" "foofoo bar" :regex t)))
+  (is (string= "frob bar FOO" (replace-first "(?i)fo+" "frob" "FOO bar FOO" :regex t))))
 
 (test replace-all
   (is (string= "foo" (replace-all "a" "o" "faa")))
   (is (string= "foo" (replace-all "^a" "o" "fo^a")))
   (is (string= "foo" (replace-all "^aa+" "o" "fo^aa+")))
   (is (string= "foo'\\'bar" (replace-all "+" "'\\'" "foo+bar"))
-      "Edge case with a double backslash and a single quote."))
+      "Edge case with a double backslash and a single quote.")
+  (is (string= "frobfrob bar" (replace-all "fo+" "frob" "foofoo bar" :regex t)))
+  (is (string= "frob bar frob" (replace-all "(?i)fo+" "frob" "FOO bar FOO" :regex t))))
 
 (test replace-using
   (is (string= "foo" (replace-using (list "a" "o") "faa")))
@@ -60,7 +64,9 @@
   (signals error (replace-using (list "a" "o" "A") "faaAA"))
   (signals error (replace-using (list 1 "C") "faaAA"))
   (signals error (replace-using (list "f" 'test) "faaAA"))
-  (is (string= "faa" (replace-using nil "faa"))))
+  (is (string= "faa" (replace-using nil "faa")))
+  (is (string= "frob Bobr"
+               (replace-using (list "fo+" "frob" "ba+" "Bob") "foo bar" :regex t))))
 
 (def-suite lengthen-functions
   :in str

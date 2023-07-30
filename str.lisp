@@ -320,18 +320,34 @@ It uses `subseq' with differences:
       (setf result (cons s result)))
     (apply #'concat result)))
 
-(defun replace-first (old new s)
-  "Replace the first occurence of `old` by `new` in `s`. Arguments are not regexs."
-  (let* ((ppcre:*allow-quoting* t)
-         (old (concatenate 'string "\\Q" old))) ;; treat metacharacters as normal.
-    ;; We need the (list new): see !52
-    (ppcre:regex-replace old s (list new))))
+(defun replace-first (old new s &key regex)
+  "Replace the first occurence of `old` by `new` in `s`.
 
-(defun replace-all (old new s)
-  "Replace all occurences of `old` by `new` in `s`. Arguments are not regexs."
-  (let* ((ppcre:*allow-quoting* t)
-         (old (concatenate 'string "\\Q" old))) ;; treat metacharacters as normal.
-    (ppcre:regex-replace-all old s (list new))))
+  By default, metacharacters are treated as normal characters.
+  If `regex` is not `nil`, `old` is treated as regular expression.
+
+  Examples:
+  (replace-first \"aa\" \"oo\" \"faaaa\") => \"fooaa\"
+  (replace-first \"fo+\" \"frob\" \"foofoo bar\" :regex t) => \"frobfoo bar\""
+    (if regex
+        (ppcre:regex-replace old s new)
+        (let ((ppcre:*allow-quoting* t))
+          ;; We need the (list new): see !52
+          (ppcre:regex-replace (concatenate 'string "\\Q" old) s (list new)))))
+
+(defun replace-all (old new s &key regex)
+  "Replace all occurences of `old` by `new` in `s`.
+
+  By default, metacharacters are treated as normal characters.
+  If `regex` is not `nil`, `old` is treated as regular expression.
+
+  Examples:
+  (replace-all \"+\" \"'\\'\" \"foo+bar\") => \"foo'\\'bar\"
+  (replace-all \"fo+\" \"frob\" \"foofoo bar\" :regex t) => \"frobfrob bar\""
+    (if regex
+        (ppcre:regex-replace-all old s new)
+        (let ((ppcre:*allow-quoting* t))
+          (ppcre:regex-replace-all (concatenate 'string "\\Q" old) s (list new)))))
 
 ;; About the (list new) above:
 #+nil
@@ -343,23 +359,30 @@ It uses `subseq' with differences:
   ;; foo\'bar
   )
 
-(defun replace-using (replacement-list s)
+(defun replace-using (replacement-list s &key regex)
   "Replace all associations given by pairs in a list and return a new string.
 
-  The replacement-list alternates a string to replace (case sensitive) and its replacement.
+  The `replacement-list` alternates a string to replace (case sensitive) and its replacement.
+  By default, metacharacters in the string to replace are treated as normal characters.
+  If `regex` is not `nil`, strings to replace are treated as regular expression.
 
   Example:
   (replace-using (list \"{{phone}}\" \"987\")
                  \"call {{phone}}\")
-  =>
-  \"call 987\"
+  => \"call 987\"
+
+  (replace-using (list \"fo+\" \"frob\"
+                       \"ba+\" \"Bob\")
+                 \"foo bar\"
+                 :regex t)
+  => \"frob Bobr\"
 
   It calls `replace-all' as many times as there are replacements to do."
   (loop for remaining-list on replacement-list by #'cddr do
     (let ((key (first remaining-list))
           (value (second remaining-list)))
       (declare (string key value))
-      (setf s (replace-all key value s))))
+      (setf s (replace-all key value s :regex regex))))
   s)
 
 (defun emptyp (s)
