@@ -134,7 +134,7 @@
 (defvar *whitespaces* (list #\Backspace #\Tab #\Linefeed #\Newline #\Vt #\Page
                             #\Return #\Space #\Rubout
                             #+sbcl #\Next-Line #-sbcl (code-char 133)
-                            #\No-break_space)
+                            #+lispworks #\no-break-space #-lispworks #\No-break_space)
   "On some implementations, linefeed and newline represent the same character (code).")
 
 (defvar +version+ (asdf:component-version (asdf:find-system "str")))
