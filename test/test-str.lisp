@@ -360,7 +360,9 @@
     (is (equalp '("foo" "   ") (split "+" "foo+++   ++++"))
         "omit-nulls and blanks"))
   (is (equalp '("foo" "bar") (split "," "foo,bar")))
-  (is (equalp '("foo" "ABbar") (split "ABAB" "fooABABABbar"))))
+  (is (equalp '("foo" "ABbar") (split "ABAB" "fooABABABbar")))
+  (is (equalp '("foo" "bar" "baz") (split "[,|;]" "foo,bar;baz" :regex t)))
+  (is (equalp '("foo" "bar" "" "" "baz") (split "[,|;+]" "foo,bar;;;baz" :regex t))))
 
 (test rsplit
   (is (equalp '("foo" "bar") (rsplit " " "foo bar")))
@@ -371,7 +373,8 @@
   (is (equalp '("" "var" "log" "mail.log") (rsplit "/" "/var/log/mail.log" :limit 4)))
   (is (equalp '("foo" "bar") (rsplit "LONG" "fooLONGbar")))
   (is (equalp '("foo" "bar" "") (rsplit "LONG" "fooLONGbarLONG" :limit 3)))
-  (is (equalp '("fooAB" "bar") (rsplit "ABAB" "fooABABABbar"))))
+  (is (equalp '("fooAB" "bar") (rsplit "ABAB" "fooABABABbar")))
+  (is (equalp '("foo" "bar" "" "" "baz") (rsplit "[,|;+]" "foo,bar;;;baz" :regex t))))
 
 (test lines
   (is (string= nil (lines nil)))

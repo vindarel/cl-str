@@ -492,22 +492,28 @@ A terminal newline character does *not* result in an extra empty string
 
 Join the list of strings with a newline character.
 
-#### split `(separator s &key omit-nulls limit start end)`
+#### split `(separator s &key omit-nulls limit start end regex)`
 
-Split into subtrings (unlike cl-ppcre, without a regexp). If
+Split into subtrings. If
 `omit-nulls` is non-nil, zero-length substrings are omitted.
+
+By default, metacharacters are treated as normal characters.
+ If `regex` is not `nil`, then `separator` is treated as regular expression.
 
 ```lisp
 (split "+" "foo++bar") ;; => ("foo" "" "bar")
 (split #\+ "foo++bar") ;; => ("foo" "" "bar")
 (split "+" "foo++bar" :omit-nulls t) ;; => ("foo" "bar")
+
+(split "[,|;]" "foo,bar;baz") ;; => ("foo,bar;baz")
+(split "[,|;]" "foo,bar;baz" :regex t) ;; => ("foo" "bar" "baz")
 ```
 
 cl-ppcre has an inconsistency such that when the separator appears at
 the end, it doesn't return a trailing empty string. But we do **since
 v0.14** (october, 2019).
 
-#### rsplit `(separator s &key limit)`
+#### rsplit `(separator s &key limit regex)`
 
 Similar to `split`, but split from the end. In particular, this will
 be different from `split` when a `:limit` is provided, but in more
@@ -527,7 +533,7 @@ ways to split the string.
 ~~~
 
 
-#### split-omit-nulls
+#### split-omit-nulls `(separator s &key regex)`
 
 Because it is a common pattern and it can be clearer than an option
 coming after many parenthesis.
