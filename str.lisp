@@ -222,33 +222,41 @@
                   string/char
                   (subseq s index)))))
 
-(defun split (separator s &key (omit-nulls *omit-nulls*) limit (start 0) end)
+(defun split (separator s &key (omit-nulls *omit-nulls*) limit (start 0) end regex)
   "Split s into substring by separator (cl-ppcre takes a regex, we do not).
 
   `limit' limits the number of elements returned (i.e. the string is
-  split at most `limit' - 1 times)."
+  split at most `limit' - 1 times).
+
+  If `regex` keyword is not `nil`, separator is treated as regular expression"
   ;; cl-ppcre:split doesn't return a null string if the separator appears at the end of s.
   (let* ((limit (or limit (1+ (length s))))
-         (res (ppcre:split `(:sequence ,(string separator)) s :limit limit :start start :end end)))
+         (res (if regex
+                  (ppcre:split separator s :limit limit :start start :end end)
+                  (ppcre:split `(:sequence ,(string separator)) s :limit limit :start start :end end))))
     (if omit-nulls
         (remove-if (lambda (it) (emptyp it)) res)
         res)))
 
-(defun rsplit (sep s &key (omit-nulls *omit-nulls*) limit)
+(defun rsplit (sep s &key (omit-nulls *omit-nulls*) limit regex)
   "Similar to `split`, except we split from the end. In particular,
 the results will be be different when `limit` is provided."
   (nreverse
    (mapcar 'nreverse
-           (split (reverse (string sep)) (reverse s)
+           (split (if regex
+                      (string sep)
+                      (reverse (string sep)))
+                  (reverse s)
                   :omit-nulls omit-nulls
-                  :limit limit))))
+                  :limit limit
+                  :regex regex))))
 
-(defun split-omit-nulls (separator s)
+(defun split-omit-nulls (separator s &key regex)
   "Call split with :omit-nulls to t.
 
    Can be clearer in certain situations.
   "
-  (split separator s :omit-nulls t))
+  (split separator s :omit-nulls t :regex regex))
 
 (defun substring (start end s)
   "Return the substring of `s' from `start' to `end'.
