@@ -225,10 +225,10 @@
 (defun split (separator s &key (omit-nulls *omit-nulls*) limit (start 0) end regex)
   "Split s into substring by separator (cl-ppcre takes a regex, we do not).
 
-  `limit' limits the number of elements returned (i.e. the string is
-  split at most `limit' - 1 times).
+   `limit' limits the number of elements returned (i.e. the string is
+   split at most `limit' - 1 times).
 
-  If `regex` keyword is not `nil`, separator is treated as regular expression"
+   If `regex` keyword is not `nil`, separator is treated as regular expression"
   ;; cl-ppcre:split doesn't return a null string if the separator appears at the end of s.
   (let* ((limit (or limit (1+ (length s))))
          (res (if regex
@@ -240,7 +240,9 @@
 
 (defun rsplit (sep s &key (omit-nulls *omit-nulls*) limit regex)
   "Similar to `split`, except we split from the end. In particular,
-the results will be be different when `limit` is provided."
+the results will be be different when `limit` is provided.
+
+   If `regex` keyword is not `nil`, separator is treated as regular expression"
   (nreverse
    (mapcar 'nreverse
            (split (if regex
@@ -255,7 +257,8 @@ the results will be be different when `limit` is provided."
   "Call split with :omit-nulls to t.
 
    Can be clearer in certain situations.
-  "
+
+   If `regex` keyword is not `nil`, separator is treated as regular expression"
   (split separator s :omit-nulls t :regex regex))
 
 (defun substring (start end s)
