@@ -4,7 +4,7 @@
   :author "vindarel <vindarel@mailz.org>"
   :maintainer "vindarel <vindarel@mailz.org>"
   :license "MIT"
-  :version "0.19.1"
+  :version "0.21"
   :homepage "https://github.com/vindarel/cl-str"
   :bug-tracker "https://github.com/vindarel/cl-str/issues"
   :source-control (:git "git@github.com:vindarel/cl-str.git")

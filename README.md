@@ -907,6 +907,10 @@ Note that there is also http://quickdocs.org/string-case/.
 
 ## Changelog
 
+* 0.21, November, 2023:
+  * added the `regex` key argument to `split`, `rsplit`, `split-omit-nulls`.
+* August, 2023:
+  * added the `regex` key argument to the `replace-*` functions.
 * March, 2023:
   * added `str:ensure`, `str:ensure-prefix`, `str:ensure-suffix`, `str:ensure-wrapped-in` and `str:wrapped-in-p`.
 * January, 2023: added the `:char-barg` parameter to `trim`, `trim-left`, `trim-right`.
