@@ -227,8 +227,12 @@
 
    `limit' limits the number of elements returned (i.e. the string is
    split at most `limit' - 1 times).
+   If `regex' is not nil, `separator' is treated as a regular expression.
 
-   If `regex` keyword is not `nil`, separator is treated as regular expression"
+   Examples:
+   (str:split \",\" \"foo,bar\") ;; => (\"foo\" \"bar\")
+   (str:split \"[,|;]\" \"foo,bar;baz\" :regex t) ;; => (\"foo\" \"bar\" \"baz\")
+"
   ;; cl-ppcre:split doesn't return a null string if the separator appears at the end of s.
   (let* ((limit (or limit (1+ (length s))))
          (res (if regex
@@ -239,10 +243,10 @@
         res)))
 
 (defun rsplit (sep s &key (omit-nulls *omit-nulls*) limit regex)
-  "Similar to `split`, except we split from the end. In particular,
+  "Similar to `split', except we split from the end. In particular,
 the results will be be different when `limit` is provided.
 
-   If `regex` keyword is not `nil`, separator is treated as regular expression"
+   If `regex' is not `nil`, `separator' is treated as a regular expression."
   (nreverse
    (mapcar 'nreverse
            (split (if regex
@@ -254,11 +258,11 @@ the results will be be different when `limit` is provided.
                   :regex regex))))
 
 (defun split-omit-nulls (separator s &key regex)
-  "Call split with :omit-nulls to t.
+  "Call `split' with :omit-nulls to t.
 
    Can be clearer in certain situations.
 
-   If `regex` keyword is not `nil`, separator is treated as regular expression"
+   If `regex' is not nil, `separator' is treated as a regular expression."
   (split separator s :omit-nulls t :regex regex))
 
 (defun substring (start end s)
@@ -335,7 +339,7 @@ It uses `subseq' with differences:
   "Replace the first occurence of `old` by `new` in `s`.
 
   By default, metacharacters are treated as normal characters.
-  If `regex` is not `nil`, `old` is treated as regular expression.
+  If `regex' is not nil, `old' is treated as a regular expression.
 
   Examples:
   (replace-first \"aa\" \"oo\" \"faaaa\") => \"fooaa\"
@@ -347,14 +351,14 @@ It uses `subseq' with differences:
           (ppcre:regex-replace (concatenate 'string "\\Q" old) s (list new)))))
 
 (defun replace-all (old new s &key regex)
-  "Replace all occurences of `old` by `new` in `s`.
+  "Replace all occurences of `old' by `new' in `s'.
 
   By default, metacharacters are treated as normal characters.
-  If `regex` is not `nil`, `old` is treated as regular expression.
+  If `regex' is not nil, `old' is treated as a regular expression.
 
   Examples:
-  (replace-all \"+\" \"'\\'\" \"foo+bar\") => \"foo'\\'bar\"
-  (replace-all \"fo+\" \"frob\" \"foofoo bar\" :regex t) => \"frobfrob bar\""
+  (replace-all \"+\" \"'\\'\" \"foo+bar\") ;; => \"foo'\\'bar\"
+  (replace-all \"fo+\" \"frob\" \"foofoo bar\" :regex t) ;; => \"frobfrob bar\""
     (if regex
         (ppcre:regex-replace-all old s new)
         (let ((ppcre:*allow-quoting* t))
@@ -373,9 +377,9 @@ It uses `subseq' with differences:
 (defun replace-using (replacement-list s &key regex)
   "Replace all associations given by pairs in a list and return a new string.
 
-  The `replacement-list` alternates a string to replace (case sensitive) and its replacement.
+  The `replacement-list' alternates a string to replace (case sensitive) and its replacement.
   By default, metacharacters in the string to replace are treated as normal characters.
-  If `regex` is not `nil`, strings to replace are treated as regular expression.
+  If `regex' is not nil, strings to replace are treated as regular expressions.
 
   Example:
   (replace-using (list \"{{phone}}\" \"987\")
