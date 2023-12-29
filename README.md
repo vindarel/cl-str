@@ -889,7 +889,7 @@ Example:
 ~~~lisp
 (str:string-case input
   ("foo" (do something))
-  (nil (print "input is nil")
+  (nil (print "input is nil"))
   (otherwise (print "non of the previous forms was caught.")))
 ~~~
 
