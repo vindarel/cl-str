@@ -54,6 +54,7 @@
   #:from-file
   #:to-file
   #:string-case
+  #:string-match
   #:s-first
   #:s-last
   #:s-rest
@@ -734,6 +735,54 @@ Returns the string written to file."
               :if (stringp s) :collect `((string= ,test ,s) ,@f)
               :else :if (string= s 'otherwise) :collect `(t ,@f)
               :else :collect `((eql ,test ,s) ,@f))))))
+
+;;:= doc
+(defun expand-match-branch (str block patterns forms)
+  (case patterns
+    ((t 'otherwise) `(return-from ,block (progn ,@forms)))
+    (t (loop with regex = '("^")
+             and vars = '()
+             and ind = 0
+             for x in patterns
+             do (cond ((stringp x)
+                       (push x regex))
+                      ((symbolp x)
+                       (push "(.*)" regex)
+                       (push (list x ind) vars)
+                       (incf ind))
+                      (t (error "only symbol and string allowed in patterns")))
+             finally (push "$" regex)
+             finally (setf vars (reverse vars))
+             finally (return (let ((whole-str (gensym))
+                                   (regs (gensym)))
+                               `(multiple-value-bind (,whole-str ,regs)
+                                    (cl-ppcre:scan-to-strings
+                                     ,(apply #'str:concat (reverse regex))
+                                     ,str)
+                                  (declare (ignore ,whole-str))
+                                  (when ,regs
+                                    (let ,(loop for (v ind) in vars
+                                                unless (eq v '_)
+                                                  collect v)
+                                      ,@(loop for (v ind) in vars
+                                              unless (eq v '_)
+                                                collect `(setf ,v (elt ,regs ,ind)))
+                                      (return-from ,block
+                                        (progn ,@forms)))))))))))
+
+;;:= doc
+;;:= README
+;;:= tests
+(defmacro string-match (str &body match-branches)
+  ""
+  (let ((block-sym (gensym)))
+    `(block ,block-sym
+       ,@(loop for statement in match-branches
+               collect (expand-match-branch
+                        str
+                        block-sym
+                        (nth 0 statement)
+                        (cdr statement))))))
 
 (defun s-first (s)
   "Return the first substring of `s'."
