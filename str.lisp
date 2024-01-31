@@ -54,7 +54,7 @@
   #:from-file
   #:to-file
   #:string-case
-  #:string-match
+  #:match
   #:s-first
   #:s-last
   #:s-rest
@@ -737,7 +737,7 @@ Returns the string written to file."
               :else :collect `((eql ,test ,s) ,@f))))))
 
 (defun expand-match-branch (str block patterns forms)
-  "Helper function of string-match macro"
+  "Helper function of match macro"
   (case patterns
     ((t 'otherwise) `(return-from ,block (progn ,@forms)))
     (t (loop with regex = '("^")
@@ -747,7 +747,7 @@ Returns the string written to file."
              do (cond ((stringp x)
                        (push x regex))
                       ((symbolp x)
-                       (push "(.*)" regex)
+                       (push "(.*?)" regex)
                        (push (list x ind) vars)
                        (incf ind))
                       (t (error "only symbol and string allowed in patterns")))
@@ -770,23 +770,23 @@ Returns the string written to file."
                                       (return-from ,block
                                         (progn ,@forms)))))))))))
 
-(defmacro string-match (str &body match-branches)
+(defmacro match (str &body match-branches)
   "A macro that matching the special string with binding vars of parts of it.
   
   Example:
 
-  (str:string-match \"a 1 b 2 d\" 
-          ((\"a 2 b\" _ \"d\") (print \"pass\")) ;; this branch will pass
-          ((\"a \" x \" b \" y \" d\") (+ (parse-integer x) (parse-integer y)) ;; => matched
-          (t 'default-but-not-for-this-case)) ;; default branch
+  (str:match \"a 1 b 2 d\" 
+    ((\"a 2 b\" _ \"d\") (print \"pass\")) ;; this branch will pass
+    ((\"a \" x \" b \" y \" d\") (+ (parse-integer x) (parse-integer y)) ;; => matched
+    (t 'default-but-not-for-this-case)) ;; default branch
   ;; => 3
    
   '_ is the placeholder, example:
 
-  (str:string-match \"a 1 b c d\" 
-          ((\"a 2 b\" _ \"d\") (print \"pass\")) ;; this branch will pass
-          ((\"a \" _ \" b c d\") \"here we go\") 
-          (t 'default-but-not-for-this-case)) ;; default branch
+  (str:match \"a 1 b c d\" 
+    ((\"a 2 b\" _ \"d\") (print \"pass\")) ;; this branch will pass
+    ((\"a \" _ \" b c d\") \"here we go\") 
+    (t 'default-but-not-for-this-case)) ;; default branch
   ;; => \"here we go\"
   "
   (let ((block-sym (gensym)))

@@ -704,35 +704,47 @@
                             (otherwise :otherwise)))
       "matching with a symbol: otherwise"))
 
-(test string-match
+(test match
   (is (= 3
-         (string-match "a 1 2 b"
+         (match "a 1 2 b"
            (("a " x " " y " b") (+ (parse-integer x)
                                    (parse-integer y)))
            (t 4)))
       "match the numbers inside")
   (is (string= "HELLO WORLD"
-               (string-match "33hello world44"
+               (match "33hello world44"
                  (("33" x "44") (str:upcase x))
                  (t "no hello")))
       "match string inside")
   (is (string= "Lisp = fun"
-               (string-match "33Lisp is fun44"
+               (match "33Lisp is fun44"
                  (("3" x "5") x)
                  (("3" "3" lisp " is " fun "4" "4")
                   (str:concat lisp " = " fun))
                  (t "no fun")))
       "match multi parts")
   (is (= 13
-         (string-match "33Lisp is fun44"
+         (match "33Lisp is fun44"
            (("3" x "4") (length x))
            (("3" "3" x "4" "4")
             (length x))
            (t 0)))
       "match the first match")
   (is (eq 'gmail
-          (string-match "lisp@gmail.com"
+          (match "lisp@gmail.com"
             ((_ "gmail" _) 'gmail)
             ((_ "outlook" _) 'outlook)
             ((_ "yahoo" _) 'yahoo)))
-      "match with the placeholders"))
+      "match with the placeholders")
+  (is (string= " hello "
+               (match "123 hello 456"
+                 (("\\d+" s "\\d+")
+                  s)
+                 (t "nothing")))
+      "match with the regex")
+  (is (string= " hello "
+               (match "123 hello 456"
+                 (("\\d+" s "\\d*")
+                  s)
+                 (t "nothing")))
+      "match with the regex"))
