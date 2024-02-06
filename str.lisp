@@ -513,7 +513,7 @@ A simple call to the built-in `search` (which returns the position of the substr
   (mapcar #'(lambda (item) (concat s item)) items))
 
 (defun add-suffix (items s)
-  "Append s to the end of eahc items."
+  "Append s to the end of each items."
   (mapcar #'(lambda (item) (concat item s)) items))
 
 (defun ensure-prefix (start s)
