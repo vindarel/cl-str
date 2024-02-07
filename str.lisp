@@ -509,12 +509,12 @@ A simple call to the built-in `search` (which returns the position of the substr
     suffix))
 
 (defun add-prefix (items s)
-  "Prepend s to the front of each items."
-  (mapcar #'(lambda (item) (concat s item)) items))
+  "Prepend s to the front of each item."
+  (mapcar (lambda (item) (concat s item)) items))
 
 (defun add-suffix (items s)
-  "Append s to the end of each items."
-  (mapcar #'(lambda (item) (concat item s)) items))
+  "Append s to the end of each item."
+  (mapcar (lambda (item) (concat item s)) items))
 
 (defun ensure-prefix (start s)
   "Ensure that `s' starts with `start'.
