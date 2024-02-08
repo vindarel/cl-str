@@ -719,11 +719,7 @@ Returns the string written to file."
     (nil (print \"input is nil\")
     (otherwise (print \"none of the previous forms was caught\")))
 
-  You might also like pattern matching. The example below with optima is very similar:
-
-  (optima:match \"hey\"
-    (\"hey\" (print \"it matched\"))
-    (otherwise :nothing))
+  You might also like pattern matching with `str:match'.
 
   Note that there is also http://quickdocs.org/string-case/.
   "
@@ -737,7 +733,7 @@ Returns the string written to file."
               :else :collect `((eql ,test ,s) ,@f))))))
 
 (defun expand-match-branch (str block patterns forms)
-  "Helper function of match macro"
+  "Helper function of the match macro."
   (case patterns
     ((t 'otherwise) `(return-from ,block (progn ,@forms)))
     (t (loop with regex = '("^")
@@ -771,23 +767,36 @@ Returns the string written to file."
                                         (progn ,@forms)))))))))))
 
 (defmacro match (str &body match-branches)
-  "A macro that matching the special string with binding vars of parts of it.
-  
+  "A COND-like macro to match substrings and bind variables to matches. Regular expressions are allowed for matches.
+
+  _ is a placeholder that is ignored.
+
+  THIS MACRO IS EXPERIMENTAL and might break in future releases.
+
   Example:
 
-  (str:match \"a 1 b 2 d\" 
-    ((\"a 2 b\" _ \"d\") (print \"pass\")) ;; this branch will pass
-    ((\"a \" x \" b \" y \" d\") (+ (parse-integer x) (parse-integer y)) ;; => matched
-    (t 'default-but-not-for-this-case)) ;; default branch
+  (str:match \"a 1 b 2 d\"
+    ((\"a \" x \" b \" y \" d\") ;; => matched
+     (+ (parse-integer x) (parse-integer y)))
+    (t
+     'default-but-not-for-this-case)) ;; default branch
   ;; => 3
-   
-  '_ is the placeholder, example:
 
-  (str:match \"a 1 b c d\" 
-    ((\"a 2 b\" _ \"d\") (print \"pass\")) ;; this branch will pass
-    ((\"a \" _ \" b c d\") \"here we go\") 
+  (str:match \"a 1 b c d\"
+    ((\"a 2 b\" _ \"d\") ;; => not matched
+     (print \"pass\"))
+    ((\"a \" _ \" b c d\") ;; => matched
+     \"here we go\")
     (t 'default-but-not-for-this-case)) ;; default branch
   ;; => \"here we go\"
+
+  Match with regexs:
+
+  (str:match \"123 hello 456\"
+    ((\"\\d+\" s \"\\d+\")
+     s)
+  (t \"nothing\"))
+  ;; => \" hello \"
   "
   (let ((block-sym (gensym)))
     `(block ,block-sym

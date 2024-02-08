@@ -89,7 +89,7 @@ The only dependency is `cl-ppcre`.
             - [s-assoc-value `(alist key)`](#s-assoc-value-alist-key)
     - [Macros](#macros)
         - [string-case](#string-case)
-        - [string-match](#string-match)
+        - [match (experimental) · new in Feb, 2024](#match-experimental-·-new-in-feb-2024)
     - [Changelog](#changelog)
     - [Dev and test](#dev-and-test)
         - [Main test suite](#main-test-suite)
@@ -904,32 +904,47 @@ You might also like pattern matching. The example below with
 
 Note that there is also http://quickdocs.org/string-case/.
 
-### string-match
+### match (experimental) · new in Feb, 2024
 
-A macro that matching the special string with binding vars of parts of it.
-  
+A COND-like macro to match substrings and bind variables to matches. Regular expressions are allowed for matches.
+
+`_` is a placeholder that is ignored.
+
+THIS MACRO IS EXPERIMENTAL and might break in future releases.
+
 Example:
 
-~~~lisp
-(string-match "a 1 b 2 d" 
-  (("a b" _ "d") (print "pass"))
-  (("a " x " b " y " d") (+ (parse-integer x) (parse-integer y)))
-  (t (print "aa")))
+```lisp
+(str:match "a 1 b 2 d"
+  (("a " x " b " y " d") ;; => matched
+   (+ (parse-integer x) (parse-integer y)))
+  (t
+   'default-but-not-for-this-case)) ;; default branch
 ;; => 3
-~~~
 
-`_` is the placeholder, example:
+(str:match "a 1 b c d"
+  (("a 2 b" _ "d") ;; => not matched
+   (print "pass"))
+  (("a " _ " b c d") ;; => matched
+   "here we go")
+  (t 'default-but-not-for-this-case)) ;; default branch
+;; => "here we go"
+```
 
-~~~lisp
-(string-match "a 1 b c d" 
-  (("a b" _ "d") (print "pass"))
-  (("a " _ " b c d") "here we go")
-  (t (print "aa")))
-;; => \"here we go\"
-~~~
+Match with regexs:
+
+```lisp
+(str:match "123 hello 456"
+ (("\\d+" s "\\d+")
+   s)
+ (t "nothing"))
+;; => " hello "
+```
 
 ## Changelog
 
+* Feb, 2024:
+  * added the `match` macro. It is EXPERIMENTAL and might change in future versions. We welcome your bug reports and feedback.
 * 0.21, November, 2023:
   * added the `regex` key argument to `split`, `rsplit`, `split-omit-nulls`.
 * August, 2023:
