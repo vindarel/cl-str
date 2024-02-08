@@ -54,6 +54,7 @@
   #:from-file
   #:to-file
   #:string-case
+  #:match
   #:s-first
   #:s-last
   #:s-rest
@@ -734,6 +735,68 @@ Returns the string written to file."
               :if (stringp s) :collect `((string= ,test ,s) ,@f)
               :else :if (string= s 'otherwise) :collect `(t ,@f)
               :else :collect `((eql ,test ,s) ,@f))))))
+
+(defun expand-match-branch (str block patterns forms)
+  "Helper function of match macro"
+  (case patterns
+    ((t 'otherwise) `(return-from ,block (progn ,@forms)))
+    (t (loop with regex = '("^")
+             and vars = '()
+             and ind = 0
+             for x in patterns
+             do (cond ((stringp x)
+                       (push x regex))
+                      ((symbolp x)
+                       (push "(.*?)" regex)
+                       (push (list x ind) vars)
+                       (incf ind))
+                      (t (error "only symbol and string allowed in patterns")))
+             finally (push "$" regex)
+             finally (setf vars (reverse vars))
+             finally (return (let ((whole-str (gensym))
+                                   (regs (gensym)))
+                               `(multiple-value-bind (,whole-str ,regs)
+                                    (cl-ppcre:scan-to-strings
+                                     ,(apply #'str:concat (reverse regex))
+                                     ,str)
+                                  (declare (ignore ,whole-str))
+                                  (when ,regs
+                                    (let ,(loop for (v ind) in vars
+                                                unless (string= (symbol-name v) "_")
+                                                  collect v)
+                                      ,@(loop for (v ind) in vars
+                                              unless (string= (symbol-name v) "_")
+                                                collect `(setf ,v (elt ,regs ,ind)))
+                                      (return-from ,block
+                                        (progn ,@forms)))))))))))
+
+(defmacro match (str &body match-branches)
+  "A macro that matching the special string with binding vars of parts of it.
+  
+  Example:
+
+  (str:match \"a 1 b 2 d\" 
+    ((\"a 2 b\" _ \"d\") (print \"pass\")) ;; this branch will pass
+    ((\"a \" x \" b \" y \" d\") (+ (parse-integer x) (parse-integer y)) ;; => matched
+    (t 'default-but-not-for-this-case)) ;; default branch
+  ;; => 3
+   
+  '_ is the placeholder, example:
+
+  (str:match \"a 1 b c d\" 
+    ((\"a 2 b\" _ \"d\") (print \"pass\")) ;; this branch will pass
+    ((\"a \" _ \" b c d\") \"here we go\") 
+    (t 'default-but-not-for-this-case)) ;; default branch
+  ;; => \"here we go\"
+  "
+  (let ((block-sym (gensym)))
+    `(block ,block-sym
+       ,@(loop for statement in match-branches
+               collect (expand-match-branch
+                        str
+                        block-sym
+                        (nth 0 statement)
+                        (cdr statement))))))
 
 (defun s-first (s)
   "Return the first substring of `s'."

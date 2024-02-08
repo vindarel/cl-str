@@ -89,6 +89,7 @@ The only dependency is `cl-ppcre`.
             - [s-assoc-value `(alist key)`](#s-assoc-value-alist-key)
     - [Macros](#macros)
         - [string-case](#string-case)
+        - [string-match](#string-match)
     - [Changelog](#changelog)
     - [Dev and test](#dev-and-test)
         - [Main test suite](#main-test-suite)
@@ -885,7 +886,6 @@ A case-like macro that works with strings (CL case's test function is
 
 Example:
 
-
 ~~~lisp
 (str:string-case input
   ("foo" (do something))
@@ -904,6 +904,29 @@ You might also like pattern matching. The example below with
 
 Note that there is also http://quickdocs.org/string-case/.
 
+### string-match
+
+A macro that matching the special string with binding vars of parts of it.
+  
+Example:
+
+~~~lisp
+(string-match "a 1 b 2 d" 
+  (("a b" _ "d") (print "pass"))
+  (("a " x " b " y " d") (+ (parse-integer x) (parse-integer y)))
+  (t (print "aa")))
+;; => 3
+~~~
+
+`_` is the placeholder, example:
+
+~~~lisp
+(string-match "a 1 b c d" 
+  (("a b" _ "d") (print "pass"))
+  (("a " _ " b c d") "here we go")
+  (t (print "aa")))
+;; => \"here we go\"
+~~~
 
 ## Changelog
 
