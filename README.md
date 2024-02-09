@@ -89,7 +89,7 @@ The only dependency is `cl-ppcre`.
             - [s-assoc-value `(alist key)`](#s-assoc-value-alist-key)
     - [Macros](#macros)
         - [string-case](#string-case)
-        - [match (experimental) · new in Feb, 2024](#match-experimental-·-new-in-feb-2024)
+        - [match (experimental) · new in Feb, 2024](#match-experimental--new-in-feb-2024)
     - [Changelog](#changelog)
     - [Dev and test](#dev-and-test)
         - [Main test suite](#main-test-suite)
