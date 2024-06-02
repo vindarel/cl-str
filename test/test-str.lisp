@@ -695,6 +695,11 @@
         ("hello" (format nil "yes"))
         (otherwise nil))
       "string-case base case")
+  (is (string-case "two-forms"
+	("first" nil)
+	(("hello" "two-forms") t)
+	(otherwise nil))
+      "multiple-item clause")
   (is (string= nil (string-case "no"
                      ("hello" t)
                      (otherwise nil)))

@@ -711,11 +711,13 @@ Returns the string written to file."
 
 (defmacro string-case (str &body forms)
   "A case-like macro that works with strings (case works only with symbols).
+  You can either supply single-item clauses, multiple-items clauses, or otherwise.
 
   Example:
 
   (str:string-case input
     (\"foo\" (do something))
+    ((\"hello\" \"test\") 5)
     (nil (print \"input is nil\")
     (otherwise (print \"none of the previous forms was caught\")))
 
@@ -729,7 +731,12 @@ Returns the string written to file."
        (cond
          ,@(loop :for (s . f) :in forms
               :if (stringp s) :collect `((string= ,test ,s) ,@f)
-              :else :if (string= s 'otherwise) :collect `(t ,@f)
+	      :else :if (consp s)
+		        :append (loop for element :in s
+				       :if (stringp element)
+					   :collect `((string= ,test ,element) ,@f)
+			               :else :collect `((eql ,test ,s) ,@f))
+	      :else :if (string= s 'otherwise) :collect `(t ,@f)
               :else :collect `((eql ,test ,s) ,@f))))))
 
 (defun expand-match-branch (str block patterns forms)
