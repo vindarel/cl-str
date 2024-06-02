@@ -887,8 +887,9 @@ A case-like macro that works with strings (CL case's test function is
 Example:
 
 ~~~lisp
-(str:string-case input
-  ("foo" (do something))
+(str:string-case "hello"
+  ("foo" 1)
+  (("hello" "test") 5)
   (nil (print "input is nil"))
   (otherwise (print "non of the previous forms was caught.")))
 ~~~
