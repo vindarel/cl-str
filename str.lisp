@@ -1179,7 +1179,7 @@ unless MERGE-NUMBERS is non-nil.
 
   (assert (or (null s)
               (stringp s)))
-  (if (has-letters-p s)
+  (when (has-letters-p s)
       (every (lambda (char)
                (if (alpha-char-p char)
                    (upper-case-p char)
