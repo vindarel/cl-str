@@ -762,14 +762,15 @@ Returns the string written to file."
                                     (cl-ppcre:scan-to-strings
                                      ,(apply #'str:concat (reverse regex))
                                      ,str)
-                                  (declare (ignore ,whole-str))
+                                  (declare (ignore ,whole-str)
+                                           ((or null (simple-array string (*))) ,regs))
                                   (when ,regs
                                     (let ,(loop for (v ind) in vars
                                                 unless (string= (symbol-name v) "_")
                                                   collect v)
                                       ,@(loop for (v ind) in vars
                                               unless (string= (symbol-name v) "_")
-                                                collect `(setf ,v (elt ,regs ,ind)))
+                                                collect `(setf ,v (aref ,regs ,ind)))
                                       (return-from ,block
                                         (progn ,@forms)))))))))))
 
