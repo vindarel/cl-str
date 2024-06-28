@@ -172,7 +172,8 @@
 (test trim
   (is (string= "rst" (trim "  rst  ")))
   (is (string= nil (trim nil)))
-  (is (string= "rst" (trim "drste" :char-bag "de"))))
+  (is (string= "rst" (trim "drste" :char-bag "de")))
+  (is (string= "rst" (trim "　　rst　　　"))))
 
 (test trim-right
   (is (string= " rst" (trim-right " rst   ")))
