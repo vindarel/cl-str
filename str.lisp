@@ -132,12 +132,21 @@
 (defparameter *pad-side* :right
   "The side of the string to add padding characters to. Can be one of :right, :left and :center.")
 
-(defvar *whitespaces* (list #\Backspace #\Tab #\Linefeed #\Newline #\Vt #\Page
-                            #\Return #\Space #\Rubout
-                            #+sbcl #\Next-Line #-sbcl (code-char 133)
-                            #+(or abcl gcl lispworks) (code-char 12288) #-(or abcl gcl lispworks) #\Ideographic_space
-                            #+lispworks #\no-break-space #-lispworks #\No-break_space)
-  "On some implementations, linefeed and newline represent the same character (code).")
+(defvar *whitespaces*
+  (mapcar (function code-char)
+	  (list 8     ;; #\Backspace
+		9     ;; #\Tab
+		10    ;; #\Linefeed #\Newline
+		11    ;; #\Vt
+		12    ;; #\Page
+		13    ;; #\Return
+		32    ;; #\Space
+		127   ;; #\Rubout
+		133   ;; #\Next-Line
+		160   ;; #\No-break_space
+		12288 ;; #\Ideographic_space
+		))
+  "List of whitespace-like characters.")
 
 (defvar +version+ (asdf:component-version (asdf:find-system "str")))
 
