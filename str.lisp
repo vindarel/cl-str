@@ -135,7 +135,7 @@
 (defvar *whitespaces* (list #\Backspace #\Tab #\Linefeed #\Newline #\Vt #\Page
                             #\Return #\Space #\Rubout
                             #+sbcl #\Next-Line #-sbcl (code-char 133)
-                            #+(or abcl gcl lispworks) (code-char 12288) #-(or abcl gcl lispworks) #\Ideographic_space
+                            #+(or abcl gcl lispworks ccl) (code-char 12288) #-(or abcl gcl lispworks ccl) #\Ideographic_space
                             #+lispworks #\no-break-space #-lispworks #\No-break_space)
   "On some implementations, linefeed and newline represent the same character (code).")
 
