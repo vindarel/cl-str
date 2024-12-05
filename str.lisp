@@ -120,7 +120,9 @@
   #:*whitespaces*
   #:version
   #:+version+
-  #:?))
+  #:?
+  #:unparagraphs
+  #:paragraphs))
 
 (in-package :str)
 
@@ -138,6 +140,8 @@
                             #+(or abcl gcl lispworks ccl) (code-char 12288) #-(or abcl gcl lispworks ccl) #\Ideographic_space
                             #+lispworks #\no-break-space #-lispworks #\No-break_space)
   "On some implementations, linefeed and newline represent the same character (code).")
+
+(defvar *newline* #\Newline "Newline character")
 
 (defvar +version+ (asdf:component-version (asdf:find-system "str")))
 
@@ -329,6 +333,16 @@ It uses `subseq' with differences:
 (defun unlines (strings)
   "Join the list of strings with a newline character."
   (join (make-string 1 :initial-element #\Newline) strings))
+
+(defun paragraphs (string)
+  "Split the string by paragraphs. Paragraphs are separated by two new lines.
+  Return a list of strings. Each paragraph has whitespace strimmed around it."
+  (mapcar #'str:trim (ppcre:split "\\n\\n" string)))
+
+(defun unparagraphs (strings)
+  "Join the list of strings by two newlines (have them separated by a blank line)."
+  (let ((separator (concatenate 'string (list *newline* *newline*))))
+    (join separator strings)))
 
 (defun repeat (count s)
   "Make a string of S repeated COUNT times."

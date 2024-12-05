@@ -493,6 +493,22 @@ A terminal newline character does *not* result in an extra empty string
 
 Join the list of strings with a newline character.
 
+#### paragraphs, unparagraphs
+
+Split the string by \n\n: paragraphs are sections of text separated by a blank line
+(two #\Newline characters in a row).
+
+Return a list of strings.
+
+Each paragraph has whitespace strimmed around it. As such, the
+operation `(unparagraphs (paragraphs s))` doesn't always re-create
+`s`, it creates a new string with less blank lines.
+
+Equivalent to `ppcre:split "\\n\\n" s`, plus trimming whitespace on the results.
+
+The `unparagraphs` functions joins the list of strings by a blank line.
+
+
 #### split `(separator s &key omit-nulls limit start end regex)`
 
 Split into subtrings. If
