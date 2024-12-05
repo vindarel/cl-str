@@ -24,6 +24,14 @@
            #:case-functions
            #:miscellaneous))
 
+;;; Test for cl-str.
+;;;
+;;; To run the test at point when compiling it with C-c C-c, set this:
+
+#+(or)
+(setf fiveam:*run-test-when-defined* t)
+
+
 (in-package :test-str)
 
 (def-suite str
@@ -288,6 +296,23 @@
   (is (string= "1
 2
 " (unlines '("1" "2" "")))))
+
+(test paragraphs
+  (let ((s "abc
+
+
+def
+")
+        ;; only one newline and no trailing newline
+        (simple-string "abc
+
+def"))
+    (is (string= "abc" (first (paragraphs s))) "default case")
+    (is (string= "def" (second (paragraphs s))) "trim other paragraphs")
+    (is (not (string= s (unparagraphs (paragraphs s)))))
+    ;; simple-string:
+    (is (string= simple-string (unparagraphs (paragraphs simple-string)))))
+  )
 
 (test prefix
   (is (string= "foo" (prefix '("foobar" "footeam"))) "default case")
