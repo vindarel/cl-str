@@ -344,12 +344,47 @@ It uses `subseq' with differences:
   (let ((separator (concatenate 'string (list *newline* *newline*))))
     (join separator strings)))
 
+(declaim (ftype (function (integer (or string null))
+                          string)
+                repeat))
 (defun repeat (count s)
-  "Make a string of S repeated COUNT times."
-  (let ((result nil))
-    (dotimes (i count)
-      (setf result (cons s result)))
-    (apply #'concat result)))
+  "Make a string of S repeated COUNT times.
+
+When the expected output is more than 10,000 characters,
+we generate it in chunks to avoid stack/heap overflows."
+  (let ((len (if s (length s) 0)))
+    (declare (type (integer 0) len))
+    (if (zerop len)
+        ;; Emulate `concat' behavior of returning the
+        ;; empty string for nils.
+        ""
+        (let ((max-count-per-concat (max 1 (floor 10000 len))))
+          (declare (type (integer 1 10000) max-count-per-concat))
+          (flet ((simple-repeat (n)
+                   (declare
+                    (optimize (speed 3) (space 3))
+                    (type (integer 0 10000) n))
+                   (the string
+                        (apply #'concat
+                               (loop
+                                 for i of-type (integer 0 10000) below n
+                                 collect s)))))
+            (declare
+             (inline simple-repeat)
+             (ftype (function ((integer 0 10000)) string) simple-repeat))
+            (if (<= count max-count-per-concat)
+                ;; If the request is small enough, generate it directly via `concat'
+                (simple-repeat count)
+                ;; If the request is large, generate it in chunks and concatenate
+                ;; them together.
+                ;; We first create (mod count max-count-per-concat) characters,
+                ;; and then repeatedly add max-count-per-concat character chunks
+                ;; until we reach the desired length
+                (let ((result (simple-repeat (mod count max-count-per-concat)))
+                      (str-block (simple-repeat max-count-per-concat)))
+                  (dotimes (i (floor count max-count-per-concat) result)
+                    (declare (dynamic-extent i))
+                    (setf result (concat result str-block))))))))))
 
 (defun replace-first (old new s &key regex)
   "Replace the first occurence of `old` by `new` in `s`.

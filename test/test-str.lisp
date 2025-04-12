@@ -687,7 +687,9 @@ def"))
 
 (test repeat
   (is (string= "" (repeat 10 "")))
-  (is (string= "foofoofoo" (repeat 3 "foo"))))
+  (is (string= "" (repeat 10 nil)))
+  (is (string= "foofoofoo" (repeat 3 "foo")))
+  (is (= (length (repeat 100000 "c")) 100000)))
 
 (test fit
   (is (string= "hello" (fit 5 "hello"))
