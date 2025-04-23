@@ -279,6 +279,9 @@ Make a string of `s` repeated `count` times.
 (repeat 3 "foo") ;; => "foofoofoo"
 ```
 
+**NEW** as of April, 2025: when the expected output is more than 10,000
+characters, we generate it in chunks to avoid stack/heap overflows.
+
 #### add-prefix, add-suffix `(items s)`
 
 Respectively prepend or append `s` to the front of each item.
@@ -960,6 +963,13 @@ Match with regexs:
 
 ## Changelog
 
+* April, 2025:
+  * optimized `repeat` for large workloads. When the workload is
+    sufficiently large, `str:repeat` allocates all chunks of the
+    expected output onto the stack to call concat, causing an
+    overflow. For workloads larger than 10,000 characters in the
+    expected output, it now chunks the work to minimize the chance of
+    overflowing the stack or heap, while retaining decent performance.
 * Feb, 2024:
   * added the `match` macro. It is EXPERIMENTAL and might change in future versions. We welcome your bug reports and feedback.
 * 0.21, November, 2023:
