@@ -279,7 +279,8 @@
   (is (string= "foo~bar" (join "~" '("foo" "bar"))))
   (is (string= "foo~~~bar" (join "~" '("foo~" "~bar"))))
   (is (string= "foo,bar" (join #\, '("foo" "bar"))))
-  (is (string= "" (join nil nil))))
+  (is (string= "" (join nil nil)))
+  (is (string= "abcde" (join nil '("a" "b" "c" "d" "e")))))
 
 (test unwords
   (is (string= "" (unwords nil)))
@@ -461,6 +462,7 @@ def"))
   (is (containsp "foo" "blafoobar") "default")
   (is (not (containsp "foo" "")) "with no string")
   (is (not (containsp "" nil)) "a blank substring in a nil str")
+  (is (not (containsp nil "")) "a nil substring in a blank str")
   (is (not (containsp "foo" nil)) "with string nil")
   (is (not (containsp "Foo" "blafoobar")) "with case")
   (is (containsp "Foo" "blafoobar" :ignore-case t) "ignore case")
@@ -485,7 +487,14 @@ def"))
 
 (test lettersp
   (is (lettersp "éß") "letters with accents and ß")
-  (is (not (lettersp " e é,")) "no letters"))
+  (is (not (lettersp " e é,")) "no letters")
+  (is (not (lettersp "éß
+")) "not lettersp with newline"))
+
+(test lettersnump
+  (is (lettersnump "éß3") "lettersnump letters with accents and ß and a number")
+  (is (not (lettersnump "éß3
+")) "not lettersnump with newline"))
 
 (test has-letters-p 
   (is (has-letters-p " e é ß") "has-letters-p default")
@@ -581,14 +590,17 @@ def"))
   (is (not (alphanump " rst123ldv ")) "alphanump no space")
   (is (not (alphanump "rst,123+ldv")) "alphanump no punctuation")
   (is (not (alphanump ",+")) "alphanump no punctuation")
-  (is (not (alphanump "abcéß")) "alphanump no accents"))
+  (is (not (alphanump "abcéß
+")) "not alphanump with newline"))
 
 (test alphap
   (is (alphap "abcDEf") "alphap default")
   (is (not (alphap "abc,de")) "alphap no punctuation")
   (is (not (alphap "abcdeé")) "alphap no accents")
   (is (not (alphap "abc de")) "alphap no space")
-  (is (not (alphap " ")) "alphap blank"))
+  (is (not (alphap " ")) "alphap blank")
+  (is (not (alphap "abc
+")) "not alphap with newline"))
 
 (test digitp
   (is (not (digitp "abc")) "digitp letters")

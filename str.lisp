@@ -183,17 +183,21 @@
   Remove newlines."
   (ppcre:regex-replace-all "\\s+" s " "))
 
-(declaim (ftype (function (&rest (or null string))
-                          string)
-                concat))
+(declaim
+ (inline concat)
+ (ftype (function (&rest (or null string))
+                  string)
+        concat))
 (defun concat (&rest strings)
   "Join all the string arguments into one string."
   (apply #'concatenate 'string strings))
 
-(declaim (ftype (function ((or null character string)
-                           (or null (cons string)))
-                          string)
-                join))
+(declaim
+ (inline join)
+ (ftype (function ((or null string symbol character)
+                   (or null (cons string list)))
+                  string)
+        join))
 (defun join (separator strings)
   "Join all the strings of the list with a separator.
 
@@ -202,12 +206,15 @@
   Example:
   (str:join \",\" '(\"a\" \"b\" \"c\")
   => \"a,b,c\""
-  (let ((sep (string separator)))
+  (let ((sep (if separator
+                 (string separator)
+                 "")))
     (with-output-to-string (out)
-      (loop for (s . rest) on strings
-         do (write-string s out)
-         unless (null rest)
-         do (write-string sep out)))))
+      (loop
+        for (s . rest) on strings
+        do (write-string s out)
+        unless (null rest)
+          do (write-string sep out)))))
 
 (defun insert (string/char index s)
   "Insert the given string (or character) at the `index' into `s' and return a new string.
@@ -239,13 +246,14 @@
    (str:split \",\" \"foo,bar\") ;; => (\"foo\" \"bar\")
    (str:split \"[,|;]\" \"foo,bar;baz\" :regex t) ;; => (\"foo\" \"bar\" \"baz\")
 "
+  (declare (type (or integer null) start end limit))
   ;; cl-ppcre:split doesn't return a null string if the separator appears at the end of s.
   (let* ((limit (or limit (1+ (length s))))
          (res (if regex
                   (ppcre:split separator s :limit limit :start start :end end)
                   (ppcre:split `(:sequence ,(string separator)) s :limit limit :start start :end end))))
     (if omit-nulls
-        (remove-if (lambda (it) (emptyp it)) res)
+        (delete-if (lambda (it) (declare (string it)) (emptyp it)) res)
         res)))
 
 (defun rsplit (sep s &key (omit-nulls *omit-nulls*) limit regex)
@@ -271,6 +279,7 @@ the results will be be different when `limit` is provided.
    If `regex' is not nil, `separator' is treated as a regular expression."
   (split separator s :omit-nulls t :regex regex))
 
+(declaim (ftype (function (t t (or string null)) (or string null)) substring))
 (defun substring (start end s)
   "Return the substring of `s' from `start' to `end'.
 
@@ -300,17 +309,21 @@ It uses `subseq' with differences:
 (defparameter *ellipsis* "..."
   "Ellipsis to add to the end of a truncated string (see `shorten').")
 
+(declaim
+ (ftype (function ((or number null)
+                   (or string null)
+                   &key (:ellipsis (or string null)))
+                  (or string null))
+        shorten))
 (defun shorten (len s &key (ellipsis *ellipsis*))
   "If s is longer than `len', truncate it to this length and add the `*ellipsis*' at the end (\"...\" by default). Cut it down to `len' minus the length of the ellipsis."
-  (when (and len
-             (< len
-                (length s)))
-    (let ((end (max (- len (length ellipsis))
-                    0)))
-      (setf s (concat
-               (subseq s 0 end)
-               ellipsis))))
-  s)
+  (if (and len
+           (< len
+              (length s)))
+      (let ((end (max (- len (length ellipsis)) 0)))
+        (concat (subseq s 0 end) ellipsis))
+      ;; Return `s' if it doesn't need to be changed.
+      s))
 
 (defun words (s &key (limit 0))
   "Return list of words, which were delimited by white space. If the optional limit is 0 (the default), trailing empty strings are removed from the result list (see cl-ppcre)."
@@ -451,10 +464,12 @@ we generate it in chunks to avoid stack/heap overflows."
       (setf s (replace-all key value s :regex regex))))
   s)
 
+(declaim (inline emptyp))
 (defun emptyp (s)
   "Is s nil or the empty string ?"
   (or (null s) (string-equal "" s)))
 
+(declaim (inline non-empty-string-p))
 (defun non-empty-string-p (s)
   "Return t if `s' is a string and is non-empty.
 
@@ -462,10 +477,12 @@ we generate it in chunks to avoid stack/heap overflows."
   (and (stringp s)
        (not (emptyp s))))
 
+(declaim (inline blankp))
 (defun blankp (s)
   "Is s nil or only contains whitespaces ?"
   (or (null s) (string-equal "" (trim s))))
 
+(declaim (inline non-blank-string-p))
 (defun non-blank-string-p (s)
   "Return t if `s' is a string and is non blank (it doesn't exclusively contain whitespace characters).
 
@@ -483,7 +500,7 @@ we generate it in chunks to avoid stack/heap overflows."
         (funcall fn s start :start1 0 :end1 start-length)))))
 
 (defun ends-with-p (end s &key (ignore-case *ignore-case*))
-  "Return t if s ends with the substring 'end', nil otherwise.
+  "Return t if s ends with the substring `END', nil otherwise.
 
   END can be a character or a string."
   (let ((s-length (length s))
@@ -492,25 +509,28 @@ we generate it in chunks to avoid stack/heap overflows."
       (let ((fn (if ignore-case #'string-equal #'string=)))
         (funcall fn s end :start1 (- s-length end-length))))))
 
+(declaim (ftype (function ((or string null) (or string null) &key (:ignore-case boolean)) boolean) containsp))
 (defun containsp (substring s &key (ignore-case *ignore-case*))
   "Return `t` if `s` contains `substring`, nil otherwise. Ignore the case with `:ignore-case t`.
 A simple call to the built-in `search` (which returns the position of the substring)."
-  (let ((a (if ignore-case
-               (string-downcase substring)
-               substring))
-        (b (if ignore-case
-               (string-downcase s)
-               s)))
-    ;; weird case: (search "" nil) => 0
-    (cond ((and (blankp substring)
-                (null s))
-           nil)
-          ((search a b)
-           t))))
+  (when (and substring s)
+    (let ((a (if ignore-case
+                 (string-downcase substring)
+                 substring))
+          (b (if ignore-case
+                 (string-downcase s)
+                 s)))
+      ;; weird case: (search "" nil) => 0
+      (cond ((and (blankp substring)
+                  (null s))
+             nil)
+            ((search a b)
+             t)))))
 
 (defun prefix-1 (item1 item2)
   (subseq item1 0 (or (mismatch item1 item2) (length item1))))
 
+(declaim (inline prefix))
 (defun prefix (items)
   "Find the common prefix between strings.
 
@@ -529,6 +549,7 @@ A simple call to the built-in `search` (which returns the position of the substr
 (defun suffix-1 (item1 item2)
   (subseq item1 (or (mismatch item1 item2 :from-end t) 0)))
 
+(declaim (inline suffix))
 (defun suffix (items)
   "Find the common suffix between strings.
 
@@ -544,6 +565,7 @@ A simple call to the built-in `search` (which returns the position of the substr
   (when items
     (reduce #'suffix-1 items)))
 
+(declaim (inline prefixp))
 (defun prefixp (items prefix)
   "Return PREFIX if all ITEMS start with it."
   (when (every (lambda (s)
@@ -551,6 +573,7 @@ A simple call to the built-in `search` (which returns the position of the substr
                items)
     prefix))
 
+(declaim (inline suffixp))
 (defun suffixp (items suffix)
   "Return `suffix' if all items end with it.
   Otherwise, return nil"
@@ -559,14 +582,17 @@ A simple call to the built-in `search` (which returns the position of the substr
              items)
     suffix))
 
+(declaim (inline add-prefix))
 (defun add-prefix (items s)
   "Prepend s to the front of each item."
   (mapcar (lambda (item) (concat s item)) items))
 
+(declaim (inline add-suffix))
 (defun add-suffix (items s)
   "Append s to the end of each item."
   (mapcar (lambda (item) (concat item s)) items))
 
+(declaim (inline ensure-prefix))
 (defun ensure-prefix (start s)
   "Ensure that `s' starts with `start'.
   Return a new string with its prefix added, if necessary.
@@ -588,6 +614,7 @@ See also `str:ensure-suffix' and `str:ensure-wrapped-in'."
            (str:concat start-s s)
            s)))))
 
+(declaim (inline ensure-suffix))
 (defun ensure-suffix (end s)
   "Ensure that `s' ends with `end'.
 Return a new string with its suffix added, if necessary.
@@ -609,6 +636,7 @@ See also `str:ensure-prefix' and `str:ensure-wrapped-in'."
            (str:concat s end-s)
            s)))))
 
+(declaim (inline ensure-wrapped-in))
 (defun ensure-wrapped-in (start/end s)
   "Ensure that S starts and ends with `START/END'.
 Return a new string.
@@ -621,6 +649,7 @@ Return a new string.
   See also: `str:enclosed-by-p'."
   (str:ensure-prefix start/end (str:ensure-suffix start/end s)))
 
+(declaim (inline ensure))
 (defun ensure (s &key wrapped-in prefix suffix)
   "The ensure functions return a string that has the specified prefix or suffix, appended if necessary.
 
@@ -656,6 +685,7 @@ Example:
     (t
      s)))
 
+(declaim (inline wrapped-in-p))
 (defun wrapped-in-p (start/end s)
   "Does S start and end with `START/END'?
 If true, return S. Otherwise, return nil.
@@ -678,6 +708,7 @@ See also: UIOP:STRING-ENCLOSED-P (prefix s suffix).
                 (str:ends-with-p start/end s))
        s))))
 
+(declaim (inline pad))
 (defun pad (len s &key (pad-side *pad-side*) (pad-char *pad-char*))
   "Fill `s' with characters until it is of the given length. By default, add spaces on the right.
 
@@ -715,15 +746,19 @@ Filling with spaces can be done with format:
             (:center (%pad-center))
             (t (error "str:pad: unknown padding side with ~a" pad-side)))))))
 
+(declaim (inline pad-left))
 (defun pad-left (len s &key (pad-char *pad-char*))
   (pad len s :pad-side :left :pad-char pad-char))
 
+(declaim (inline pad-right))
 (defun pad-right (len s &key (pad-char *pad-char*))
   (pad len s :pad-side :right :pad-char pad-char))
 
+(declaim (inline pad-center))
 (defun pad-center (len s &key (pad-char *pad-char*))
   (pad len s :pad-side :center :pad-char pad-char))
 
+(declaim (inline fit))
 (defun fit (len s &key (pad-char *pad-char*) (pad-side :right) (ellipsis *ellipsis*))
   "Fit this string to the given length:
   - if it's too long, shorten it (showing the `ellipsis'),
@@ -741,6 +776,7 @@ Filling with spaces can be done with format:
       ((< s-length len)
        (pad len s :pad-side pad-side :pad-char pad-char)))))
 
+(declaim (inline from-file))
 (defun from-file (pathname &rest keys)
   "Read the file and return its content as a string.
 
@@ -752,6 +788,7 @@ Example: (str:from-file \"path/to/file.txt\" :external-format :utf-8)
 "
   (apply #'uiop:read-file-string pathname keys))
 
+(declaim (inline to-file))
 (defun to-file (pathname s &key (if-exists :supersede) (if-does-not-exist :create))
   "Write string `s' to file `pathname'. If the file does not exist, create it (use `:if-does-not-exist'), if it already exists, replace its content (`:if-exists').
 
@@ -789,6 +826,7 @@ Returns the string written to file."
 	      :else :if (string= s 'otherwise) :collect `(t ,@f)
               :else :collect `((eql ,test ,s) ,@f))))))
 
+(declaim (inline expand-match-branch))
 (defun expand-match-branch (str block patterns forms)
   "Helper function of the match macro."
   (case patterns
@@ -865,33 +903,34 @@ Returns the string written to file."
                         (nth 0 statement)
                         (cdr statement))))))
 
+(declaim (inline s-first)
+         (ftype (function ((or string null)) (or string null)) s-first))
 (defun s-first (s)
   "Return the first substring of `s'."
-  (cond ((null s)
-         nil)
-        ((emptyp s)
-         "")
-        (t
-         (subseq s 0 1))))
+  (etypecase s
+    (null nil)
+    ((string 0) "")
+    (t (subseq s 0 1))))
 
+(declaim (inline s-last)
+         (ftype (function ((or string null)) (or string null)) s-last))
 (defun s-last (s)
   "Return the last substring of `s'."
-  (cond ((null s)
-         nil)
-        ((emptyp s)
-         "")
-        (t
-         (substring (1- (length s)) t s))))
+  (etypecase s
+    (null nil)
+    ((string 0) "")
+    (t (substring (1- (length s)) t s))))
 
+(declaim (inline s-rest)
+         (ftype (function ((or string null)) (or string null)) s-rest))
 (defun s-rest (s)
   "Return the rest substring of `s'."
-  (cond ((null s)
-         nil)
-        ((emptyp s)
-         "")
-        (t
-         (subseq s 1))))
+  (etypecase s
+    (null nil)
+    ((string 0) "")
+    (t (subseq s 1))))
 
+(declaim (ftype (function (integer (or string null)) (or string null)) s-nth))
 (defun s-nth (n s)
   "Return the nth substring of `s'.
 
@@ -903,6 +942,7 @@ Returns the string written to file."
         ((= n 0) (s-first s))
         (t (s-nth (1- n) (s-rest s)))))
 
+(declaim (inline s-assoc-value))
 (defun s-assoc-value (alist key)
   "Return the value of a cons cell in `alist' with key `key', tested
 with `string-equal' (case-insensitive).
@@ -910,6 +950,7 @@ with `string-equal' (case-insensitive).
   (let ((cons (assoc key alist :test #'string-equal)))
     (values (cdr cons) cons)))
 
+(declaim (inline s-member))
 (defun s-member (list s &key (test #'string=)
                           (ignore-case *ignore-case*))
   "Return T if `s' is a member of `list'. Do not ignore case by default.
@@ -950,6 +991,7 @@ with `string-equal' (case-insensitive).
 
 ;; Small wrappers around built-ins that return nil when the argument is nil.
 
+(declaim (inline downcase))
 (defun downcase (s)
   "Return the lowercase version of `s'.
   Calls the built-in `string-downcase', but returns nil if `s' is
@@ -963,6 +1005,7 @@ with `string-equal' (case-insensitive).
   (when s
     (string-downcase s)))
 
+(declaim (inline upcase))
 (defun upcase (s)
   "Return the uppercase version of `s'.
   Call the built-in `string-upcase', but return nil if `s' is
@@ -976,6 +1019,7 @@ with `string-equal' (case-insensitive).
   (when s
     (string-upcase s)))
 
+(declaim (inline capitalize))
 (defun capitalize (s)
   "Return the capitalized version of `s'.
   Calls the built-in `string-capitalize', but returns nil if `s' is
@@ -992,6 +1036,7 @@ with `string-equal' (case-insensitive).
 ;; Wrappers around cl-change-case functions that coerce the argument into a string
 ;; and return nil when the argument is nil.
 
+(declaim (inline no-case))
 (defun no-case (s &key (replacement " "))
   "Transform `s' to lower case space delimited. Use REPLACEMENT as delimiter.
 
@@ -1003,6 +1048,7 @@ with `string-equal' (case-insensitive).
   (when s
     (cl-change-case:no-case (string s) :replacement replacement)))
 
+(declaim (inline camel-case))
 (defun camel-case (s &key merge-numbers)
   "Transform `s' to camelCase.
 Dot-separated numbers like 1.2.3 will be replaced by underscores 1_2_3
@@ -1016,6 +1062,7 @@ unless MERGE-NUMBERS is non-nil.
   (when s
     (cl-change-case:camel-case (string s) :merge-numbers merge-numbers)))
 
+(declaim (inline dot-case))
 (defun dot-case (s)
   "Transform `s' to dot.case.
 
@@ -1027,6 +1074,7 @@ unless MERGE-NUMBERS is non-nil.
   (when s
     (cl-change-case:dot-case (string s))))
 
+(declaim (inline header-case))
 (defun header-case (s)
   "Transform `s' to Header-Case.
 
@@ -1038,6 +1086,7 @@ unless MERGE-NUMBERS is non-nil.
   (when s
     (cl-change-case:header-case (string s))))
 
+(declaim (inline param-case))
 (defun param-case (s)
   "Transform `s' to param-case.
 
@@ -1049,6 +1098,7 @@ unless MERGE-NUMBERS is non-nil.
   (when s
     (cl-change-case:param-case (string s))))
 
+(declaim (inline pascal-case))
 (defun pascal-case (s)
   "Transform `s' to Pascal Case
 
@@ -1060,6 +1110,7 @@ unless MERGE-NUMBERS is non-nil.
   (when s
     (cl-change-case:pascal-case (string s))))
 
+(declaim (inline path-case))
 (defun path-case (s)
   "Transform `s' to path/case
 
@@ -1071,6 +1122,7 @@ unless MERGE-NUMBERS is non-nil.
   (when s
     (cl-change-case:path-case (string s))))
 
+(declaim (inline sentence-case))
 (defun sentence-case (s)
   "Transform `s' to Sentence case
 
@@ -1082,6 +1134,7 @@ unless MERGE-NUMBERS is non-nil.
   (when s
     (cl-change-case:sentence-case (string s))))
 
+(declaim (inline snake-case))
 (defun snake-case (s)
   "Transform `s' to snake_case
 
@@ -1093,6 +1146,7 @@ unless MERGE-NUMBERS is non-nil.
   (when s
     (cl-change-case:snake-case (string s))))
 
+(declaim (inline swap-case))
 (defun swap-case (s)
   "Reverse case for each character in `s'.
 
@@ -1104,6 +1158,7 @@ unless MERGE-NUMBERS is non-nil.
   (when s
     (cl-change-case:swap-case (string s))))
 
+(declaim (inline title-case))
 (defun title-case (s)
   "Transform `s' to Title Case
 
@@ -1115,6 +1170,7 @@ unless MERGE-NUMBERS is non-nil.
   (when s
     (cl-change-case:title-case (string s))))
 
+(declaim (inline constant-case))
 (defun constant-case (s)
   "Transform `s' to CONSTANT_CASE.
 
@@ -1127,44 +1183,49 @@ unless MERGE-NUMBERS is non-nil.
 
 ;;; Case predicates.
 
+(declaim (inline alphanump))
 (defun alphanump (s)
   "Return t if `s' contains at least one character and all characters are alphanumeric.
   See also `lettersnump' which also works on unicode letters."
-  (ppcre:scan "^[a-zA-Z0-9]+$" s))
+  (not (ppcre:scan "[^a-zA-Z0-9]" s)))
 
+(declaim (inline alphap))
 (defun alphap (s)
   "Return t if `s' contains at least one character and all characters are alpha (in [a-zA-Z]).
   See also `lettersp', which checks for unicode letters."
-  (ppcre:scan-to-strings "^[a-zA-Z]+$" s)
+  (not (ppcre:scan "[^a-zA-Z]" s))
   ;; TODO: this regexp accepts é and ß: in lettersp like cuerdas ?
   ;; and like in python, so definitely yes.
   ;; (ppcre:scan-to-strings "^\\p{L}+$" s)
   )
 
+(declaim (inline lettersp))
 (defun lettersp (s)
   "Return t if `s' contains only letters (including unicode letters).
 
    (alphap \"éß\") ;; => nil
    (lettersp \"éß\") ;; => t"
-  (when (ppcre:scan "^\\p{L}+$" s)
+  (unless (ppcre:scan "\\P{L}" s)
     t))
 
+(declaim (inline lettersnump))
 (defun lettersnump (s)
   "Return t if `s' contains only letters (including unicode letters) and digits."
-  (when (ppcre:scan "^[\\p{L}a-zA-Z0-9]+$" s)
+  (unless (ppcre:scan "[^\\p{L}a-zA-Z0-9]" s)
     t))
 
+(declaim (inline digitp))
 (defun digitp (s)
   "Return t if `s' contains at least one character and all characters are numerical."
   (unless (emptyp s)
     ;; regex ? Check sign and exponents.
-    (every (lambda (char)
-             (digit-char-p char))
-           s)))
+    (every #'digit-char-p s)))
 
 ;; An alias for digitp
 (setf (fdefinition 'numericp) #'digitp)
 
+(declaim (inline has-alphanum-p)
+         (ftype (function (t) boolean) has-alphanum-p))
 (defun has-alphanum-p (s)
   "Return t if `s' has at least one alphanumeric character."
   (unless (emptyp s)
@@ -1172,17 +1233,22 @@ unless MERGE-NUMBERS is non-nil.
             (alphanumericp char))
           s)))
 
+(declaim (inline has-alpha-p)
+         (ftype (function (t) boolean) has-alpha-p))
 (defun has-alpha-p (s)
   "Return t if `s' has at least one alpha character ([a-zA-Z])."
   (when (ppcre:scan "[a-zA-Z]" s)
     t))
 
+(declaim (inline has-letters-p)
+         (ftype (function (t) boolean) has-letters-p))
 (defun has-letters-p (s)
   "Return t if `s' contains at least one letter (considering unicode, not only alpha characters)."
   (when (ppcre:scan "\\p{L}" s)
     t))
 
-(declaim (inline ascii-char-p))
+(declaim (inline ascii-char-p)
+         (ftype (function (t) boolean) ascii-char-p))
 (defun ascii-char-p (char)
   "Return t if `char' is an ASCII char (its char code is below 128)."
   ;; Inspired by Serapeum
@@ -1190,10 +1256,8 @@ unless MERGE-NUMBERS is non-nil.
              char)
     t))
 
-(declaim (ftype (function ((or null character string))
-                          boolean)
-                ascii-p))
-(declaim (inline ascii-p))
+(declaim (inline ascii-p)
+         (ftype (function (t) boolean) ascii-p))
 (defun ascii-p (char/s)
   "If `char/s' is a character, return t if it is an ASCII character (its char code is below 128).
    If `char/s' is a string, return t if every character is ASCII."
@@ -1207,6 +1271,7 @@ unless MERGE-NUMBERS is non-nil.
        ;; we could return the string itself as it is usually done on CL functions.
        (every #'ascii-char-p char/s)))))
 
+(declaim (inline downcasep))
 (defun downcasep (s)
   "Return t if all alphabetical characters of `s' are lowercase, and `s' contains at least one letter."
   (when (characterp s)
@@ -1221,6 +1286,7 @@ unless MERGE-NUMBERS is non-nil.
                    t))
              s)))
 
+(declaim (inline upcasep))
 (defun upcasep (s)
   "Return t if all alphabetical characters of `s' are uppercase."
   (when (characterp s)
