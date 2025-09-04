@@ -3,7 +3,7 @@
 
     (ql:quickload "str")
 
-also on [Ultralisp](http://ultralisp.org/).
+also on [Ultralisp](http://ultralisp.org/), [ocicl](https://github.com/ocicl/ocicl/) and [vend](https://github.com/fosskers/vend/).
 
 Why ?
 
