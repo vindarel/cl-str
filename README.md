@@ -964,6 +964,7 @@ Match with regexs:
 ## Changelog
 
 * September, 2025:
+  * optimized `repeat` further and fixed for LispWorks (no more using `apply` and its call argument limit), thanks to @yehouda.
   * small backward uncompatible correctness changes, thanks to @swapneils:
     * `join` now treats a `nil` separator as the empty string, rather than the string `"nil"`, conforming to the semantics in the README of not converting `nil` to `"nil"`.
     * `containsp` now automatically returns `nil` if either string input is `nil`.
