@@ -38,6 +38,7 @@
   #:suffixp
   #:add-prefix
   #:add-suffix
+  #:s-or
 
   #:ensure
   #:ensure-prefix
@@ -1305,6 +1306,19 @@ unless MERGE-NUMBERS is non-nil.
     (if (null s)
         ""
         (replace-non-word s))))
+
+(defmacro s-or (&rest args)
+  "Similar to CL:OR, but returns the first non-empty string. If all the
+strings are empty or NIL, then we return NIL.
+
+Like OR, expressions are evaluated from left to right, until the first
+expression returns a non-empty string."
+  (let ((var (gensym)))
+   `(or
+     ,@ (loop for arg in args
+              collect `(let ((,var ,arg))
+                         (unless (str:emptyp ,var)
+                           ,var))))))
 
 ;; "deprecated" function alias
 (setf (fdefinition 'prune)        #'shorten

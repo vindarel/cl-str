@@ -90,6 +90,7 @@ The only dependency is `cl-ppcre`.
     - [Macros](#macros)
         - [string-case](#string-case)
         - [match (experimental) · new in Feb, 2024](#match-experimental--new-in-feb-2024)
+        - [s-or](#s-or)
     - [Changelog](#changelog)
     - [Dev and test](#dev-and-test)
         - [Main test suite](#main-test-suite)
@@ -959,6 +960,21 @@ Match with regexs:
    s)
  (t "nothing"))
 ;; => " hello "
+```
+
+### s-or
+
+Similar to OR, but finds the first argument that is not `(STR:EMPTYP)`. 
+
+```lisp
+(str:s-or "" "foo") 
+;; => "foo"
+
+(str:s-or nil "foo")
+;; => "foo"
+
+(str:s-or "foo" (error "will not be evaluated"))
+;; => "foo"
 ```
 
 ## Changelog

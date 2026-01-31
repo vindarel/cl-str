@@ -793,3 +793,20 @@ def"))
                   s)
                  (t "nothing")))
       "match with the regex"))
+
+(test s-or
+  (is (equal
+       "foo"
+       (str:s-or nil "foo" "bar")))
+  (is (equal
+       "foo"
+       (str:s-or "" "foo" "bar")))
+  (is (equal
+       nil
+       (str:s-or)))
+  (is (equal
+       nil
+       (str:s-or "" "")))
+  (is (equal
+       "foo"
+       (str:s-or "foo" (error "will not be evaluated")))))
