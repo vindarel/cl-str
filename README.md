@@ -33,13 +33,13 @@ The only dependency is `cl-ppcre`.
         - [To longer strings](#to-longer-strings)
             - [join `(separator list-of-strings)`](#join-separator-list-of-strings)
             - [concat `(&rest strings)`](#concat-rest-strings)
-            - [ensure `(s &key wrapped-in prefix suffix)` NEW in March, 2023](#ensure-s-key-wrapped-in-prefix-suffix-new-in-march-2023)
-            - [ensure-prefix, ensure-suffix `(start/end s)` NEW in March, 2023](#ensure-prefix-ensure-suffix-startend-s-new-in-march-2023)
+            - [ensure `(s &key wrapped-in prefix suffix)`](#ensure-s-key-wrapped-in-prefix-suffix)
+            - [ensure-prefix, ensure-suffix `(start/end s)`](#ensure-prefix-ensure-suffix-startend-s)
             - [ensure-wrapped-in `(start/end s)`](#ensure-wrapped-in-startend-s)
             - [insert `(string/char index s)`](#insert-stringchar-index-s)
             - [repeat `(count s)`](#repeat-count-s)
             - [add-prefix, add-suffix `(items s)`](#add-prefix-add-suffix-items-s)
-            - [pad `(len s &key (pad-side :right) (pad-char #\Space))`, pad-left, pad-right, pad-center (new in 0.16, 2019/12)](#pad-len-s-key-pad-side-right-pad-char-space-pad-left-pad-right-pad-center-new-in-016-201912)
+            - [pad `(len s &key (pad-side :right) (pad-char #\Space))`, pad-left, pad-right, pad-center](#pad-len-s-key-pad-side-right-pad-char-space-pad-left-pad-right-pad-center)
         - [To shorter strings](#to-shorter-strings)
             - [substring `(start end s)`](#substring-start-end-s)
             - [s-first `(s)`](#s-first-s)
@@ -54,6 +54,7 @@ The only dependency is `cl-ppcre`.
             - [unwords `(strings)`](#unwords-strings)
             - [lines `(s &key omit-nulls)`](#lines-s-key-omit-nulls)
             - [unlines `(strings)`](#unlines-strings)
+            - [paragraphs, unparagraphs](#paragraphs-unparagraphs)
             - [split `(separator s &key omit-nulls limit start end regex)`](#split-separator-s-key-omit-nulls-limit-start-end-regex)
             - [rsplit `(separator s &key limit regex)`](#rsplit-separator-s-key-limit-regex)
             - [split-omit-nulls `(separator s &key regex)`](#split-omit-nulls-separator-s-key-regex)
@@ -68,7 +69,7 @@ The only dependency is `cl-ppcre`.
             - [containsp `(substring s &key (ignore-case nil))`](#containsp-substring-s-key-ignore-case-nil)
             - [s-member `(list s &key (ignore-case *ignore-case*) (test #'string=))`](#s-member-list-s-key-ignore-case-ignore-case-test-string)
             - [prefixp and suffixp `(items s)`](#prefixp-and-suffixp-items-s)
-            - [wrapped-in-p (`start/end` `s`) NEW in March, 2023](#wrapped-in-p-startend-s-new-in-march-2023)
+            - [wrapped-in-p (`start/end` `s`)](#wrapped-in-p-startend-s)
         - [Case](#case)
             - [Functions to change case: camel-case, snake-case,...](#functions-to-change-case-camel-case-snake-case)
             - [downcase, upcase, capitalize `(s)` fixing a built-in suprise.](#downcase-upcase-capitalize-s-fixing-a-built-in-suprise)
@@ -89,7 +90,7 @@ The only dependency is `cl-ppcre`.
             - [s-assoc-value `(alist key)`](#s-assoc-value-alist-key)
     - [Macros](#macros)
         - [string-case](#string-case)
-        - [match (experimental) · new in Feb, 2024](#match-experimental--new-in-feb-2024)
+        - [match (experimental)](#match-experimental)
     - [Changelog](#changelog)
     - [Dev and test](#dev-and-test)
         - [Main test suite](#main-test-suite)
@@ -201,7 +202,7 @@ Simple call of the built-in [concatenate](https://lispcookbook.github.io/cl-cook
 
 We actually also have `uiop:strcat`.
 
-#### ensure `(s &key wrapped-in prefix suffix)` NEW in March, 2023
+#### ensure `(s &key wrapped-in prefix suffix)`
 
 The "ensure-" functions return a string that has the specified prefix or suffix, appended if necessary.
 
@@ -229,7 +230,7 @@ These functions accept strings and characters:
 warn: if both `:wrapped-in` and `:prefix` (and/or `:suffix`) are supplied together, `:wrapped-in` takes precedence and `:prefix` (and/or `:suffix`) is ignored.
 
 
-#### ensure-prefix, ensure-suffix `(start/end s)` NEW in March, 2023
+#### ensure-prefix, ensure-suffix `(start/end s)`
 
 Ensure that `s` starts with `start/end` (or ends with `start/end`, respectively).
 
@@ -287,7 +288,7 @@ characters, we generate it in chunks to avoid stack/heap overflows.
 Respectively prepend or append `s` to the front of each item.
 
 
-#### pad `(len s &key (pad-side :right) (pad-char #\Space))`, pad-left, pad-right, pad-center (new in 0.16, 2019/12)
+#### pad `(len s &key (pad-side :right) (pad-char #\Space))`, pad-left, pad-right, pad-center
 
 Fill `s` with characters until it is of the given length. By default,
 add spaces on the right:
@@ -488,8 +489,7 @@ Join the list of strings with a whitespace.
 
 Split string by newline character and return list of lines.
 
-A terminal newline character does *not* result in an extra empty string
-(new in **v0.14**, october 2019).
+A terminal newline character does *not* result in an extra empty string.
 
 
 #### unlines `(strings)`
@@ -662,7 +662,7 @@ See also `uiop:string-prefix-p prefix s`, which returns `t` if
 and `uiop:string-enclosed-p prefix s suffix`, which returns `t` if `s`
 begins with `prefix` and ends with `suffix`.
 
-#### wrapped-in-p (`start/end` `s`) NEW in March, 2023
+#### wrapped-in-p (`start/end` `s`)
 
 Does `s` start and end with `start/end'?
 
@@ -924,7 +924,7 @@ You might also like pattern matching. The example below with
 
 Note that there is also http://quickdocs.org/string-case/.
 
-### match (experimental) · new in Feb, 2024
+### match (experimental)
 
 A COND-like macro to match substrings and bind variables to matches. Regular expressions are allowed for matches.
 
@@ -963,7 +963,9 @@ Match with regexs:
 
 ## Changelog
 
-* September, 2025:
+* October, 2026:
+  * `str:concat` accepts numbers as arguments, in addition to strings. They are printed to their string representation using `princ-to-string`. Passing in other objects still fails.
+* 0.22, September, 2025:
   * optimized `repeat` further and fixed for LispWorks (no more using `apply` and its call argument limit), thanks to @yehouda.
   * small backward uncompatible correctness changes, thanks to @swapneils:
     * `join` now treats a `nil` separator as the empty string, rather than the string `"nil"`, conforming to the semantics in the README of not converting `nil` to `"nil"`.

@@ -185,12 +185,22 @@
 
 (declaim
  (inline concat)
- (ftype (function (&rest (or null string))
+ (ftype (function (&rest (or null string number))
                   string)
         concat))
-(defun concat (&rest strings)
-  "Join all the string arguments into one string."
-  (apply #'concatenate 'string strings))
+(defun concat (&rest strings/numbers)
+  "Join all the arguments into one string.
+
+  Numbers are printed to their string representation. Passing in other objects will fail.
+
+  This function uses CONCATENATE 'STRING."
+  (let ((strings (mapcar (lambda (it)
+                           (typecase it
+                             (string it)
+                             (number (princ-to-string it))
+                             (t it)))
+                         strings/numbers)))
+    (apply #'concatenate 'string strings)))
 
 (declaim
  (inline join)
