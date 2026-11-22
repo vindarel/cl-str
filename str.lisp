@@ -243,17 +243,75 @@
   (or (null s) (string-equal "" s)))
 
 
-(defun split (separator s &key (omit-nulls *omit-nulls*) limit (start 0) end regex)
-  "Split s into substring by separator (cl-ppcre takes a regex, we do not).
+(declaim
+ (ftype
+  (function (character string
+                       &key
+                       (:omit-nulls boolean)
+                       (:start fixnum)
+                       (:end (or null fixnum))
+                       (:limit (or null fixnum)))
+            list)
+  split-by-char))
 
-   `limit' limits the number of elements returned (i.e. the string is
-   split at most `limit' - 1 times).
-   If `regex' is not nil, `separator' is treated as a regular expression.
+(defun split-by-char (char s &key (omit-nulls *omit-nulls*) (start 0) end limit)
+  (declare (optimize (speed 3) (debug 0)))
+  (loop for c across (subseq s start end)
+        for left-pointer :of-type fixnum = start :then (1+ left-pointer)
+        with acc = nil
+        with res :of-type list = nil
+        with after-match = nil
+        with separator = char
+        if (equal c separator)
+          do
+             (cond
+               (acc
+                (push (coerce (reverse acc) 'string) res)
+                (setf acc nil)
+                (setf after-match nil)
+                )
+               (t
+                ;; (unless omit-nulls (push "" res))
+                ;; Following str:split, omit-nulls occurs after the split.
+                (unless after-match
+                  (push "" res))
+                ))
 
-   Examples:
-   (str:split \",\" \"foo,bar\") ;; => (\"foo\" \"bar\")
-   (str:split \"[,|;]\" \"foo,bar;baz\" :regex t) ;; => (\"foo\" \"bar\" \"baz\")
-"
+             ;; Limit? Early exit.
+             (when (and limit
+                        (>= (length res) (1- limit)))
+               (return-from split-by-char
+                 (progn
+                   ;; move past the trailing separator.
+                   (incf left-pointer)
+                   (let ((ret (reverse (cons (subseq s left-pointer) res))))
+                     (if omit-nulls
+                         (delete-if (lambda (it)
+                                      (declare (string it))
+                                      (emptyp it))
+                                    ret)
+                         ret)))))
+
+        else
+          do
+             (push c acc)
+             (setf after-match t)
+        finally
+
+           (when acc
+             (push (coerce (reverse acc) 'string) res))
+
+           (when omit-nulls
+             (setf res
+                   (delete-if (lambda (it)
+                                (declare (string it))
+                                (emptyp it))
+                              res)))
+
+           (return (reverse res))))
+
+
+(defun split-by-string (separator s &key (omit-nulls *omit-nulls*) limit (start 0) end regex)
   (declare (type (or integer null) start end limit))
   ;; cl-ppcre:split doesn't return a null string if the separator appears at the end of s.
   (let* ((limit (or limit (1+ (length s))))
@@ -263,6 +321,49 @@
     (if omit-nulls
         (delete-if (lambda (it) (declare (string it)) (emptyp it)) res)
         res)))
+
+(defun split (separator s &key (omit-nulls *omit-nulls*) (start 0) end limit regex)
+  "Split `s' by `separator', return a list of strings.
+
+   `separator' can be a string or a character.
+
+   When `separator' is a string, longer than one character, we split
+   with cl-ppcre, but separator is *not* considered a regular
+   expression by default (unlike with cl-ppcre).
+
+   Key arguments:
+
+   If `regex' is not nil, `separator' is treated as a regular expression.
+
+   `limit' limits the number of elements returned (i.e. the string is
+   split at most `limit' - 1 times).
+
+   When `omit-nulls' is truthy, we remove elements just before returning the result.
+   The `limit' parameter was respected before, during the split. If splitting returns a lot
+   of blank strings (nulls) because the `s' has many separators, you will get fewer results
+   than `limit'.
+
+   Examples:
+
+   (str:split \",\" \"foo,bar\") ;; => (\"foo\" \"bar\")
+   (str:split \"[,|;]\" \"foo,bar;baz\" :regex t) ;; => (\"foo\" \"bar\" \"baz\")
+
+   (str:split \",\" \"hello,world,I mean, what's up?\" :limit 3)
+   => (\"hello\" \"world\" \"I mean, what's up?\")
+
+   Performance considerations:
+
+   When `separator' is a character, or a string of one character, we
+   don't use cl-ppcre but call `str::split-by-char', which is two
+   orders of magnitude faster.
+"
+  (declare (ignorable regex))
+  (cond
+    ((or (characterp separator)
+         (and (stringp separator) (= 1 (length separator))))
+     (split-by-char (coerce separator 'character) s :omit-nulls omit-nulls :start start :end end :limit limit))
+    (t
+     (split-by-string separator s :omit-nulls omit-nulls :start start :end end :limit limit :regex regex))))
 
 (defun rsplit (sep s &key (omit-nulls *omit-nulls*) limit regex)
   "Similar to `split', except we split from the end. In particular,

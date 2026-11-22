@@ -529,9 +529,24 @@ By default, metacharacters are treated as normal characters.
 (split "[,|;]" "foo,bar;baz" :regex t) ;; => ("foo" "bar" "baz")
 ```
 
+`limit` limits the number of elements returned (i.e. the string is
+split at most `limit` - 1 times).
+
+~~~lisp
+(str:split "," "hello,world,I mean, what's up?" :limit 3)
+=>
+("hello" "world" "I mean, what's up?")
+~~~
+
 cl-ppcre has an inconsistency such that when the separator appears at
 the end, it doesn't return a trailing empty string. But we do **since
 v0.14** (october, 2019).
+
+**Performance considerations**:
+
+When `separator` is a character, or a string of one character, we
+don't use `cl-ppcre` but call a custom split function, which is two
+orders of magnitude faster.
 
 #### rsplit `(separator s &key limit regex)`
 
@@ -963,6 +978,8 @@ Match with regexs:
 
 ## Changelog
 
+* November, 2026:
+  * optimized `split` (two orders of magnitude faster) when the separator is a character (or a string of one character).
 * September, 2025:
   * optimized `repeat` further and fixed for LispWorks (no more using `apply` and its call argument limit), thanks to @yehouda.
   * small backward uncompatible correctness changes, thanks to @swapneils:
