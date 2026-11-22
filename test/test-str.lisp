@@ -363,32 +363,104 @@ def"))
 
 (test split
   (is (equalp '("foo" "bar") (split " " "foo bar")))
+  (is (equalp '("foo" "bar") (str::split-by-string " " "foo bar")))
+  (is (equalp '("foo" "bar") (str::split-by-char #\Space "foo bar")))
+
   (is (equalp '("foo" "bar") (split "+" "foo+bar")) "separator is a regexp")
+  (is (equalp '("foo" "bar") (str::split-by-string "+" "foo+bar")) "separator is a regexp")
+  (is (equalp '("foo" "bar") (str::split-by-char #\+ "foo+bar")) "separator is a regexp")
+
   (is (equalp '("foo" "" "bar") (split "+" "foo++bar")))
+  (is (equalp '("foo" "" "bar") (str::split-by-string "+" "foo++bar")))
+  (is (equalp '("foo" "" "bar") (str::split-by-char #\+ "foo++bar")))
+
   (is (equalp '("foo" "bar+car+dar") (split "+" "foo+bar+car+dar" :limit 2)))
+  (is (equalp '("foo" "bar+car+dar") (str::split-by-string "+" "foo+bar+car+dar" :limit 2)))
+  (is (equalp '("foo" "bar+car+dar") (str::split-by-char #\+ "foo+bar+car+dar" :limit 2)))
+
+  (let ((res '("foo" "+bar+car+dar+"))
+        (s "foo++bar+car+dar+")
+        (separator "+"))
+    (is (equalp res (split separator s :limit 2)))
+    (is (equalp res (str::split-by-string separator s :limit 2)))
+    (is (equalp res (str::split-by-char (coerce separator 'character) s :limit 2))))
+
+  (is (equalp '("foo" "" "bar+car+dar+") (split "+" "foo++bar+car+dar+" :limit 3)))
+  (is (equalp '("foo" "" "bar+car+dar+") (str::split-by-string "+" "foo++bar+car+dar+" :limit 3)))
+  (is (equalp '("foo" "" "bar+car+dar+") (str::split-by-char #\+ "foo++bar+car+dar+" :limit 3)))
+
+  (is (equalp '("foo" "" "bar" "car+dar+") (split "+" "foo++bar+car+dar+" :limit 4)))
+  (is (equalp '("foo" "" "bar" "car+dar+") (str::split-by-string "+" "foo++bar+car+dar+" :limit 4)))
+  (is (equalp '("foo" "" "bar" "car+dar+") (str::split-by-char #\+ "foo++bar+car+dar+" :limit 4)))
+
+  (is (equalp '("foo" "bar" "car+dar+") (split "+" "foo++bar+car+dar+" :limit 4 :omit-nulls t)))
+  (is (equalp '("foo" "bar" "car+dar+") (str::split-by-string "+" "foo++bar+car+dar+" :limit 4 :omit-nulls t)))
+  (is (equalp '("foo" "bar" "car+dar+") (str::split-by-char #\+ "foo++bar+car+dar+" :limit 4 :omit-nulls t)))
+
+  ;; many separators
+  (is (equalp '("foo" "" "" "" "" "bar") (split "+" "foo+++++bar")))
+  (is (equalp '("foo" "" "" "" "" "bar") (str::split-by-string "+" "foo+++++bar")))
+  (is (equalp '("foo" "" "" "" "" "bar") (str::split-by-char #\+ "foo+++++bar")))
+
+  (is (equalp '("foo" "bar") (split "+" "foo+++++bar" :omit-nulls t)))
+  (is (equalp '("foo" "bar") (str::split-by-string "+" "foo+++++bar" :omit-nulls t)))
+  (is (equalp '("foo" "bar") (str::split-by-char #\+ "foo+++++bar" :omit-nulls t)))
+
   (is (equalp '("foo" "bar") (split "+" "foo+bar")))
+  (is (equalp '("foo" "bar") (str::split-by-string "+" "foo+bar")))
+  (is (equalp '("foo" "bar") (str::split-by-char #\+ "foo+bar")))
+
   (is (equalp '("foo" "bar") (split "x" "fooxbar")) "split with string x")
+  (is (equalp '("foo" "bar") (str::split-by-string "x" "fooxbar")) "str::split-by-string with string x")
+  (is (equalp '("foo" "bar") (str::split-by-char #\x "fooxbar")) "str::split-by-char with string x")
+
   (is (equalp '("foo" "bar") (split #\x "fooxbar")) "split with character")
+  (is (equalp '("foo" "bar") (str::split-by-char #\x "fooxbar")) "str::split-by-char with character")
+
   (is (equalp '("fooxbarx") (split "xx" "fooxbarx")) "split with xx, end in x")
+
   (is (equalp '("foo" "barx") (split "xx" "fooxxbarx")) "split with xx")
+
   (is (equalp '("fooxbar" "x") (split "xx" "fooxbarxxx")) "split with xx, end in xxx")
+
   (is (equalp '("foo" "bar") (split "(*)" "foo(*)bar")))
+
   (is (equalp '("foo" "bar" "") (split "NO" "fooNObarNO"))
       "separator at the end (cl-ppcre doesn't return an empty string), but we do.")
+
   (is (equalp '("foo" "bar" "") (split "NO" "fooNObarNO" :limit 10))
       "but cl-ppcre does return trailing empty strings if limit is provided")
+
   (is (equalp '("foo" "bar") (split "+" "foo+++bar++++" :omit-nulls t))
       "omit-nulls argument")
+  (is (equalp '("foo" "bar") (str::split-by-string "+" "foo+++bar++++" :omit-nulls t))
+      "omit-nulls argument")
+  (is (equalp '("foo" "bar") (str::split-by-char #\+ "foo+++bar++++" :omit-nulls t))
+      "omit-nulls argument")
+
   (is (equalp '("foo" "   ") (split "+" "foo+++   ++++" :omit-nulls t))
       "omit-nulls and blanks")
+  (is (equalp '("foo" "   ") (str::split-by-string "+" "foo+++   ++++" :omit-nulls t))
+      "omit-nulls and blanks")
+  (is (equalp '("foo" "   ") (str::split-by-char #\+ "foo+++   ++++" :omit-nulls t))
+      "omit-nulls and blanks")
+
   (with-fixture omit-nulls ()
     (is (equalp '("foo" "bar") (split "+" "foo+++bar++++"))
         "omit-nulls argument")
-    (is (equalp '("foo" "   ") (split "+" "foo+++   ++++"))
+    (is (equalp '("foo" "   ") (str::split-by-string "+" "foo+++   ++++"))
+        "omit-nulls and blanks")
+    (is (equalp '("foo" "   ") (str::split-by-char #\+ "foo+++   ++++"))
         "omit-nulls and blanks"))
+
   (is (equalp '("foo" "bar") (split "," "foo,bar")))
+  (is (equalp '("foo" "bar") (str::split-by-string "," "foo,bar")))
+  (is (equalp '("foo" "bar") (str::split-by-char #\, "foo,bar")))
+
   (is (equalp '("foo" "ABbar") (split "ABAB" "fooABABABbar")))
+
   (is (equalp '("foo" "bar" "baz") (split "[,|;]" "foo,bar;baz" :regex t)))
+
   (is (equalp '("foo" "bar" "" "" "baz") (split "[,|;+]" "foo,bar;;;baz" :regex t))))
 
 (test rsplit
@@ -793,3 +865,73 @@ def"))
                   s)
                  (t "nothing")))
       "match with the regex"))
+
+;;;
+;;; Performance notes for split
+;;;
+
+(defparameter line
+  (make-string 1000 :initial-element #\x))
+
+#++
+(time
+ (dotimes (i 1000)
+   (split-by-char #\x line)))
+;; 0.019 0.075 0.015 0.103 0.015
+;; avec types:
+;; 0.008 0.012 0.020 0.008 0.012 0.008
+
+
+#++
+(time
+ (dotimes (i 1000)
+   (str::split-by-string "x" line)))
+;; 0.343s 0.4 0.2 or worse the first run
+
+;; split-sequence
+#++
+(time
+ (dotimes (i 1000)
+   (split-sequence:split-sequence #\x line)))
+;; 0.087 0.067 0.083 0.019 0.023
+
+(defun simple-split (char s &rest rest)
+  (cond
+    ((or (characterp char)
+         (and (stringp char) (= 1 (length char))))
+     (loop for c across s
+           with acc = nil
+           with res = nil
+           with separator = (coerce char 'character)
+           if (equal c separator)
+             do
+                (when acc
+                  (push (coerce (reverse acc) 'string) res)
+                  (setf acc nil))
+           else
+             do
+                (push c acc)
+           finally
+              (when acc
+                (push (coerce (reverse acc) 'string) res))
+              (return (reverse res)))
+     )
+    (t
+     (str:split char s))))
+
+#++
+(time
+ (dotimes (i 1000)
+   (simple-split "x" line)))
+;; 0.007 0.004
+
+
+#++
+(require 'sb-sprof)
+
+#++
+(sb-sprof:with-profiling (:max-samples 100000
+                          :report :flat
+                          :loop nil)
+ (dotimes (i 1000)
+   (split-by-char #\x line)))
